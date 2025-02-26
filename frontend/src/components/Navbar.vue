@@ -3,37 +3,37 @@
 
 <template>
   <nav>
-    <ul>
-      <li><router-link to="/">Home</router-link></li>
-      <li><router-link to="/content">Content</router-link></li>
-      <li><router-link to="/instrument-wall">Instrument Wall</router-link></li>
-      <li><router-link to="/about">About</router-link></li>
-    </ul>
+    <div class="container">
+      <ul>
+        <li><router-link to="/">Home</router-link></li>
+        <li><router-link to="/content">Content</router-link></li>
+        <li><router-link to="/instrument-wall">Instrument Wall</router-link></li>
+        <li><router-link to="/about">About</router-link></li>
+      </ul>
+    </div>
   </nav>
 </template>
 
 <style scoped>
 nav {
   background: #007bff;
-  padding: 10px;
-  text-align: center;
+  padding: 15px 0;
 }
 
 ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   justify-content: center;
+  list-style: none;
 }
 
 li {
-  margin: 0 15px;
+  margin: 0 20px;
 }
 
 a {
   color: white;
   text-decoration: none;
+  font-size: 1.1rem;
   font-weight: bold;
 }
 

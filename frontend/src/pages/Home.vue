@@ -2,18 +2,8 @@
 </script>
 
 <template>
-    <div>
-        <h1>Bem-vindo ao Som que Conecta 🎶</h1>
-        <p>Plataforma em construção ...</p>
-    </div>
+  <div class="container">
+    <h1>Welcome to Som que Conecta 🎶</h1>
+    <p>Connecting people through music education.</p>
+  </div>
 </template>
-
-<style scoped>
-h1 {
-    color: #007bff;
-    text-align: center;
-}
-p {
-    text-align: center;
-}
-</style>

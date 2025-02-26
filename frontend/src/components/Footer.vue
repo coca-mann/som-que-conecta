@@ -3,7 +3,9 @@
 
 <template>
   <footer>
-    <p>© 2025 Som que Conecta 🎶 - Todos os direitos reservados.</p>
+    <div class="container">
+      <p>© 2025 Som que Conecta 🎶 - All rights reserved.</p>
+    </div>
   </footer>
 </template>
 
@@ -12,9 +14,9 @@ footer {
   background: #222;
   color: white;
   text-align: center;
-  padding: 10px;
-  position: fixed;
+  padding: 15px 0;
+  position: relative;
   width: 100%;
-  bottom: 0;
+  margin-top: 20px;
 }
 </style>
