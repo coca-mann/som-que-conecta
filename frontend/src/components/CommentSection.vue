@@ -7,8 +7,9 @@ const props = defineProps({
 
 const newComment = ref('')
 const userName = ref('')
-const localComments = ref([...props.comments])
+const localComments = ref([...props.comments]) // Cópia para manipulação local
 
+// Adicionar um novo comentário
 const addComment = () => {
   if (!userName.value.trim() || !newComment.value.trim()) return
 
@@ -19,9 +20,14 @@ const addComment = () => {
     created_at: new Date().toISOString()
   }
 
-  localComments.value.unshift(newCommentObj) // Adiciona no topo da lista
+  localComments.value.unshift(newCommentObj) // Adiciona no topo
   userName.value = ''
   newComment.value = ''
+}
+
+// Remover um comentário
+const deleteComment = (id) => {
+  localComments.value = localComments.value.filter(comment => comment.id !== id)
 }
 </script>
 
@@ -39,6 +45,7 @@ const addComment = () => {
         <span class="comment-date">{{ new Date(comment.created_at).toLocaleString() }}</span>
       </div>
       <p class="comment-content">{{ comment.content }}</p>
+      <button class="delete-btn" @click="deleteComment(comment.id)">🗑️ Delete</button>
     </div>
 
     <div class="comment-form">
@@ -82,6 +89,7 @@ h2 {
   margin-bottom: 10px;
   border-radius: 5px;
   background: #f9f9f9;
+  position: relative;
 }
 
 /* Cabeçalho do comentário */
@@ -106,6 +114,26 @@ h2 {
 .comment-content {
   font-size: 1rem;
   color: #333;
+  margin-bottom: 8px;
+}
+
+/* Botão de exclusão */
+.delete-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: #cc0000;
 }
 
 /* Formulário de comentário */
@@ -158,6 +186,11 @@ button:hover {
 
   .comment-user {
     margin-bottom: 5px;
+  }
+
+  .delete-btn {
+    font-size: 0.7rem;
+    padding: 4px 8px;
   }
 }
 </style>

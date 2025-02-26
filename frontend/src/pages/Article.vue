@@ -47,16 +47,51 @@ onMounted(async () => {
       <!-- Seção de Comentários -->
       <CommentSection :comments="article.comments || []" />
 
-      <router-link to="/content">
-        <button>Back to Articles</button>
+      <router-link to="/content" class="back-button">
+        <button>← Back to Articles</button>
       </router-link>
     </div>
 
     <div v-else class="error-container">
       <h1>Article not found</h1>
-      <router-link to="/content">
-        <button>Back to Articles</button>
+      <router-link to="/content" class="back-button">
+        <button>← Back to Articles</button>
       </router-link>
     </div>
   </div>
 </template>
+
+<style scoped>
+.back-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  text-decoration: none;
+}
+
+.back-button button {
+  background: #007bff;
+  color: white;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-button button:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+  box-shadow: 0px 6px 12px rgba(0, 123, 255, 0.5);
+}
+
+.back-button button:active {
+  transform: scale(0.95);
+}
+
+</style>
