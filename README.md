@@ -15,10 +15,10 @@ Este projeto está alinhado aos Objetivos de Desenvolvimento Sustentável (ODS) 
 
 ## 🚀 Tecnologias Utilizadas
 O projeto utilizará as seguintes tecnologias:
-- **Frontend**: React.js / Next.js
+- **Frontend**: Vue.JS
 - **Backend**: Django / Node.js
 - **Banco de Dados**: PostgreSQL
-- **Autenticação**: OAuth / Firebase Auth
+- **Autenticação**: Local / Google SSO
 - **Hospedagem**: Vercel / Heroku / AWS
 
 ## 📅 Cronograma de Desenvolvimento
