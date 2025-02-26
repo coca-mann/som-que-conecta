@@ -3,20 +3,23 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const name = ref('')
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
-const handleLogin = () => {
-  // Simulação de autenticação (será integrado ao backend no futuro)
-  if (email.value === 'user@example.com' && password.value === '123456') {
-    router.push('/') // Redireciona para a home após login bem-sucedido
-  } else {
-    errorMessage.value = 'Invalid email or password. Try again.'
+const handleRegister = () => {
+  if (!name.value || !email.value || !password.value) {
+    errorMessage.value = 'All fields are required.'
+    return
   }
+
+  // Simulação de registro (depois será integrado ao backend)
+  console.log(`User registered: ${name.value}, ${email.value}`)
+  router.push('/')
 }
 
-// Simula login via Google (será integrado ao backend no futuro)
+// Simula login via Google (SSO) - Será integrado ao backend futuramente
 const handleGoogleLogin = () => {
   console.log('Google Login initiated')
   alert('Google SSO ainda não está configurado. Isso será integrado ao backend!')
@@ -24,20 +27,23 @@ const handleGoogleLogin = () => {
 </script>
 
 <template>
-  <div class="login-container">
-    <div class="login-card">
-      <h1>Login</h1>
+  <div class="register-container">
+    <div class="register-card">
+      <h1>Register</h1>
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-      <form @submit.prevent="handleLogin">
+      <form @submit.prevent="handleRegister">
+        <label for="name">Full Name</label>
+        <input v-model="name" type="text" id="name" placeholder="Enter your full name" required />
+
         <label for="email">Email</label>
         <input v-model="email" type="email" id="email" placeholder="Enter your email" required />
 
         <label for="password">Password</label>
         <input v-model="password" type="password" id="password" placeholder="Enter your password" required />
 
-        <button type="submit">Sign In</button>
+        <button type="submit">Sign Up</button>
       </form>
 
       <div class="divider">or</div>
@@ -45,16 +51,16 @@ const handleGoogleLogin = () => {
       <!-- Botão para SSO do Google -->
       <button class="google-button" @click="handleGoogleLogin">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" />
-        Sign In with Google
+        Sign Up with Google
       </button>
 
-      <p class="register-link">Don't have an account? <router-link to="/register">Register here</router-link></p>
+      <p class="login-link">Already have an account? <router-link to="/login">Login here</router-link></p>
     </div>
   </div>
 </template>
 
 <style scoped>
-.login-container {
+.register-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -62,7 +68,7 @@ const handleGoogleLogin = () => {
   background: #f4f4f4;
 }
 
-.login-card {
+.register-card {
   background: white;
   padding: 20px;
   border-radius: 10px;
@@ -148,18 +154,18 @@ button:hover {
   margin-bottom: 10px;
 }
 
-/* Link para registro */
-.register-link {
+/* Link para login */
+.login-link {
   margin-top: 10px;
   font-size: 0.9rem;
 }
 
-.register-link a {
+.login-link a {
   color: #007bff;
   text-decoration: none;
 }
 
-.register-link a:hover {
+.login-link a:hover {
   text-decoration: underline;
 }
 </style>
