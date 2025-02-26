@@ -6,6 +6,7 @@ const route = useRoute()
 const router = useRouter()
 const isLoading = ref(true)
 const instrument = ref(null)
+const isReserved = ref(false) // Estado da reserva
 
 onMounted(async () => {
   try {
@@ -30,6 +31,13 @@ onMounted(async () => {
     }, 1000)
   }
 })
+
+// Função para reservar o instrumento
+const reserveInstrument = () => {
+  if (instrument.value.status !== "Available") return
+  isReserved.value = true
+  instrument.value.status = "Reserved"
+}
 </script>
 
 <template>
@@ -45,8 +53,19 @@ onMounted(async () => {
       <p class="description">{{ instrument.description }}</p>
       <p class="location">📍 Located at: <strong>{{ instrument.location }}</strong></p>
       <span class="status" :class="{ available: instrument.status === 'Available', unavailable: instrument.status !== 'Available' }">
-        {{ instrument.status }}
+        {{ isReserved ? 'Reserved' : instrument.status }}
       </span>
+
+      <!-- Botão de reserva -->
+      <button 
+        v-if="instrument.status === 'Available' && !isReserved" 
+        class="reserve-button"
+        @click="reserveInstrument"
+      >
+        🎸 Reserve This Instrument
+      </button>
+
+      <p v-if="isReserved" class="reserved-message">✅ You have successfully reserved this instrument!</p>
 
       <!-- Botão para voltar -->
       <router-link to="/instrument-wall" class="back-button">
@@ -111,6 +130,41 @@ h1 {
   color: white;
 }
 
+/* Botão de reserva */
+.reserve-button {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 25px;
+  background: #ff9800;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  box-shadow: 0px 4px 8px rgba(255, 152, 0, 0.4);
+}
+
+.reserve-button:hover {
+  background: #e68900;
+  transform: scale(1.05);
+  box-shadow: 0px 6px 12px rgba(255, 152, 0, 0.6);
+}
+
+.reserve-button:active {
+  transform: scale(0.95);
+}
+
+/* Mensagem de reserva confirmada */
+.reserved-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #28a745;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* Botão para voltar */
 .back-button {
   display: flex;
   justify-content: center;
