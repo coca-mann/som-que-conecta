@@ -5,8 +5,9 @@
   <nav>
     <ul>
       <li><router-link to="/">Home</router-link></li>
-      <li><router-link to="/conteudo">Conteúdo</router-link></li>
-      <li><router-link to="/mural">Mural</router-link></li>
+      <li><router-link to="/content">Content</router-link></li>
+      <li><router-link to="/instrument-wall">Instrument Wall</router-link></li>
+      <li><router-link to="/about">About</router-link></li>
     </ul>
   </nav>
 </template>
