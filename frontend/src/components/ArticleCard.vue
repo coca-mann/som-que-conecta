@@ -9,7 +9,9 @@ defineProps({
     <img :src="article.image" alt="Article Image" />
     <h2>{{ article.title }}</h2>
     <p>{{ article.description }}</p>
-    <button>Read More</button>
+    <router-link :to="`/article/${article.id}`">
+      <button>Read More</button>
+    </router-link>
   </div>
 </template>
 
