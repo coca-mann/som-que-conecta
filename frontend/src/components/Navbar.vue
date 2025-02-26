@@ -1,4 +1,22 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+
+const isAuthenticated = ref(false)
+
+onMounted(() => {
+  // Criar um usuário fixo para testes
+  const testUser = {
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    profilePicture: 'https://i.pravatar.cc/100' // Avatar de teste
+  }
+
+  if (!localStorage.getItem('user')) {
+    localStorage.setItem('user', JSON.stringify(testUser)) // Define usuário fixo
+  }
+
+  isAuthenticated.value = true
+})
 </script>
 
 <template>
@@ -9,11 +27,14 @@
         <li><router-link to="/content">Content</router-link></li>
         <li><router-link to="/instrument-wall">Instrument Wall</router-link></li>
         <li><router-link to="/about">About</router-link></li>
+        <li v-if="isAuthenticated"><router-link to="/profile">Profile</router-link></li>
+        <li v-else><router-link to="/login">Login</router-link></li>
       </ul>
-      <router-link to="/login" class="login-button">Login</router-link>
+      <ThemeSwitcher />
     </div>
   </nav>
 </template>
+
 
 <style scoped>
 nav {

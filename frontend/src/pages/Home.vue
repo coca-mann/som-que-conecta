@@ -64,7 +64,7 @@
 /* Seção Hero */
 .hero {
   background: url("https://source.unsplash.com/1600x600/?music,concert") center/cover;
-  color: white;
+  color: black;
   padding: 60px 20px;
   display: flex;
   align-items: center;

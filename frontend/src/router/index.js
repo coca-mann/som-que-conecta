@@ -7,6 +7,7 @@ import Article from '../pages/Article.vue'
 import InstrumentDetail from '../pages/InstrumentDetail.vue'
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
+import Profile from '../pages/Profile.vue'
 
 const routes = [
   { path: '/', component: Home, name: 'Home' },
@@ -16,7 +17,8 @@ const routes = [
   { path: '/article/:id', component: Article, name: 'Article'},
   { path: '/instrument/:id', component: InstrumentDetail, name: 'InstrumentDetail'},
   { path: '/login', component: Login, name: 'Login'},
-  { path: '/register', component: Register, name: 'Register'}
+  { path: '/register', component: Register, name: 'Register'},
+  { path: '/profile', component: Profile, name: 'Profile'},
 ]
 
 const router = createRouter({
