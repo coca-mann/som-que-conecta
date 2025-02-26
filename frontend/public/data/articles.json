@@ -1,34 +1,62 @@
 [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "title": "Introduction to Guitar Chords",
-      "content": {
-        "text": "Learning guitar chords is fundamental for playing songs. Start with simple chords like C, G, and D.",
-        "media": [
-          { "type": "image", "url": "https://source.unsplash.com/800x400/?guitar,music" },
-          { "type": "video", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
-        ]
-      },
-      "author_id": "123e4567-e89b-12d3-a456-426614174000",
-      "tags": ["guitar", "chords", "beginner"],
-      "is_published": true,
-      "created_at": "2025-02-25T12:00:00Z",
-      "updated_at": "2025-02-26T08:30:00Z"
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "title": "Introduction to Guitar Chords",
+    "content": {
+      "text": "Learning guitar chords is fundamental for playing songs. Start with simple chords like C, G, and D.",
+      "media": [
+        { "type": "image", "url": "https://source.unsplash.com/800x400/?guitar,music" },
+        { "type": "video", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+      ]
     },
-    {
-      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-      "title": "Piano for Beginners",
-      "content": {
-        "text": "The piano is one of the easiest instruments to start with. Learn how to play basic scales and chords.",
-        "media": [
-          { "type": "image", "url": "https://source.unsplash.com/800x400/?piano,music" }
-        ]
+    "author_id": "123e4567-e89b-12d3-a456-426614174000",
+    "tags": ["guitar", "chords", "beginner"],
+    "is_published": true,
+    "created_at": "2025-02-25T12:00:00Z",
+    "updated_at": "2025-02-26T08:30:00Z",
+    "comments": [
+      {
+        "id": "1",
+        "user": "John Doe",
+        "content": "Great tutorial! Really helped me with my chord transitions.",
+        "created_at": "2025-02-26T09:00:00Z"
       },
-      "author_id": "321e6547-e89b-98c3-a321-426614174999",
-      "tags": ["piano", "beginner", "music theory"],
-      "is_published": true,
-      "created_at": "2025-02-24T10:30:00Z",
-      "updated_at": "2025-02-24T14:15:00Z"
-    }
-  ]
-  
+      {
+        "id": "2",
+        "user": "Jane Smith",
+        "content": "I struggled a bit with the F chord. Any tips?",
+        "created_at": "2025-02-26T10:15:00Z"
+      }
+    ]
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655442000",
+    "title": "Introduction to Guitar Chords",
+    "content": {
+      "text": "Learning guitar chords is fundamental for playing songs. Start with simple chords like C, G, and D.",
+      "media": [
+        { "type": "image", "url": "https://source.unsplash.com/800x400/?guitar,music" },
+        { "type": "video", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+      ]
+    },
+    "author_id": "123e4567-e89b-12d3-a456-426614174000",
+    "tags": ["guitar", "chords", "beginner"],
+    "is_published": true,
+    "created_at": "2025-02-25T12:00:00Z",
+    "updated_at": "2025-02-26T08:30:00Z",
+    "comments": [
+      {
+        "id": "1",
+        "user": "John Doe",
+        "content": "Great tutorial! Really helped me with my chord transitions.",
+        "created_at": "2025-02-26T09:00:00Z"
+      },
+      {
+        "id": "2",
+        "user": "Jane Smith",
+        "content": "I struggled a bit with the F chord. Any tips?",
+        "created_at": "2025-02-26T10:15:00Z"
+      }
+    ]
+  }
+]
