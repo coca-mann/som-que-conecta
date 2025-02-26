@@ -1,30 +1,29 @@
 <script setup>
+import Navbar from './components/Navbar.vue'
+import Footer from './components/Footer.vue'
 </script>
 
 <template>
-  <div>
-    <nav>
-      <router-link to="/">Home</router-link>
-    </nav>
+  <div class="app-container">
+    <Navbar />
 
-    <router-view />
+    <main>
+      <router-view />
+    </main>
+
+    <Footer />
   </div>
 </template>
 
 <style scoped>
-nav {
-  text-align: center;
-  margin-bottom: 20px;
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-nav a {
-  text-decoration: none;
-  color: #007bff;
-  font-weight: bold;
-  margin: 0 10px;
-}
-
-nav a:hover {
-  text-decoration: underline;
+main {
+  flex-grow: 1;
+  padding-bottom: 40px; /* Para não cobrir o conteúdo com o footer */
 }
 </style>
