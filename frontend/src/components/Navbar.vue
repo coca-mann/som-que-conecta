@@ -30,7 +30,6 @@ onMounted(() => {
         <li v-if="isAuthenticated"><router-link to="/profile">Profile</router-link></li>
         <li v-else><router-link to="/login">Login</router-link></li>
       </ul>
-      <ThemeSwitcher />
     </div>
   </nav>
 </template>

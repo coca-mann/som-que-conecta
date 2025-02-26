@@ -5,8 +5,11 @@ import InstrumentModal from '../components/InstrumentModal.vue'
 
 const router = useRouter()
 const user = ref({
-  name: '',
+  username: '',
   email: '',
+  dateOfBirth: '',
+  bio: '',
+  authProvider: 'local', // Pode ser 'local' ou 'google'
   profilePicture: '',
   instruments: [] // Lista de instrumentos do usuário
 })
@@ -28,6 +31,18 @@ onMounted(() => {
 const saveProfile = () => {
   localStorage.setItem('user', JSON.stringify(user.value))
   isEditing.value = false
+}
+
+// Processa o upload da imagem de perfil
+const handleProfilePictureUpload = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = () => {
+      user.value.profilePicture = reader.result
+    }
+    reader.readAsDataURL(file)
+  }
 }
 
 // Remover um instrumento do usuário
@@ -55,15 +70,26 @@ const addInstrument = (newInstrument) => {
       <div v-if="user.profilePicture" class="profile-picture">
         <img :src="user.profilePicture" alt="Profile Picture" />
       </div>
+      <input type="file" accept="image/*" @change="handleProfilePictureUpload" v-if="isEditing" />
 
       <div class="profile-info">
-        <label>Nome:</label>
-        <input v-if="isEditing" v-model="user.name" type="text" />
-        <p v-else>{{ user.name }}</p>
+        <label>Nome de Usuário:</label>
+        <input v-if="isEditing" v-model="user.username" type="text" />
+        <p v-else>{{ user.username }}</p>
 
         <label>Email:</label>
-        <input v-if="isEditing" v-model="user.email" type="email" />
-        <p v-else>{{ user.email }}</p>
+        <p>{{ user.email }}</p>
+
+        <label>Data de Nascimento:</label>
+        <input v-if="isEditing" v-model="user.dateOfBirth" type="date" />
+        <p v-else>{{ user.dateOfBirth || 'Não informado' }}</p>
+
+        <label>Sobre Mim:</label>
+        <textarea v-if="isEditing" v-model="user.bio" placeholder="Fale um pouco sobre você..."></textarea>
+        <p v-else>{{ user.bio || 'Nenhuma bio cadastrada' }}</p>
+
+        <label>Autenticação:</label>
+        <p>{{ user.authProvider === 'google' ? 'Google SSO' : 'Cadastro Local' }}</p>
 
         <div class="profile-actions">
           <button v-if="isEditing" @click="saveProfile">Salvar</button>
@@ -94,7 +120,6 @@ const addInstrument = (newInstrument) => {
     <InstrumentModal v-if="isModalOpen" @close="isModalOpen = false" @add-instrument="addInstrument" />
   </div>
 </template>
-
 
 <style scoped>
 /* Estrutura da Página */
@@ -132,12 +157,16 @@ label {
   margin-top: 10px;
 }
 
-input {
+input, textarea {
   width: 100%;
   padding: 10px;
   margin: 5px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+textarea {
+  resize: vertical;
 }
 
 p {
