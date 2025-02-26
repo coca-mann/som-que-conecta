@@ -1,41 +1,33 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-
-const isLoading = ref(true) // Estado de carregamento
-const article = ref(null)
-
-const articles = [
-  {
-    id: 1,
-    title: 'Introduction to Guitar Chords',
-    content: 'Learning guitar chords is fundamental for playing songs...',
-    image: 'https://source.unsplash.com/800x400/?guitar,music'
-  },
-  {
-    id: 2,
-    title: 'Piano for Beginners',
-    content: 'The piano is one of the easiest instruments to start with...',
-    image: 'https://source.unsplash.com/800x400/?piano,music'
-  },
-  {
-    id: 3,
-    title: 'The Benefits of Learning an Instrument',
-    content: 'Music can improve cognitive skills, mental health, and more...',
-    image: 'https://source.unsplash.com/800x400/?music,instrument'
-  }
-]
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
+const isLoading = ref(true)
+const article = ref(null)
 
-onMounted(() => {
-  const articleId = parseInt(route.params.id)
-  article.value = articles.find(a => a.id === articleId)
+onMounted(async () => {
+  try {
+    const response = await fetch('/data/articles.json') // Carrega o JSON
+    const articles = await response.json()
 
-  // Simulando um atraso no carregamento
-  setTimeout(() => {
-    isLoading.value = false
-  }, 1500) // Aguarda 1.5 segundos antes de exibir o conteúdo
+    const articleId = route.params.id
+    article.value = articles.find(a => a.id === articleId)
+
+    if (!article.value) {
+      console.warn(`Article with ID ${articleId} not found.`)
+      router.push('/content') // Redireciona para a lista se o artigo não existir
+      return
+    }
+
+  } catch (error) {
+    console.error('Error loading article:', error)
+  } finally {
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000) // Simula carregamento
+  }
 })
 </script>
 
@@ -48,10 +40,18 @@ onMounted(() => {
     </div>
 
     <!-- Exibe o artigo quando carregar -->
-    <div v-else>
-      <img :src="article.image" alt="Article Image" class="article-image" />
+    <div v-else-if="article">
+      <img :src="article.content.media[0]?.url" alt="Article Image" class="article-image" />
       <h1>{{ article.title }}</h1>
-      <p>{{ article.content }}</p>
+      <p>{{ article.content.text }}</p>
+      <router-link to="/content">
+        <button>Back to Articles</button>
+      </router-link>
+    </div>
+
+    <!-- Exibe mensagem se o artigo não for encontrado -->
+    <div v-else class="error-container">
+      <h1>Article not found</h1>
       <router-link to="/content">
         <button>Back to Articles</button>
       </router-link>
@@ -116,5 +116,11 @@ button:hover {
   to {
     transform: rotate(360deg);
   }
+}
+
+.error-container {
+  text-align: center;
+  color: red;
+  margin-top: 50px;
 }
 </style>

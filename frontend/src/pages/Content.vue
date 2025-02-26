@@ -1,34 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import ArticleCard from '../components/ArticleCard.vue'
 
-// Dados fictícios para teste
-const articles = ref([
-  {
-    id: 1,
-    title: 'Introduction to Guitar Chords',
-    description: 'Learn the basics of guitar chords and how to switch between them smoothly.',
-    image: 'https://source.unsplash.com/400x250/?guitar,music'
-  },
-  {
-    id: 2,
-    title: 'Piano for Beginners',
-    description: 'A step-by-step guide to getting started with the piano.',
-    image: 'https://source.unsplash.com/400x250/?piano,music'
-  },
-  {
-    id: 3,
-    title: 'The Benefits of Learning an Instrument',
-    description: 'Discover how playing an instrument can improve cognitive skills and mental health.',
-    image: 'https://source.unsplash.com/400x250/?music,instrument'
-  },
-  {
-    id: 4,
-    title: 'The Benefits of Learning an Instrument',
-    description: 'Discover how playing an instrument can improve cognitive skills and mental health.',
-    image: 'https://source.unsplash.com/400x250/?music,instrument'
+const articles = ref([])
+const isLoading = ref(true)
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/data/articles.json') // Busca o JSON
+    articles.value = await response.json()
+  } catch (error) {
+    console.error('Failed to load articles:', error)
+  } finally {
+    isLoading.value = false
   }
-])
+})
 </script>
 
 <template>
@@ -36,7 +22,14 @@ const articles = ref([
     <h1>Music Content 🎼</h1>
     <p>Explore our collection of music tutorials and articles.</p>
 
-    <div class="articles">
+    <!-- Exibe o carregamento -->
+    <div v-if="isLoading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading articles...</p>
+    </div>
+
+    <!-- Exibe os artigos -->
+    <div v-else class="articles">
       <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
     </div>
   </div>
@@ -48,5 +41,23 @@ const articles = ref([
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   margin-top: 20px;
+}
+.loading-container {
+  text-align: center;
+  margin-top: 50px;
+}
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 123, 255, 0.3);
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

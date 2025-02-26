@@ -6,9 +6,9 @@ defineProps({
 
 <template>
   <div class="article-card">
-    <img :src="article.image" alt="Article Image" />
+    <img :src="article.content.media[0].url" alt="Article Image" />
     <h2>{{ article.title }}</h2>
-    <p>{{ article.description }}</p>
+    <p>{{ article.content.text.substring(0, 100) }}...</p>
     <router-link :to="`/article/${article.id}`">
       <button>Read More</button>
     </router-link>
