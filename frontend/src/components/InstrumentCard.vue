@@ -5,16 +5,17 @@ defineProps({
 </script>
 
 <template>
-  <div class="instrument-card">
-    <img :src="instrument.image" alt="Instrument Image" />
-    <h2>{{ instrument.name }}</h2>
-    <p>{{ instrument.description }}</p>
-    <p class="location">📍 {{ instrument.location }}</p>
-    <span class="status" :class="{ available: instrument.status === 'Available', unavailable: instrument.status !== 'Available' }">
-      {{ instrument.status }}
-    </span>
-  </div>
-</template>
+    <router-link :to="`/instrument/${instrument.id}`" class="instrument-card">
+      <img :src="instrument.image" alt="Instrument Image" />
+      <h2>{{ instrument.name }}</h2>
+      <p>{{ instrument.description }}</p>
+      <p class="location">📍 {{ instrument.location }}</p>
+      <span class="status" :class="{ available: instrument.status === 'Available', unavailable: instrument.status !== 'Available' }">
+        {{ instrument.status }}
+      </span>
+    </router-link>
+  </template>
+  
 
 <style scoped>
 .instrument-card {
