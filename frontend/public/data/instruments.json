@@ -1,0 +1,27 @@
+[
+    {
+      "id": "1",
+      "name": "Yamaha Acoustic Guitar",
+      "description": "A well-maintained acoustic guitar available for borrowing.",
+      "image": "https://source.unsplash.com/400x250/?guitar,music",
+      "location": "Community Center A",
+      "status": "Available"
+    },
+    {
+      "id": "2",
+      "name": "Roland Digital Piano",
+      "description": "Electric piano with weighted keys, great for beginners.",
+      "image": "https://source.unsplash.com/400x250/?piano,music",
+      "location": "Music School B",
+      "status": "Unavailable"
+    },
+    {
+      "id": "3",
+      "name": "Violin 4/4",
+      "description": "Perfect for intermediate violinists, available for rental.",
+      "image": "https://source.unsplash.com/400x250/?violin,music",
+      "location": "Cultural Center C",
+      "status": "Available"
+    }
+  ]
+  
