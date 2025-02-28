@@ -1,0 +1,24 @@
+# Ambiente virtual
+venv/
+__pycache__/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Dependências do Python
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+# Dentro de backend/.gitignore
+
+# Configurações locais (caso tenha um settings.py exclusivo)
+local_settings.py
+
+# Arquivos de migração antigos
+migrations/
+
+# Logs do Django
+*.log
+.env
