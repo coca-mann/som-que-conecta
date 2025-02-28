@@ -16,12 +16,12 @@
 
 ✅ **5. Arquitetura do Sistema** (**Concluído**)
 
-✅ **6. Desenvolvimento da Interface** (**7 dias** - pode ser estendido caso necessário)
+✅ **6. Desenvolvimento da Interface** (**Em pausa para poder desenvolver o backend e servir os dados ao frontend**)
 
 ---
 
 ## **Mês 2 (Março - Abril) → Desenvolvimento**
-✅ **7. Desenvolvimento do Backend** (**12 dias**)
+✅ **7. Desenvolvimento do Backend** ( **Em andamento!** )
 
 ✅ **8. Testes Funcionais e de Usabilidade** (**6 dias**)
 
