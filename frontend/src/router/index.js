@@ -8,6 +8,9 @@ import InstrumentDetail from '../pages/InstrumentDetail.vue'
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
 import Profile from '../pages/Profile.vue'
+import LearningPaths from '../pages/LearningPaths.vue'
+import LearningPathDetail from '../pages/LearningPathDetail.vue'
+import LessonDetail from '../pages/LessonDetail.vue'
 
 const routes = [
   { path: '/', component: Home, name: 'Home' },
@@ -19,6 +22,9 @@ const routes = [
   { path: '/login', component: Login, name: 'Login'},
   { path: '/register', component: Register, name: 'Register'},
   { path: '/profile', component: Profile, name: 'Profile'},
+  { path: '/learning', component: LearningPaths},
+  { path: '/learning-path/:id', component: LearningPathDetail},
+  { path: '/lesson/:id', component: LessonDetail}
 ]
 
 const router = createRouter({
