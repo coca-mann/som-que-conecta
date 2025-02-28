@@ -1,12 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { format, isSameDay, parseISO } from 'date-fns'
 
 const route = useRoute()
 const router = useRouter()
 const isLoading = ref(true)
 const instrument = ref(null)
-const isReserved = ref(false) // Estado da reserva
+const availability = ref([]) // Disponibilidade do instrumento
+const today = new Date()
 
 onMounted(async () => {
   try {
@@ -23,6 +25,13 @@ onMounted(async () => {
       return
     }
 
+    // Carregar disponibilidade simulada da API (mock)
+    const availabilityResponse = await fetch('/data/instrument_availability_mock.json')
+    const allAvailability = await availabilityResponse.json()
+    availability.value = allAvailability
+      .filter(a => a.instrument_id === instrumentId)
+      .filter(a => isSameDay(parseISO(a.available_from), today))
+
   } catch (error) {
     console.error('Error loading instrument:', error)
   } finally {
@@ -31,13 +40,6 @@ onMounted(async () => {
     }, 1000)
   }
 })
-
-// Função para reservar o instrumento
-const reserveInstrument = () => {
-  if (instrument.value.status !== "Available") return
-  isReserved.value = true
-  instrument.value.status = "Reserved"
-}
 </script>
 
 <template>
@@ -50,39 +52,56 @@ const reserveInstrument = () => {
     <div v-else-if="instrument">
       <img :src="instrument.image" alt="Instrument Image" class="instrument-image" />
       <h1>{{ instrument.name }}</h1>
-      <p class="description">{{ instrument.description }}</p>
-      <p class="location">📍 Located at: <strong>{{ instrument.location }}</strong></p>
+
+      <div class="instrument-details">
+        <p><strong>Descrição:</strong> {{ instrument.description }}</p>
+        <p><strong>Tipo:</strong> {{ instrument.type }}</p>
+        <p><strong>Marca:</strong> {{ instrument.brand }}</p>
+        <p><strong>Cor:</strong> {{ instrument.color }}</p>
+        <p><strong>Localização:</strong> 📍 {{ instrument.location }}</p>
+        <p><strong>Registrado por:</strong> {{ instrument.owner }}</p>
+        <p><strong>Data de Cadastro:</strong> {{ new Date(instrument.created_at).toLocaleDateString() }}</p>
+      </div>
+
       <span class="status" :class="{ available: instrument.status === 'Available', unavailable: instrument.status !== 'Available' }">
-        {{ isReserved ? 'Reserved' : instrument.status }}
+        {{ instrument.status }}
       </span>
 
-      <!-- Botão de reserva -->
-      <button 
-        v-if="instrument.status === 'Available' && !isReserved" 
-        class="reserve-button"
-        @click="reserveInstrument"
-      >
-        🎸 Reserve This Instrument
-      </button>
+      <!-- Disponibilidade de Hoje -->
+      <div class="availability-section">
+        <h2>📅 Disponibilidade para Hoje</h2>
+        <p v-if="availability.length === 0">Nenhuma disponibilidade para hoje.</p>
 
-      <p v-if="isReserved" class="reserved-message">✅ You have successfully reserved this instrument!</p>
+        <ul v-else>
+          <li v-for="slot in availability" :key="slot.id">
+            {{ format(parseISO(slot.available_from), 'HH:mm') }} - {{ format(parseISO(slot.available_to), 'HH:mm') }}
+            <span class="badge">Disponível</span>
+          </li>
+        </ul>
+      </div>
 
       <!-- Botão para voltar -->
       <router-link to="/instrument-wall" class="back-button">
-        <button>← Back to Instrument Wall</button>
+        <button>← Voltar para o Mural</button>
       </router-link>
     </div>
 
     <div v-else class="error-container">
-      <h1>Instrument not found</h1>
+      <h1>Instrumento não encontrado</h1>
       <router-link to="/instrument-wall">
-        <button>Back to Instrument Wall</button>
+        <button>Voltar para o Mural</button>
       </router-link>
     </div>
   </div>
 </template>
 
 <style scoped>
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+}
+
 .instrument-image {
   width: 100%;
   height: 300px;
@@ -97,23 +116,16 @@ h1 {
   margin-bottom: 10px;
 }
 
-.description {
-  font-size: 1.2rem;
-  color: #555;
-  text-align: center;
-}
-
-.location {
-  text-align: center;
+.instrument-details {
   font-size: 1.1rem;
-  color: #007bff;
-  margin-top: 10px;
+  line-height: 1.6;
+  margin-bottom: 15px;
 }
 
 .status {
   display: block;
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: bold;
   margin-top: 10px;
   padding: 10px;
@@ -130,38 +142,42 @@ h1 {
   color: white;
 }
 
-/* Botão de reserva */
-.reserve-button {
-  display: block;
-  margin: 20px auto;
-  padding: 12px 20px;
+/* Seção de Disponibilidade */
+.availability-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.availability-section h2 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
   font-size: 1.1rem;
-  border: none;
-  border-radius: 25px;
-  background: #ff9800;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #d4edda;
+  color: #155724;
+}
+
+.badge {
+  font-size: 0.9rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: #28a745;
   color: white;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-  box-shadow: 0px 4px 8px rgba(255, 152, 0, 0.4);
-}
-
-.reserve-button:hover {
-  background: #e68900;
-  transform: scale(1.05);
-  box-shadow: 0px 6px 12px rgba(255, 152, 0, 0.6);
-}
-
-.reserve-button:active {
-  transform: scale(0.95);
-}
-
-/* Mensagem de reserva confirmada */
-.reserved-message {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #28a745;
-  font-weight: bold;
-  margin-top: 10px;
 }
 
 /* Botão para voltar */
@@ -181,42 +197,10 @@ h1 {
   border-radius: 25px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .back-button button:hover {
   background: #0056b3;
-  transform: scale(1.05);
-  box-shadow: 0px 6px 12px rgba(0, 123, 255, 0.5);
-}
-
-.back-button button:active {
-  transform: scale(0.95);
-}
-
-/* Loading */
-.loading-container {
-  text-align: center;
-  margin-top: 50px;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(0, 123, 255, 0.3);
-  border-top-color: #007bff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 10px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .error-container {
