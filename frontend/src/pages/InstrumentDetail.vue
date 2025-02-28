@@ -2,6 +2,11 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { format, isSameDay, parseISO } from 'date-fns'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+import { Navigation, Pagination } from 'swiper/modules'
 
 const route = useRoute()
 const router = useRouter()
@@ -50,17 +55,28 @@ onMounted(async () => {
     </div>
 
     <div v-else-if="instrument">
-      <img :src="instrument.image" alt="Instrument Image" class="instrument-image" />
+      <!-- Carrossel de Imagens -->
+      <swiper
+        :modules="[Navigation, Pagination]"
+        navigation
+        pagination
+        class="instrument-carousel"
+      >
+        <swiper-slide v-for="(image, index) in instrument.images" :key="index">
+          <img :src="image" alt="Instrument Image" class="instrument-image" />
+        </swiper-slide>
+      </swiper>
+
       <h1>{{ instrument.name }}</h1>
 
       <div class="instrument-details">
-        <p><strong>Descrição:</strong> {{ instrument.description }}</p>
-        <p><strong>Tipo:</strong> {{ instrument.type }}</p>
-        <p><strong>Marca:</strong> {{ instrument.brand }}</p>
-        <p><strong>Cor:</strong> {{ instrument.color }}</p>
-        <p><strong>Localização:</strong> 📍 {{ instrument.location }}</p>
-        <p><strong>Registrado por:</strong> {{ instrument.owner }}</p>
-        <p><strong>Data de Cadastro:</strong> {{ new Date(instrument.created_at).toLocaleDateString() }}</p>
+        <p><strong>Description:</strong> {{ instrument.description }}</p>
+        <p><strong>Type:</strong> {{ instrument.type }}</p>
+        <p><strong>Brand:</strong> {{ instrument.brand }}</p>
+        <p><strong>Color:</strong> {{ instrument.color }}</p>
+        <p><strong>Location:</strong> 📍 {{ instrument.location }}</p>
+        <p><strong>Registered by:</strong> {{ instrument.owner }}</p>
+        <p><strong>Created at:</strong> {{ new Date(instrument.created_at).toLocaleDateString() }}</p>
       </div>
 
       <span class="status" :class="{ available: instrument.status === 'Available', unavailable: instrument.status !== 'Available' }">
@@ -69,37 +85,37 @@ onMounted(async () => {
 
       <!-- Disponibilidade de Hoje -->
       <div class="availability-section">
-        <h2>📅 Disponibilidade para Hoje</h2>
-        <p v-if="availability.length === 0">Nenhuma disponibilidade para hoje.</p>
+        <h2>📅 Availability for Today</h2>
+        <p v-if="availability.length === 0">No availability today.</p>
 
         <ul v-else>
           <li v-for="slot in availability" :key="slot.id">
             {{ format(parseISO(slot.available_from), 'HH:mm') }} - {{ format(parseISO(slot.available_to), 'HH:mm') }}
-            <span class="badge">Disponível</span>
+            <span class="badge">Available</span>
           </li>
         </ul>
       </div>
 
       <!-- Botão para voltar -->
       <router-link to="/instrument-wall" class="back-button">
-        <button>← Voltar para o Mural</button>
+        <button>← Back to Instrument Wall</button>
       </router-link>
     </div>
 
     <div v-else class="error-container">
-      <h1>Instrumento não encontrado</h1>
+      <h1>Instrument not found</h1>
       <router-link to="/instrument-wall">
-        <button>Voltar para o Mural</button>
+        <button>Back to Instrument Wall</button>
       </router-link>
     </div>
   </div>
 </template>
 
 <style scoped>
-.container {
-  max-width: 700px;
-  margin: auto;
-  padding: 20px;
+.instrument-carousel {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 20px;
 }
 
 .instrument-image {
@@ -107,7 +123,6 @@ onMounted(async () => {
   height: 300px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 20px;
 }
 
 h1 {
@@ -142,7 +157,7 @@ h1 {
   color: white;
 }
 
-/* Seção de Disponibilidade */
+/* Disponibilidade */
 .availability-section {
   margin-top: 20px;
   padding: 15px;
@@ -180,7 +195,7 @@ li {
   color: white;
 }
 
-/* Botão para voltar */
+/* Botão de Voltar */
 .back-button {
   display: flex;
   justify-content: center;
