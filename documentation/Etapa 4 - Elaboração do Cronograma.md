@@ -12,9 +12,9 @@
 
 ✅ **3. Pesquisa de Ferramentas e Tecnologias** (**Concluído**)
 
-✅ **4. Elaboração do Cronograma** (**3 dias** - pode ser ajustado conforme necessidade)
+✅ **4. Elaboração do Cronograma** (**Concluído**)
 
-✅ **5. Arquitetura do Sistema** (**6 dias** - tempo real pode ser ajustado conforme avanço do projeto)
+✅ **5. Arquitetura do Sistema** (**Concluído**)
 
 ✅ **6. Desenvolvimento da Interface** (**7 dias** - pode ser estendido caso necessário)
 
