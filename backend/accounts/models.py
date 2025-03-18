@@ -32,6 +32,7 @@ class UserProfile(models.Model):
     sso_id = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+    gender = models.CharField(choices=GENDER_CHOICES, blank=True, null=True)
     # modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
