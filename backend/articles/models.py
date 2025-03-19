@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django_ckeditor_5.fields import CKEditor5Field
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name='Nome da Tag')
@@ -9,7 +10,7 @@ class Tag(models.Model):
 
 class Article(models.Model):
     title = models.CharField(max_length=255, null=False, blank=False, verbose_name='Título')
-    content = models.JSONField(verbose_name='Conteúdo do Artigo')
+    content = CKEditor5Field('Text', config_name='extends')
     author = models.CharField(max_length=255, null=True, blank=True, verbose_name='Autor')
     tags = models.ManyToManyField(Tag, related_name='articles', blank=True, verbose_name='Tags')
     is_published = models.BooleanField()
