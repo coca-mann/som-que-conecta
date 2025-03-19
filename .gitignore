@@ -64,3 +64,4 @@ migrations/
 *.alac
 *.aiff
 *.au
+staticfiles
