@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name='Nome da Tag')
 
+    def __str__(self):
+        return self.name
+
 class Article(models.Model):
     title = models.CharField(max_length=255, null=False, blank=False, verbose_name='Título')
     content = models.JSONField(verbose_name='Conteúdo do Artigo')
