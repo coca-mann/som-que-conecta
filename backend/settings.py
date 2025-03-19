@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'backend.accounts.apps.AccountsConfig',
     'backend.instruments',
+    'backend.articles',
 ]
 
 MIDDLEWARE = [
