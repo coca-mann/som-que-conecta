@@ -20,7 +20,7 @@ class UserInstrument(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.PROTECT)
     instrument_type_id = models.ForeignKey(InstrumentTypes, on_delete=models.PROTECT)
     color = models.CharField(max_length=50, blank=True, null=True)
-    brand = models.ForeignKey(InstrumentBrands, on_delete=models.PROTECT, null=False)
+    brand_id = models.ForeignKey(InstrumentBrands, on_delete=models.PROTECT, null=False)
     description = models.TextField(blank=True)
     is_available = models.BooleanField(blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
