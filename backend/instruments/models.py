@@ -7,6 +7,9 @@ class InstrumentBrands(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"{self.name}"
+
 class InstrumentTypes(models.Model):
     name = models.CharField(null=False, blank=False)
     description = models.TextField(blank=True)
@@ -14,7 +17,7 @@ class InstrumentTypes(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
     
 class UserInstrument(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.PROTECT)
