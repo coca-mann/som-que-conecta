@@ -10,7 +10,7 @@ class Tag(models.Model):
 
 class Article(models.Model):
     title = models.CharField(max_length=255, null=False, blank=False, verbose_name='Título')
-    content = CKEditor5Field('Text', config_name='extends')
+    content = CKEditor5Field('Conteudo', config_name='extends')
     author = models.CharField(max_length=255, null=True, blank=True, verbose_name='Autor')
     tags = models.ManyToManyField(Tag, related_name='articles', blank=True, verbose_name='Tags')
     is_published = models.BooleanField()
@@ -26,6 +26,9 @@ class ArticleComments(models.Model):
     content = models.TextField(blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.content
 
 
 class ArticleFavorites(models.Model):
