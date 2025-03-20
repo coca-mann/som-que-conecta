@@ -199,20 +199,6 @@ Essa tabela registra **o que cada usuário já completou** dentro de um curso.
 | `completed` | `BOOLEAN`       | ❌ Não | Indica se o curso foi concluído |
 | `updated_at` | `TIMESTAMP`    | ❌ Não | Última atualização do progresso |
 
-
----
-### **4️⃣ Agendamento de Uso dos Instrumentos (`instrument_bookings`)**
-Registra quando um usuário deseja utilizar um instrumento.
-
-| Coluna        | Tipo            | Descrição |
-|--------------|----------------|-----------|
-| `id`        | `UUID` (PK)     | Identificador único |
-| `instrument_id` | `UUID (FK -> instruments.id)` | Instrumento agendado |
-| `user_id`   | `UUID (FK -> users.id)` | Usuário que agendou |
-| `start_time` | `TIMESTAMP`    | Início do uso |
-| `end_time`   | `TIMESTAMP`    | Fim do uso |
-| `status`    | `ENUM('pendente', 'confirmado', 'cancelado')` | Estado do agendamento |
-
 ---
 
 ## **📌 Estrutura de Agendamentos de Instrumentos**
