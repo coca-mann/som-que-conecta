@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveAPIView
 from django.contrib.auth.models import User
 from .serializers import UserRegistrationSerializer, UserSerializer
 
@@ -24,3 +25,9 @@ class UserProfileView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+
+class PublicUserProfileView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'username'
