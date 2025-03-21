@@ -29,6 +29,15 @@ class UpdateUserProfileView(RetrieveUpdateAPIView):
         return self.request.user
     
 
+class DeleteUserAccountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+        user.delete()
+        return Response({"message": "Conta excluída com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+    
+
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
