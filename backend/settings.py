@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'backend.accounts.apps.AccountsConfig',
     'backend.instruments',
     'backend.articles',
+    'backend.lessons',
     'django_ckeditor_5',
 ]
 
