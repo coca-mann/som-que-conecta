@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'backend.instruments',
     'backend.articles',
     'backend.lessons',
+    'backend.notifications',
     'django_ckeditor_5',
 ]
 
