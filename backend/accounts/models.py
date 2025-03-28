@@ -13,27 +13,36 @@ AUTH_PROVIDER = [
 ]
 
 class UserType(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
-    description = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=50, null=False, blank=False, verbose_name='Nome')
+    description = models.TextField(null=True, blank=True, verbose_name='Descrição')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
+    modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
 
     def __str__(self):
         return self.name
+    
 
+    class Meta:
+        verbose_name = 'Tipo de usuário'
+        verbose_name_plural = 'Tipos de usuários'
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    user_type = models.ForeignKey(UserType, on_delete=models.PROTECT, null=False, blank=False)
-    date_of_birth = models.DateField(null=True, blank=True)
-    bio = models.TextField(null=True, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.jpg', blank=True)
-    auth_provider = models.CharField(choices=AUTH_PROVIDER, blank=True, null=True)
-    sso_id = models.CharField(max_length=255, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    gender = models.CharField(choices=GENDER_CHOICES, blank=True, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Usuário')
+    user_type = models.ForeignKey(UserType, on_delete=models.PROTECT, null=False, blank=False, verbose_name='Tipo de Usuário')
+    date_of_birth = models.DateField(null=True, blank=True, verbose_name='Data de Nascimento')
+    bio = models.TextField(null=True, blank=True, verbose_name='Biografia')
+    profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.jpg', blank=True, verbose_name='Foto de Perfil')
+    auth_provider = models.CharField(choices=AUTH_PROVIDER, blank=True, null=True, verbose_name='Provedor de autenticação')
+    sso_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='ID de SSO')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
+    modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
+    gender = models.CharField(choices=GENDER_CHOICES, blank=True, null=True, verbose_name='Gênero')
     # modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username}"
+    
+
+    class Meta:
+        verbose_name = 'Perfil de Usuário'
+        verbose_name_plural = 'Perfis de Usuários'
