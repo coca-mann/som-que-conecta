@@ -1,24 +1,36 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 const router = useRouter()
-const email = ref('')
+const username = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
-const handleLogin = () => {
-  // Simulação de autenticação (será integrado ao backend no futuro)
-  if (email.value === 'user@example.com' && password.value === '123456') {
-    router.push('/') // Redireciona para a home após login bem-sucedido
-  } else {
-    errorMessage.value = 'Invalid email or password. Try again.'
+const handleLogin = async () => {
+  try {
+    const response = await axios.post('http://localhost:8000/api/token/', {
+      username: username.value,
+      password: password.value
+    })
+
+    // Armazena os tokens JWT
+    localStorage.setItem('access_token', response.data.access)
+    localStorage.setItem('refresh_token', response.data.refresh)
+
+    // Redireciona para a home
+    router.push('/')
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      errorMessage.value = 'Usuário ou senha inválidos.'
+    } else {
+      errorMessage.value = 'Erro ao conectar com o servidor.'
+    }
   }
 }
 
-// Simula login via Google (será integrado ao backend no futuro)
 const handleGoogleLogin = () => {
-  console.log('Google Login initiated')
   alert('Google SSO ainda não está configurado. Isso será integrado ao backend!')
 }
 </script>
@@ -31,27 +43,27 @@ const handleGoogleLogin = () => {
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
 
       <form @submit.prevent="handleLogin">
-        <label for="email">Email</label>
-        <input v-model="email" type="email" id="email" placeholder="Enter your email" required />
+        <label for="username">Usuário</label>
+        <input v-model="username" type="text" id="username" placeholder="Digite seu usuário" required />
 
-        <label for="password">Password</label>
-        <input v-model="password" type="password" id="password" placeholder="Enter your password" required />
+        <label for="password">Senha</label>
+        <input v-model="password" type="password" id="password" placeholder="Digite sua senha" required />
 
-        <button type="submit">Sign In</button>
+        <button type="submit">Entrar</button>
       </form>
 
-      <div class="divider">or</div>
+      <div class="divider">ou</div>
 
-      <!-- Botão para SSO do Google -->
       <button class="google-button" @click="handleGoogleLogin">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" />
-        Sign In with Google
+        Entrar com Google
       </button>
 
-      <p class="register-link">Don't have an account? <router-link to="/register">Register here</router-link></p>
+      <p class="register-link">Ainda não tem conta? <router-link to="/register">Cadastre-se aqui</router-link></p>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .login-container {
