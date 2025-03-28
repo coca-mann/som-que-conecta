@@ -50,7 +50,7 @@ const handleGoogleLogin = () => {
 
       <!-- Botão para SSO do Google -->
       <button class="google-button" @click="handleGoogleLogin">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" />
+        <img src="https://user-images.githubusercontent.com/700503/58114684-e12ffd00-7c2a-11e9-8d59-4ab1c501afe8.jpg" alt="Google Logo" />
         Sign Up with Google
       </button>
 
