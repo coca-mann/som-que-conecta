@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from backend.notifications.serializers import NotificationSerializer
+from backend.notifications.models import Notifications
 
-# Create your views here.
+class NotificationsViewSet(viewsets.ModelViewSet):
+    queryset = Notifications.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
