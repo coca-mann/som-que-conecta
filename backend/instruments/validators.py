@@ -12,7 +12,7 @@ def validate_booking_conflict(instance):
     model_class = instance.__class__
 
     overlapping = model_class.objects.filter(
-        instrumet_id=instance.instrument_id,
+        instrument_id=instance.instrument_id,
         status__in=['PENDING', 'CONFIRM']
     ).exclude(id=instance.id).filter(
         start_time__lt=end_time,
