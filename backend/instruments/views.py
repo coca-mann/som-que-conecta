@@ -38,6 +38,7 @@ class InstrumentBookingViewSet(viewsets.ModelViewSet):
 
 
 class UserInstrumentViewSet(viewsets.ModelViewSet):
+    queryset = UserInstrument.objects.all()
     serializer_class = UserInstrumentSerializer
     permission_classes = [IsAuthenticated]
 
