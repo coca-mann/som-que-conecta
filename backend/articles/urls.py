@@ -1,17 +1,19 @@
-from django.urls import path
-from .views import (
-    TagView,
-    ArticleDetailView,
-    ArticleListCreateView, 
-    ArticleCommentListCreateView,
-    ArticleFavoriteListCreateView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from backend.articles.views import (
+    TagViewSet,
+    ArticleViewSet,
+    ArticleCommentViewSet,
+    ArticleFavoriteViewSet
 )
 
 
+router = DefaultRouter()
+router.register('articles', ArticleViewSet)
+router.register('articlecomments', ArticleCommentViewSet)
+router.register('articlefavorites', ArticleFavoriteViewSet)
+router.register('tags', TagViewSet)
+
 urlpatterns = [
-    path('tags/', TagView.as_view(), name='tag-list'),
-    path('articles/', ArticleListCreateView.as_view(), name='article-list-create'),
-    path('articles/<int:pk>', ArticleDetailView.as_view(), name='article-detail'),
-    path('comments/', ArticleCommentListCreateView.as_view(), name='comment-list-create'),
-    path('favorites/', ArticleFavoriteListCreateView.as_view(), name='favorites-list-create'),
+    path('', include(router.urls))
 ]

@@ -1,12 +1,16 @@
 from rest_framework import serializers
-from .models import Tag, Article, ArticleComments, ArticleFavorites
-from django.contrib.auth.models import User
+from backend.articles.models import (
+    Tag,
+    Article,
+    ArticleComments,
+    ArticleFavorites
+)
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['id', 'name']
+        fields = '__all__'
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -15,16 +19,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = [
-            'id',
-            'title',
-            'content',
-            'author',
-            'tags',
-            'is_published',
-            'created_at',
-            'modified_at',
-        ]
+        fields = '__all__'
 
 
 class ArticleCommentSerializer(serializers.ModelSerializer):
@@ -33,14 +28,7 @@ class ArticleCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ArticleComments
-        fields = [
-            'id',
-            'article_id',
-            'user',
-            'content',
-            'created_at',
-            'modified_at',
-        ]
+        fields = '__all__'
 
 
 class ArticleFavoriteSerializer(serializers.ModelSerializer):
@@ -49,9 +37,4 @@ class ArticleFavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ArticleFavorites
-        fields = [
-            'id',
-            'user_id',
-            'article',
-            'created_at',
-        ]
+        fields = '__all__'
