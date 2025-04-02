@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from backend.instruments.validators import validate_booking_conflict
 
 STATUS_BOOKING = [
     ('PENDING', 'Pendente'),
@@ -76,6 +77,15 @@ class InstrumentBookings(models.Model):
     expires_at = models.DateTimeField(blank=True, null=True, verbose_name='Limite para confirmar agendamento')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
     modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
+
+
+    def clean(self):
+        validate_booking_conflict(self)
+
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
     class Meta:
