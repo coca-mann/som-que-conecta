@@ -17,5 +17,5 @@ router.register('instrumentbooking', InstrumentBookingViewSet)
 router.register('instrumentavailability', InstrumentAvailabilityViewSet)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
 ]
