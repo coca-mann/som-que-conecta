@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import UserProfile
+from backend.accounts.models import UserProfile
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = '__all__'
 
     
     def create(self, validated_data):
@@ -23,32 +23,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = [
-            'user_type',
-            'date_of_birth',
-            'bio',
-            'profile_picture',
-            'auth_provider',
-            'gender'
-        ]
+        fields = '__all__'
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserWithProfileSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(source='userprofile')
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile']
-
-    def update(self, instance, validated_data):
-        profile_data = validated_data.pop('userprofile', {})
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-
-        profile = instance.userprofile
-        for attr, value in profile_data.items():
-            setattr(profile, attr, value)
-        profile.save()
-
-        return instance
+        fields = '__all__'
