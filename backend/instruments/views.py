@@ -7,6 +7,13 @@ from .models import (
     InstrumentBookings,
     UserInstrument
 )
+from backend.instruments.serializers import (
+    InstrumentTypeSerializer,
+    UserInstrumentSerializer,
+    InstrumentBrandsSerializer,
+    InstrumentBookingsSerializer,
+    InstrumentAvailabilitySerializer
+)
 
 
 class InstrumentTypeViewSet(viewsets.ModelViewSet):
