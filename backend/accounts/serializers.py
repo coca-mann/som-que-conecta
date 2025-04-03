@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from backend.accounts.models import UserProfile
+from backend.accounts.validators import validate_username
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -9,6 +10,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+    def validate_username(self, value):
+        validate_username(value)
+        return value
+        
 
     def create(self, validated_data):
         user = User.objects.create_user(
