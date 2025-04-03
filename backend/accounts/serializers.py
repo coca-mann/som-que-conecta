@@ -6,6 +6,7 @@ from backend.accounts.validators import (
     validate_email,
     validate_auth_provider_sso_id,
     validate_date_of_birth,
+    validate_profile_picture,
 )
 
 
@@ -48,6 +49,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def validate_date_of_birth(self, value):
         validate_date_of_birth(value)
+        return value
+    
+    def validate_profile_picture(self, value):
+        validate_profile_picture(value)
         return value
 
 

@@ -21,3 +21,14 @@ def validate_auth_provider_sso_id(auth_provider, sso_id):
 def validate_date_of_birth(date_of_birth):
     if date_of_birth > datetime.date.today():
         raise ValidationError("Data de Nascimento não pode ser no futuro!")
+
+
+def validate_profile_picture(file):
+    max_size = 2 * 1024 * 1024
+
+    if hasattr(file, 'content_type'):
+        if not file.content_type.startswith("image/"):
+            raise ValidationError("O arquivo deve ser uma imagem válida.")
+        
+        if file.size > max_size:
+            raise ValidationError("A imagem deve ter no máximo 2MB.")
