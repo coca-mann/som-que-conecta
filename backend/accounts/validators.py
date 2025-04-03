@@ -10,3 +10,8 @@ def validate_username(username):
 def validate_email(email):
     if User.objects.filter(email=email).exists():
         raise ValidationError("Um usuário com essa conta de e-mail já existe")
+
+
+def validate_auth_provider_sso_id(auth_provider, sso_id):
+    if auth_provider == 'google' and not sso_id:
+        raise ValidationError("O campo sso_id é obrigatório quando o provedor de autenticação é Google.")

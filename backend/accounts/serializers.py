@@ -4,6 +4,7 @@ from backend.accounts.models import UserProfile
 from backend.accounts.validators import (
     validate_username,
     validate_email,
+    validate_auth_provider_sso_id,
 )
 
 
@@ -32,9 +33,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        exclude = ['user_type']
+
+    def validate(self, attrs):
+        validate_auth_provider_sso_id(
+            attrs.get("auth_provider"),
+                      attrs.get("sso_id")
+                      )
+        return attrs
 
 
 class UserWithProfileSerializer(serializers.ModelSerializer):
