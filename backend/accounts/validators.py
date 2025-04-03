@@ -1,3 +1,4 @@
+import datetime
 from django.contrib.auth.models import User
 from rest_framework.serializers import ValidationError
 
@@ -15,3 +16,8 @@ def validate_email(email):
 def validate_auth_provider_sso_id(auth_provider, sso_id):
     if auth_provider == 'google' and not sso_id:
         raise ValidationError("O campo sso_id é obrigatório quando o provedor de autenticação é Google.")
+    
+
+def validate_date_of_birth(date_of_birth):
+    if date_of_birth > datetime.date.today():
+        raise ValidationError("Data de Nascimento não pode ser no futuro!")

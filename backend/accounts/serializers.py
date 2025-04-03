@@ -5,6 +5,7 @@ from backend.accounts.validators import (
     validate_username,
     validate_email,
     validate_auth_provider_sso_id,
+    validate_date_of_birth,
 )
 
 
@@ -38,12 +39,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         exclude = ['user_type']
 
-    def validate(self, attrs):
+    def validate_auth_provider_sso_id(self, attrs):
         validate_auth_provider_sso_id(
             attrs.get("auth_provider"),
                       attrs.get("sso_id")
                       )
         return attrs
+    
+    def validate_date_of_birth(self, value):
+        validate_date_of_birth(value)
+        return value
 
 
 class UserWithProfileSerializer(serializers.ModelSerializer):
