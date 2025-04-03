@@ -12,6 +12,7 @@ AUTH_PROVIDER = [
     ('google', 'Autenticação SSO Google'),
 ]
 
+
 class UserType(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False, verbose_name='Nome')
     description = models.TextField(null=True, blank=True, verbose_name='Descrição')
@@ -20,11 +21,11 @@ class UserType(models.Model):
 
     def __str__(self):
         return self.name
-    
 
     class Meta:
         verbose_name = 'Tipo de usuário'
         verbose_name_plural = 'Tipos de usuários'
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Usuário')
@@ -41,7 +42,6 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}"
-    
 
     class Meta:
         verbose_name = 'Perfil de Usuário'

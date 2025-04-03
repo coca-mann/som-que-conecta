@@ -10,7 +10,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
-    
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
@@ -18,7 +17,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
-    
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:

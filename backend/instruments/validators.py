@@ -6,7 +6,6 @@ def validate_booking_conflict(instance):
     if not instance.instrument_id or not instance.start_time:
         return
 
-
     end_time = instance.end_time or (instance.start_time + timedelta(hours=1))
 
     model_class = instance.__class__
