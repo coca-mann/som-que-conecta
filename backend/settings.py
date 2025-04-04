@@ -253,3 +253,5 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 SITE_ID = 1
+
+SOCIALACCOUNT_ADAPTER = 'backend.accounts.adapters.MySocialAccountAdapter'
