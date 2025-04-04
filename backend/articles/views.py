@@ -17,13 +17,13 @@ from backend.articles.serializers import (
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    
+
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticated]
-    
+
 
 class ArticleCommentViewSet(viewsets.ModelViewSet):
     queryset = ArticleComments.objects.all()

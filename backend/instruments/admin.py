@@ -1,8 +1,10 @@
 from django.contrib import admin
 from .models import InstrumentBrands, InstrumentTypes, UserInstrument
 
+
 admin.site.register(InstrumentBrands)
 admin.site.register(InstrumentTypes)
+
 
 @admin.register(UserInstrument)
 class UserInstrumentAdmin(admin.ModelAdmin):

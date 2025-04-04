@@ -1,6 +1,13 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from backend.accounts.models import UserProfile
+from backend.accounts.validators import (
+    validate_username,
+    validate_email,
+    validate_auth_provider_sso_id,
+    validate_date_of_birth,
+    validate_profile_picture,
+)
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -10,7 +17,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
-    
+    def validate_username(self, value):
+        validate_username(value)
+        return value
+
+    def validate_email(self, value):
+        validate_email(value)
+        return value
+
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
@@ -18,12 +32,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
-    
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        exclude = ['user_type']
+
+    def validate_auth_provider_sso_id(self, attrs):
+        validate_auth_provider_sso_id(
+            attrs.get("auth_provider"),
+                      attrs.get("sso_id")
+                      )
+        return attrs
+    
+    def validate_date_of_birth(self, value):
+        validate_date_of_birth(value)
+        return value
+    
+    def validate_profile_picture(self, value):
+        validate_profile_picture(value)
+        return value
 
 
 class UserWithProfileSerializer(serializers.ModelSerializer):

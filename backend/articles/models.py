@@ -2,11 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 from django_ckeditor_5.fields import CKEditor5Field
 
+
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name='Nome da Tag')
 
     def __str__(self):
         return self.name
+
 
 class Article(models.Model):
     title = models.CharField(max_length=255, null=False, blank=False, verbose_name='Título')
@@ -19,10 +21,11 @@ class Article(models.Model):
 
     def __str__(self):
         return f"{self.title}"
-    
+
     class Meta:
         verbose_name = 'Artigo'
         verbose_name_plural = 'Artigos'
+
 
 class ArticleComments(models.Model):
     article_id = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True, verbose_name='Artigo')
@@ -33,7 +36,6 @@ class ArticleComments(models.Model):
 
     def __str__(self):
         return self.content
-    
 
     class Meta:
         verbose_name = 'Comentário de Artigo'
@@ -44,7 +46,6 @@ class ArticleFavorites(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Usuário')
     article_id = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True, verbose_name='Artigo')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
-
 
     class Meta:
         verbose_name = 'Artigo Favorito'

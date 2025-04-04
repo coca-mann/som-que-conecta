@@ -1,5 +1,5 @@
-from rest_framework import viewsets, permissions
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from .models import (
     InstrumentTypes,
     InstrumentBrands,
@@ -44,6 +44,6 @@ class UserInstrumentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return UserInstrument.objects.filter(user_id=self.request.user)
-    
+
     def perform_create(self, serializer):
         serializer.save(user_id=self.request.user)
