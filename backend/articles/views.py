@@ -24,6 +24,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated and user.is_staff:
+            return Article.objects.all()
+        return Article.objects.filter(is_published=True)
+
 
 class ArticleCommentViewSet(viewsets.ModelViewSet):
     queryset = ArticleComments.objects.all()
