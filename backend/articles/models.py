@@ -15,6 +15,7 @@ class Article(models.Model):
     content = CKEditor5Field('Conteudo', config_name='extends')
     author = models.CharField(max_length=255, null=True, blank=True, verbose_name='Autor')
     tags = models.ManyToManyField(Tag, related_name='articles', blank=True, verbose_name='Tags')
+    image = models.ImageField(upload_to='articles_media/cover/', blank=True, verbose_name='Imagem da capa do artigo')
     is_published = models.BooleanField(verbose_name='Publicado')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
     modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
