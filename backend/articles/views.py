@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from backend.articles.models import (
     Tag,
     ArticleFavorites,
@@ -23,18 +23,22 @@ class TagViewSet(viewsets.ModelViewSet):
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get_permissions(self):
+    '''def get_permissions(self):
         if self.action == 'create':
             return[IsTutorOrOng()]
-        return super().get_permissions()
+        return super().get_permissions()'''
 
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated and user.is_staff:
             return Article.objects.all()
         return Article.objects.filter(is_published=True)
+    
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer = serializer.save(created_by=user)
 
 
 class ArticleCommentViewSet(viewsets.ModelViewSet):

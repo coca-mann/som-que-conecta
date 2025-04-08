@@ -25,8 +25,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
     def validate(self, data):
-        user = self.context['request'].user
-        validate_user_can_post_article(user)
+        validate_user_can_post_article(self.context['request'].user)
         return data
 
 

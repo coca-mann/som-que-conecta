@@ -18,6 +18,12 @@ class Article(models.Model):
     is_published = models.BooleanField(verbose_name='Publicado')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
     modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        verbose_name='Usuário de criação',
+        default=3
+    )
 
     def __str__(self):
         return f"{self.title}"
