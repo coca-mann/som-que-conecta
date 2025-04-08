@@ -36,10 +36,16 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_authenticated and user.is_staff:
-            return Article.objects.all()
-        return Article.objects.filter(is_published=True)
-    
+        queryset = Article.objects.all() if user.is_authenticated and user.is_staff else Article.objects.filter(is_published=True)
+
+        tags_param = self.request.query_params.get("tags")
+        if tags_param:
+            tags = tags_param.split(',')
+            queryset = queryset.filter(tags__name__in=tags).distinct()
+
+        return queryset
+
+
     def perform_create(self, serializer):
         user = self.request.user
         serializer = serializer.save(created_by=user)
