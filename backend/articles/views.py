@@ -12,7 +12,7 @@ from backend.articles.serializers import (
     ArticleFavoriteSerializer,
     ArticleCommentSerializer
 )
-from backend.permissions import IsTutorOrOng
+from backend.articles.permissions import IsCommentAuthorOrAdmin
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -44,7 +44,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
 class ArticleCommentViewSet(viewsets.ModelViewSet):
     queryset = ArticleComments.objects.all()
     serializer_class = ArticleCommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsCommentAuthorOrAdmin, IsAuthenticated]
+
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer = serializer.save(user_id=user)
 
 
 class ArticleFavoriteViewSet(viewsets.ModelViewSet):
