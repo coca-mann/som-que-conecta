@@ -12,6 +12,7 @@ from backend.articles.serializers import (
     ArticleFavoriteSerializer,
     ArticleCommentSerializer
 )
+from backend.permissions import IsTutorOrOng
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -23,6 +24,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return[IsTutorOrOng()]
+        return super().get_permissions()
 
     def get_queryset(self):
         user = self.request.user
