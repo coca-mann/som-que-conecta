@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from backend.accounts.models import SKILL_LEVEL
 from backend.instruments.models import InstrumentTypes
 
@@ -166,7 +166,7 @@ class TaksAditionalResource(models.Model):
     
 class UserTaks(models.Model):
     user_id = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=False,
         null=False,

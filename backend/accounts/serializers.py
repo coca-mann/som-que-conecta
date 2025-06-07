@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from backend.accounts.models import UserProfile
+from django.contrib.auth import get_user_model
 from backend.accounts.validators import (
     validate_username,
     validate_email,
@@ -9,6 +9,7 @@ from backend.accounts.validators import (
     validate_profile_picture,
 )
 
+User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
@@ -37,7 +38,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = UserProfile
+        model = User
         exclude = ['user_type']
 
     def validate_auth_provider_sso_id(self, attrs):

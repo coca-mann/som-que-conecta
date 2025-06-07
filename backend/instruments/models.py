@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from backend.instruments.validators import validate_booking_conflict
 
 
@@ -59,7 +59,7 @@ class InstrumentTypes(models.Model):
 
 class Instrument(models.Model):
     user_id = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         verbose_name='Usuário'
     )
@@ -139,7 +139,7 @@ class InstrumentBookings(models.Model):
         verbose_name='Instrumento'
     )
     user_id = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Usuário que agendou'

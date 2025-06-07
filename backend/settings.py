@@ -29,10 +29,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'backend.accounts.apps.AccountsConfig',
-    'backend.instruments',
-    'backend.articles',
-    'backend.lessons',
-    'backend.notifications',
+    'backend.instruments.apps.InstrumentsConfig',
+    'backend.articles.apps.ArticlesConfig',
+    'backend.lessons.apps.LessonsConfig',
+    'backend.notifications.apps.NotificationsConfig',
     'django_ckeditor_5',
     'corsheaders',
     'django.contrib.sites',
@@ -255,3 +255,16 @@ CORS_ALLOWED_ORIGINS = [
 SITE_ID = 1
 
 SOCIALACCOUNT_ADAPTER = 'backend.accounts.adapters.MySocialAccountAdapter'
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # Não estamos usando um campo 'username'
+ACCOUNT_EMAIL_REQUIRED = True             # O email é obrigatório
+ACCOUNT_UNIQUE_EMAIL = True               # Cada email deve ser único
+ACCOUNT_USERNAME_REQUIRED = False         # O 'username' não é obrigatório
+ACCOUNT_AUTHENTICATION_METHOD = 'email'   # O método de autenticação é o email
+ACCOUNT_EMAIL_VERIFICATION = 'optional' # 'mandatory' para forçar verificação de email
+ACCOUNT_ADAPTER = 'backend.accounts.adapters.MySocialAccountAdapter'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+AUTH_USER_MODEL = 'accounts.User'

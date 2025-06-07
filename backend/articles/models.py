@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 
 DIFICULTY = [
@@ -74,7 +74,7 @@ class Article(models.Model):
         verbose_name='Conteúdo',
     )
     author = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Autor',
@@ -135,7 +135,7 @@ class ArticleComments(models.Model):
         verbose_name='Artigo',
     )
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Usuário',
@@ -173,7 +173,7 @@ class ArticleComments(models.Model):
 
 class ArticleRating(models.Model):
     user_id = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Usuário',
@@ -204,7 +204,7 @@ class ArticleRating(models.Model):
 
 class ArticleFavorites(models.Model):
     user_id = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Usuário',
