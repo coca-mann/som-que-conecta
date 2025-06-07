@@ -1,10 +1,9 @@
 from rest_framework import serializers
 from backend.instruments.models import (
-    InstrumentAvailability,
     InstrumentBookings,
     InstrumentBrands,
     InstrumentTypes,
-    UserInstrument
+    Instrument
 )
 
 
@@ -20,12 +19,6 @@ class InstrumentBrandsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class InstrumentAvailabilitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InstrumentAvailability
-        fields = '__all__'
-
-
 class InstrumentBookingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstrumentBookings
@@ -34,5 +27,5 @@ class InstrumentBookingsSerializer(serializers.ModelSerializer):
 
 class UserInstrumentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserInstrument
+        model = Instrument
         fields = '__all__'

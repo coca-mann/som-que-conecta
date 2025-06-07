@@ -5,16 +5,26 @@ from backend.instruments.validators import validate_booking_conflict
 
 STATUS_BOOKING = [
     ('PENDING', 'Pendente'),
-    ('CONFIRM', 'Confirmado'),
-    ('CANCELED', 'Cancelado'),
+    ('APPROVED', 'Aprovado'),
+    ('REJECTED', 'Rejeitado'),
 ]
 
 
 class InstrumentBrands(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False, verbose_name='Nome')
-    description = models.TextField(blank=True, verbose_name='Descrição')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
-    modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
+    name = models.CharField(
+        max_length=100,
+        blank=False,
+        null=False,
+        verbose_name='Nome',
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='Descrição',
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Criado em',
+    )
 
     def __str__(self):
         return f"{self.name}"
@@ -25,10 +35,19 @@ class InstrumentBrands(models.Model):
 
 
 class InstrumentTypes(models.Model):
-    name = models.CharField(null=False, blank=False, verbose_name='Nome')
-    description = models.TextField(blank=True, verbose_name='Descrição')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
-    modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
+    name = models.CharField(
+        null=False,
+        blank=False,
+        verbose_name='Nome'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='Descrição',
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Criado em',
+    )
 
     def __str__(self):
         return f"{self.name}"
@@ -38,16 +57,71 @@ class InstrumentTypes(models.Model):
         verbose_name_plural = 'Tipos de Instrumentos'
 
 
-class UserInstrument(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Usuário')
-    instrument_type_id = models.ForeignKey(InstrumentTypes, on_delete=models.PROTECT, verbose_name='Tipo de Instrumento')
-    color = models.CharField(max_length=50, blank=True, null=True, verbose_name='Cor')
-    brand_id = models.ForeignKey(InstrumentBrands, on_delete=models.PROTECT, null=False, verbose_name='Marca')
-    description = models.TextField(blank=True, verbose_name='Descrição')
-    is_available = models.BooleanField(blank=True, verbose_name='Disponível')
-    location = models.CharField(max_length=255, blank=True, null=True, verbose_name='Localização')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
-    modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
+class Instrument(models.Model):
+    user_id = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        verbose_name='Usuário'
+    )
+    type = models.ForeignKey(
+        InstrumentTypes,
+        on_delete=models.PROTECT,
+        verbose_name='Tipo de Instrumento'
+    )
+    brand = models.ForeignKey(
+        InstrumentBrands,
+        on_delete=models.PROTECT,
+        null=False,
+        verbose_name='Marca'
+    )
+    name = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        verbose_name='Nome'
+    )
+    color = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name='Cor'
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name='Descrição'
+    )
+    is_available = models.BooleanField(
+        default=False,
+        verbose_name='Disponível'
+    )
+    is_loanable = models.BooleanField(
+        default=False,
+        verbose_name='Emprestável'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='Ativo'
+    )
+    location = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Localização'
+    )
+    availability = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Disponibilidade'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Criado em'
+    )
+    modified_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Modificado em'
+    )
 
     def __str__(self):
         return f"{self.instrument_type_id.name} {self.color}"
@@ -57,28 +131,43 @@ class UserInstrument(models.Model):
         verbose_name_plural = 'Instrumentos'
 
 
-class InstrumentAvailability(models.Model):
-    instrument_id = models.ForeignKey(UserInstrument, on_delete=models.SET_NULL, null=True, verbose_name='Instrumento')
-    available_from = models.DateTimeField(null=False, blank=False, verbose_name='Disponível desde')
-    available_to = models.DateTimeField(null=True, blank=True, verbose_name='Disponível até')
-    recurring = models.BooleanField(verbose_name='Recorrente')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
-    modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
-
-    class Meta:
-        verbose_name = 'Disponibilidade de instrumento'
-        verbose_name_plural = 'Disponibilidades de instrumentos'
-
-
 class InstrumentBookings(models.Model):
-    instrument_id = models.ForeignKey(UserInstrument, on_delete=models.SET_NULL, null=True, verbose_name='Instrumento')
-    user_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Usuário que agendou')
-    start_time = models.DateTimeField(blank=False, null=False, verbose_name='Inicio agendamento')
-    end_time = models.DateTimeField(blank=True, null=True, verbose_name='Fim agendamento')
-    status = models.CharField(choices=STATUS_BOOKING, blank=False, null=False, verbose_name='Status agendamento')
-    expires_at = models.DateTimeField(blank=True, null=True, verbose_name='Limite para confirmar agendamento')
+    instrument_id = models.ForeignKey(
+        Instrument,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Instrumento'
+    )
+    user_id = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Usuário que agendou'
+    )
+    reservation_date = models.DateField(
+        blank=False,
+        null=False,
+        verbose_name='Data de agendamento'
+    )
+    reservation_time = models.TimeField(
+        blank=True,
+        null=True,
+        verbose_name='Hora do agendamento'
+    )
+    status = models.CharField(
+        choices=STATUS_BOOKING,
+        blank=False,
+        null=False,
+        verbose_name='Status agendamento',
+        default='PENDING'
+    )
+    reservation_refusal_reason = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name='Motivo da rejeição da reserva'
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
-    modified_at = models.DateTimeField(auto_now=True, verbose_name='Modificado em')
 
     def clean(self):
         validate_booking_conflict(self)
@@ -90,3 +179,8 @@ class InstrumentBookings(models.Model):
     class Meta:
         verbose_name = 'Reserva de instrumento'
         verbose_name_plural = 'Reservas de instrumentos'
+
+
+class InstrumentPictures(models.Model):
+    instrument_id = models.ForeignKey(Instrument, on_delete=models.SET_NULL, null=True, verbose_name='Instrumento')
+    picture = models.ImageField(upload_to='instruments_media/pictures/', verbose_name='Foto')

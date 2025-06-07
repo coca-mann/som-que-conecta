@@ -4,8 +4,7 @@ from backend.instruments.views import (
     InstrumentTypeViewSet,
     UserInstrumentViewSet,
     InstrumentBrandsViewSet,
-    InstrumentBookingViewSet,
-    InstrumentAvailabilityViewSet
+    InstrumentBookingViewSet
 )
 
 
@@ -14,7 +13,6 @@ router.register('instrumenttype', InstrumentTypeViewSet)
 router.register('userinstrument', UserInstrumentViewSet)
 router.register('instrumentbrand', InstrumentBrandsViewSet)
 router.register('instrumentbooking', InstrumentBookingViewSet)
-router.register('instrumentavailability', InstrumentAvailabilityViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

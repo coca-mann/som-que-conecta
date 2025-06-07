@@ -3,16 +3,14 @@ from rest_framework.permissions import IsAuthenticated
 from .models import (
     InstrumentTypes,
     InstrumentBrands,
-    InstrumentAvailability,
     InstrumentBookings,
-    UserInstrument
+    Instrument
 )
 from backend.instruments.serializers import (
     InstrumentTypeSerializer,
     UserInstrumentSerializer,
     InstrumentBrandsSerializer,
-    InstrumentBookingsSerializer,
-    InstrumentAvailabilitySerializer
+    InstrumentBookingsSerializer
 )
 
 
@@ -27,23 +25,18 @@ class InstrumentBrandsViewSet(viewsets.ModelViewSet):
     serializer_class = InstrumentBrandsSerializer
 
 
-class InstrumentAvailabilityViewSet(viewsets.ModelViewSet):
-    queryset = InstrumentAvailability.objects.all()
-    serializer_class = InstrumentAvailabilitySerializer
-
-
 class InstrumentBookingViewSet(viewsets.ModelViewSet):
     queryset = InstrumentBookings.objects.all()
     serializer_class = InstrumentBookingsSerializer
 
 
 class UserInstrumentViewSet(viewsets.ModelViewSet):
-    queryset = UserInstrument.objects.all()
+    queryset = Instrument.objects.all()
     serializer_class = UserInstrumentSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return UserInstrument.objects.filter(user_id=self.request.user)
+        return Instrument.objects.filter(user_id=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user_id=self.request.user)
