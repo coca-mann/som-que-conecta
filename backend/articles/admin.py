@@ -1,9 +1,11 @@
 from django.contrib import admin
-from .models import Article, ArticleComments, Tag
+from .models import Article, ArticleComments, ArticleRating, ArticleFavorites
+
 
 
 admin.site.register(ArticleComments)
-admin.site.register(Tag)
+admin.site.register(ArticleRating)
+admin.site.register(ArticleFavorites)
 
 
 @admin.register(Article)

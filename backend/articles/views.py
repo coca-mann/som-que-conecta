@@ -5,23 +5,16 @@ from rest_framework import viewsets
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from backend.articles.models import (
-    Tag,
     ArticleFavorites,
     Article,
     ArticleComments
 )
 from backend.articles.serializers import (
-    TagSerializer,
     ArticleSerializer,
     ArticleFavoriteSerializer,
     ArticleCommentSerializer
 )
 from backend.articles.permissions import IsCommentAuthorOrAdmin
-
-
-class TagViewSet(viewsets.ModelViewSet):
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
