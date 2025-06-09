@@ -259,25 +259,30 @@
             leave-from-class="transform opacity-100 translate-y-0"
             leave-to-class="transform opacity-0 -translate-y-2"
           >
-            <div v-if="isLogin" class="flex items-center justify-between">
-              <div class="flex items-center">
-                <input
-                  id="remember"
-                  v-model="form.rememberMe"
-                  type="checkbox"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
-                />
-                <label for="remember" class="ml-2 text-sm text-gray-600">
-                  Lembrar de mim
-                </label>
+            <div>
+              <div v-if="isLogin" class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <input
+                    id="remember"
+                    v-model="form.rememberMe"
+                    type="checkbox"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
+                  />
+                  <label for="remember" class="ml-2 text-sm text-gray-600">
+                    Lembrar de mim
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  @click="showForgotPassword = true"
+                  class="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                >
+                  Esqueceu a senha?
+                </button>
               </div>
-              <button
-                type="button"
-                @click="showForgotPassword = true"
-                class="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
-              >
-                Esqueceu a senha?
-              </button>
+              <p v-if="errorMessage" class="text-center text-sm font-medium text-red-600 bg-red-50 p-3 rounded-lg">
+                {{ errorMessage }}
+              </p>
             </div>
           </Transition>
 
@@ -399,6 +404,7 @@
 </template>
 
 <script setup>
+import api from '@/services/api'; // Certifique-se que o caminho está correto
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
@@ -414,6 +420,8 @@ import {
   Users,
   Award
 } from 'lucide-vue-next'
+
+const errorMessage = ref(null);
 
 const router = useRouter()
 const route = useRoute()
@@ -503,38 +511,64 @@ const clearForm = () => {
   }
 }
 
+// Substitua a sua função handleSubmit por esta
 const handleSubmit = async () => {
-  if (!isFormValid.value) return
+  // Limpa erros anteriores ao tentar novamente
+  errorMessage.value = null; 
+
+  // A validação de formulário continua igual
+  if (!isFormValid.value) return;
   
-  isLoading.value = true
+  isLoading.value = true;
   
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
+    // --- LÓGICA DE LOGIN ---
     if (isLogin.value) {
-      console.log('Login attempt:', {
-        email: form.value.email,
+      // Faz a requisição POST para o endpoint /token/
+      const response = await api.post('/token/', {
+        // O DRF/SimpleJWT por padrão espera 'username' e 'password'.
+        // É comum mapear o campo de email do frontend para o username do backend.
+        email: form.value.email, 
         password: form.value.password,
-        rememberMe: form.value.rememberMe
-      })
+      });
+
+      // Se a requisição for bem-sucedida, armazena os tokens
+      localStorage.setItem('accessToken', response.data.access);
+      localStorage.setItem('refreshToken', response.data.refresh);
+      
+      // Adiciona o token aos cabeçalhos padrão do Axios para as próximas requisições
+      api.defaults.headers['Authorization'] = `Bearer ${response.data.access}`;
+
+      // Redireciona para a página principal
+      const redirectTo = route.query.redirect || '/';
+      router.push(redirectTo);
+
     } else {
+      // --- LÓGICA DE REGISTRO (para o futuro) ---
+      // Aqui você implementaria a chamada para o seu endpoint de registro
       console.log('Register attempt:', {
         firstName: form.value.firstName,
         lastName: form.value.lastName,
         email: form.value.email,
         password: form.value.password
-      })
+      });
+      // Simulação para o registro por enquanto
+      await new Promise(resolve => setTimeout(resolve, 1500)); 
+      alert('Conta criada com sucesso! Por favor, faça o login.');
+      setMode('login'); // Muda para a tela de login após o registro
     }
     
-    // Redirect to dashboard or previous page
-    const redirectTo = route.query.redirect || '/'
-    router.push(redirectTo)
-    
   } catch (error) {
-    console.error('Auth error:', error)
+    console.error('Auth error:', error);
+    if (error.response && (error.response.status === 400 || error.response.status === 401)) {
+        // Erro de credenciais inválidas do Simple JWT
+        errorMessage.value = 'Email ou senha inválidos. Tente novamente.';
+    } else {
+        // Outros erros (ex: servidor fora do ar)
+        errorMessage.value = 'Não foi possível conectar ao servidor. Verifique sua conexão.';
+    }
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
