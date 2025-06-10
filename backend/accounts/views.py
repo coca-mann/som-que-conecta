@@ -1,7 +1,7 @@
-from rest_framework import viewsets, mixins
-from rest_framework.permissions import IsAuthenticated, AllowAny, DjangoModelPermissions
+from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
-from backend.accounts.serializers import UserRegistrationSerializer, UserProfileSerializer
+from backend.accounts.serializers import UserRegistrationSerializer
 
 
 User = get_user_model()

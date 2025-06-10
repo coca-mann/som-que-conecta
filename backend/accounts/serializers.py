@@ -16,50 +16,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
-
-    def validate_username(self, value):
-        validate_username(value)
-        return value
-
-    def validate_email(self, value):
-        validate_email(value)
-        return value
+        fields = ('email', 'password', 'first_name', 'last_name')
+        extra_kwargs = {
+            'password': {'write_only': True, 'style': {'input_type': 'password'}},
+        }
 
     def create(self, validated_data):
+        """
+        Sobrescreve o método create para usar create_user,
+        que lida com o hashing da senha.
+        """
+        # Extrai os dados do dicionário validado
+        email = validated_data.get('email')
+        password = validated_data.get('password')
+        first_name = validated_data.get('first_name', '')
+        last_name = validated_data.get('last_name', '')
+
+        # Usa o método create_user do nosso CustomUserManager
         user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password']
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name
+            # Passe quaisquer outros campos aqui
         )
         return user
-
-
-class UserProfileSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        exclude = ['user_type']
-
-    def validate_auth_provider_sso_id(self, attrs):
-        validate_auth_provider_sso_id(
-            attrs.get("auth_provider"),
-                      attrs.get("sso_id")
-                      )
-        return attrs
-    
-    def validate_date_of_birth(self, value):
-        validate_date_of_birth(value)
-        return value
-    
-    def validate_profile_picture(self, value):
-        validate_profile_picture(value)
-        return value
-
-
-class UserWithProfileSerializer(serializers.ModelSerializer):
-    profile = UserProfileSerializer(source='userprofile')
-
-    class Meta:
-        model = User
-        fields = '__all__'

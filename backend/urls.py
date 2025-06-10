@@ -7,11 +7,11 @@ from backend.accounts.views_social import GoogleLogin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include('backend.instruments.urls')),
-    path('api/v1/', include('backend.lessons.urls')),
-    path('api/v1/', include('backend.articles.urls')),
-    path('api/v1/', include('backend.accounts.urls')),
-    path('api/v1/', include('backend.notifications.urls')),
+    path('api/', include('backend.instruments.urls')),
+    path('api/', include('backend.lessons.urls')),
+    path('api/', include('backend.articles.urls')),
+    path('api/', include('backend.accounts.urls')),
+    path('api/', include('backend.notifications.urls')),
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
     path('auth/social/', include('allauth.socialaccount.urls')),
