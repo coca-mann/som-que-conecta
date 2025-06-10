@@ -209,13 +209,8 @@ const userMenuItems = computed(() => {
   const items = [
     { name: 'Meu Perfil', path: '/profile', icon: User },
     { name: 'Gerenciar Instrumentos', path: '/manage-instruments', icon: Guitar },
-    { name: 'Ajuda', path: '/help-center', icon: HelpCircle }
+    { name: 'Ajuda', path: '/help', icon: HelpCircle }
   ]
-  
-  // A lógica de roles pode vir do store também no futuro
-  if (authStore.user?.role === 'teacher' || authStore.user?.role === 'admin') {
-    items.splice(1, 0, { name: 'Gerenciar Instrumentos', path: '/manage-instruments', icon: Guitar })
-  }
   
   return items
 })
@@ -261,8 +256,13 @@ const closeUserMenu = () => {
 }
 
 // Event listeners
-onMounted(() => { /* ... */ })
-onUnmounted(() => { /* ... */ })
+onMounted(() => {
+  document.addEventListener('click', closeMenus)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeMenus)
+})
 
 // Watchers
 watch(() => route.path, () => { /* ... */ })
