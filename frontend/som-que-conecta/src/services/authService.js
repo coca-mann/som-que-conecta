@@ -22,6 +22,9 @@ const authService = {
     // O DRF espera snake_case (first_name), então mapeamos aqui se necessário.
     return api.post('/register/', userData);
   },
+  getMe() {
+    return api.get('/user/');
+  }
 
   // No futuro, você pode adicionar outras funções aqui:
   //

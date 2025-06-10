@@ -404,7 +404,7 @@
 </template>
 
 <script setup>
-import authService from '@/services/authService';
+import { useAuthStore } from '@/stores/auth.store';
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
@@ -433,6 +433,7 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const showForgotPassword = ref(false)
 const resetEmail = ref('')
+const authStore = useAuthStore();
 
 // Form data
 const form = ref({
@@ -513,55 +514,56 @@ const clearForm = () => {
 
 // Substitua a sua função handleSubmit por esta
 const handleSubmit = async () => {
+  console.log("A. Função handleSubmit foi ACIONADA.");
+  console.log("B. O valor de isLogin.value é:", isLogin.value);
+  console.log("C. O valor de isFormValid.value é:", isFormValid.value);
+
   errorMessage.value = null; 
-  if (!isFormValid.value) return;
+  if (!isFormValid.value) {
+    console.log("Formulário inválido, execução parada.");
+    return;
+  }
   
   isLoading.value = true;
   
   try {
     // Lógica de Login (continua a mesma)
     if (isLogin.value) {
-      const response = await authService.login({
-        email: form.value.email, 
+      console.log("D. Entrando no bloco de LOGIN...");
+      
+      // A chamada que suspeitamos não estar acontecendo
+      await authStore.login({
+        email: form.value.email,
         password: form.value.password,
       });
-      // ... (código de sucesso do login)
-      localStorage.setItem('accessToken', response.data.access);
-      localStorage.setItem('refreshToken', response.data.refresh);
-      router.push('/');
 
+      console.log("E. authStore.login() CONCLUÍDO. Redirecionando...");
+      router.push('/');
     } else {
-      // --- LÓGICA DE REGISTRO (A PARTE NOVA) ---
-      
-      // 1. Chama o serviço de registro com os dados do formulário
+      console.log("D. Entrando no bloco de REGISTRO...");
+      // ... sua lógica de registro ...
       await authService.register({
         email: form.value.email,
         password: form.value.password,
-        first_name: form.value.firstName, // Mapeando de camelCase para snake_case
-        last_name: form.value.lastName,   // que o DRF espera.
+        first_name: form.value.firstName,
+        last_name: form.value.lastName,
       });
-
       // 2. Se o registro for bem-sucedido:
       alert('Conta criada com sucesso! Por favor, faça o login para continuar.');
       setMode('login'); // Leva o usuário para a tela de login
     }
     
   } catch (error) {
-    console.error('Auth error:', error);
-
-    // 3. Tratamento de erro melhorado
+    console.error("F. ERRO CAPTURADO no handleSubmit:", error);
     if (error.response && error.response.data) {
-        // Se o DRF retornar erros de validação (ex: {"email": ["Este email já existe."]})
         const errorData = error.response.data;
         let errorMessages = [];
         for (const field in errorData) {
-            // Pega a mensagem de erro de cada campo e junta em uma string
             errorMessages.push(`${field}: ${errorData[field].join(', ')}`);
         }
         errorMessage.value = errorMessages.join(' | ');
     } else {
-        // Erro genérico de comunicação
-        errorMessage.value = 'Não foi possível conectar ao servidor. Tente novamente mais tarde.';
+        errorMessage.value = 'Não foi possível conectar ao servidor. Verifique sua conexão.';
     }
   } finally {
     isLoading.value = false;

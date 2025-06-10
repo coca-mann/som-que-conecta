@@ -42,7 +42,7 @@
             <Search class="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
           </button>
 
-          <div v-if="authStore.isAuthenticated" class="relative">
+          <div v-if="authStore.isAuthenticated" class="relative user-menu">
             <button 
               class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 p-2 rounded-lg transition-all duration-300 group"
               @click="toggleUserMenu"
@@ -70,7 +70,7 @@
               leave-from-class="transform opacity-100 scale-100 translate-y-0"
               leave-to-class="transform opacity-0 scale-95 translate-y-2"
             >
-              <div v-if="showUserMenu" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden">
+              <div v-if="showUserMenu" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden user-menu">
                 <div class="px-4 py-3 border-b border-gray-100">
                   <div class="flex items-center space-x-3">
                     <img 
@@ -86,14 +86,23 @@
                 </div>
 
                 <div class="py-1">
-                  <router-link v-for="item in userMenuItems" :key="item.path" :to="item.path" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 group">
+                  <router-link 
+                    v-for="item in userMenuItems" 
+                    :key="item.path" 
+                    :to="item.path" 
+                    @click="closeUserMenu"
+                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 group"
+                  >
                     <component :is="item.icon" class="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                     {{ item.name }}
                   </router-link>
                   
                   <div class="border-t border-gray-100 my-1"></div>
                   
-                  <button @click="handleLogout" class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-200 group">
+                  <button 
+                    @click="() => { handleLogout(); closeUserMenu(); }" 
+                    class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-200 group"
+                  >
                     <LogOut class="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                     Sair
                   </button>
@@ -199,7 +208,7 @@ const handleLogout = () => {
 const userMenuItems = computed(() => {
   const items = [
     { name: 'Meu Perfil', path: '/profile', icon: User },
-    { name: 'Configurações', path: '/settings', icon: Settings },
+    { name: 'Gerenciar Instrumentos', path: '/manage-instruments', icon: Guitar },
     { name: 'Ajuda', path: '/help-center', icon: HelpCircle }
   ]
   
@@ -220,13 +229,36 @@ const isActiveRoute = (path) => {
 }
 
 const toggleMobileMenu = () => { /* ... */ }
-const toggleUserMenu = () => { /* ... */ }
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value
+  if (showUserMenu.value) {
+    showMobileMenu.value = false
+    showSearch.value = false
+  }
+}
 const toggleSearch = async () => { /* ... */ }
 const closeSearch = () => { /* ... */ }
 
 // 5. A FUNÇÃO DE LOGOUT FOI REMOVIDA. Usaremos a do store diretamente no template.
 
-const closeMenus = (event) => { /* ... */ }
+const closeMenus = (event) => {
+  // Fecha o menu do usuário se o clique foi fora dele
+  if (showUserMenu.value && !event.target.closest('.user-menu')) {
+    showUserMenu.value = false
+  }
+  // Fecha o menu mobile se o clique foi fora dele
+  if (showMobileMenu.value && !event.target.closest('.mobile-menu')) {
+    showMobileMenu.value = false
+  }
+  // Fecha a busca se o clique foi fora dela
+  if (showSearch.value && !event.target.closest('.search-container')) {
+    showSearch.value = false
+  }
+}
+
+const closeUserMenu = () => {
+  showUserMenu.value = false
+}
 
 // Event listeners
 onMounted(() => { /* ... */ })

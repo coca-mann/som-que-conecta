@@ -1,4 +1,3 @@
-console.log("Executando stores/auth.store.js");
 import { defineStore } from 'pinia';
 import authService from '@/services/authService';
 import { jwtDecode } from 'jwt-decode';
@@ -16,33 +15,22 @@ export const useAuthStore = defineStore({
     actions: {
         async login(credentials) {
             try {
-                const response = await authService.login(credentials);
-                const token = response.data.access;
-                const userData = jwtDecode(token);
+                // ETAPA 1: Obter os tokens
+                const tokenResponse = await authService.login(credentials);
 
-                this.accessToken = token;
-                this.refreshToken = response.data.refresh;
-                this.user = { 
-                    id: userData.user_id,
-                    email: userData.email,
-                    firstName: userData.first_name 
-                };
-
+                this.accessToken = tokenResponse.data.access;
+                this.refreshToken = tokenResponse.data.refresh;
                 localStorage.setItem('accessToken', this.accessToken);
                 localStorage.setItem('refreshToken', this.refreshToken);
+
+                // ETAPA 2: Buscar os dados do usuário
+                const userResponse = await authService.getMe();
+
+                this.user = userResponse.data;
                 localStorage.setItem('user', JSON.stringify(this.user));
+
             } catch (error) {
-                // --- AQUI ESTÁ A MUDANÇA ---
-                // Em vez de chamar this.logout(), limpamos o estado diretamente
-                // para evitar problemas de referência interna na inicialização.
-                this.accessToken = null;
-                this.refreshToken = null;
-                this.user = null;
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                localStorage.removeItem('user');
-                
-                // Relança o erro para que o componente que chamou possa tratá-lo.
+                this.logout(); 
                 throw error;
             }
         },
