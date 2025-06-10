@@ -34,6 +34,33 @@ export const useAuthStore = defineStore({
                 throw error;
             }
         },
+        /**
+         * --- NOVA AÇÃO DE REGISTRO ---
+         * @param {object} userData - Dados do formulário de registro
+         */
+        async register(userData) {
+            try {
+                // A resposta agora contém os dados do usuário + tokens
+                const response = await authService.register(userData);
+                
+                // Extraímos os dados e tokens da resposta
+                const { access, refresh, ...user } = response.data;
+
+                // Atualizamos o estado e o localStorage, assim como no login
+                this.accessToken = access;
+                this.refreshToken = refresh;
+                this.user = user;
+
+                localStorage.setItem('accessToken', this.accessToken);
+                localStorage.setItem('refreshToken', this.refreshToken);
+                localStorage.setItem('user', JSON.stringify(this.user));
+
+            } catch (error) {
+                // Se der erro, limpa tudo para garantir
+                this.logout();
+                throw error;
+            }
+        },
         logout() {
             this.accessToken = null;
             this.refreshToken = null;

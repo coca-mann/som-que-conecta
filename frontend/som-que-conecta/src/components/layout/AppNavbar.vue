@@ -196,7 +196,7 @@ const navigationLinks = [
 // Propriedade computada para exibir o nome do usuário
 const userName = computed(() => {
   // O '?' (optional chaining) evita erros se o usuário for nulo
-  return authStore.user?.firstName || 'Usuário'; 
+  return authStore.user?.first_name || 'Usuário'; 
 })
 
 const handleLogout = () => {

@@ -529,20 +529,16 @@ const handleSubmit = async () => {
   try {
     // Lógica de Login (continua a mesma)
     if (isLogin.value) {
-      console.log("D. Entrando no bloco de LOGIN...");
-      
       // A chamada que suspeitamos não estar acontecendo
       await authStore.login({
         email: form.value.email,
         password: form.value.password,
       });
 
-      console.log("E. authStore.login() CONCLUÍDO. Redirecionando...");
       router.push('/');
     } else {
-      console.log("D. Entrando no bloco de REGISTRO...");
       // ... sua lógica de registro ...
-      await authService.register({
+      await authStore.register({
         email: form.value.email,
         password: form.value.password,
         first_name: form.value.firstName,
@@ -550,7 +546,7 @@ const handleSubmit = async () => {
       });
       // 2. Se o registro for bem-sucedido:
       alert('Conta criada com sucesso! Por favor, faça o login para continuar.');
-      setMode('login'); // Leva o usuário para a tela de login
+      router.push('/');
     }
     
   } catch (error) {
