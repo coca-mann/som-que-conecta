@@ -1,9 +1,4 @@
-// src/services/authService.js
-
-/**
- * Importamos a nossa instância central do Axios, que já está
- * configurada com a baseURL e os interceptors.
- */
+console.log("Executando services/authService.js");
 import api from './api';
 
 /**

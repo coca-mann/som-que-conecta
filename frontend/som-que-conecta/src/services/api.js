@@ -1,64 +1,82 @@
 // src/services/api.js
 import axios from 'axios';
 
+// NENHUMA importação do auth.store aqui no topo
+
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/', // Sua URL base
+  baseURL: 'http://127.0.0.1:8000/api/', // Sua URL base
 });
 
-// Interceptor para adicionar o ACCESS TOKEN em cada requisição
+// Interceptor de REQUEST: Esta parte está perfeita e não precisa mudar.
+// Ele lê o token do localStorage, que não cria dependência com o store.
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      // Padrão JWT é usar o prefixo 'Bearer'
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
-// Lógica mais avançada para atualizar o token (opcional, mas recomendado)
-// O interceptor de resposta lida com o caso de um access token expirado.
+// Interceptor de RESPONSE: Aqui faremos o ajuste.
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
-    // Se o erro for 401 (Não Autorizado) e ainda não tentamos atualizar o token
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+  (response) => {
+    // Se a resposta for bem-sucedida, não fazemos nada.
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    
+    // Verificamos se o erro é 401 e se ainda não tentamos o refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
-          refresh: refreshToken,
-        });
+      try {
+        // A lógica de tentar o refresh do token está perfeita.
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+            // Se não houver refresh token, não há como continuar. Deslogue.
+            throw new Error("No refresh token found");
+        }
+        const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
+          refresh: refreshToken,
+        });
 
-        const newAccessToken = response.data.access;
-        localStorage.setItem('accessToken', newAccessToken);
+        const newAccessToken = response.data.access;
+        localStorage.setItem('accessToken', newAccessToken);
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
-        // Atualiza o cabeçalho da requisição original com o novo token
-        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
 
-        // Tenta a requisição original novamente
-        return api(originalRequest);
+      } catch (refreshError) {
+        // --- AQUI ESTÁ A MUDANÇA ---
+        // Se a atualização do token falhar (ex: refresh token expirado ou inválido),
+        // deslogamos o usuário usando o store de forma centralizada.
+        console.error("Refresh token is invalid or expired. Logging out.", refreshError);
+        
+        // 1. Importa o store dinamicamente para quebrar o ciclo de dependência
+        const { useAuthStore } = await import('@/stores/auth.store');
+        const authStore = useAuthStore();
 
-      } catch (refreshError) {
-        // Se a atualização falhar, deslogue o usuário
-        console.error("Refresh token is invalid. Logging out.", refreshError);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        // Redireciona para a página de login
-        window.location.href = '/login'; 
-        return Promise.reject(refreshError);
-      }
-    }
-    return Promise.reject(error);
-  }
+        // 2. Chama a ação de logout centralizada
+        authStore.logout();
+
+        // 3. As linhas antigas que faziam isso manualmente são removidas
+        // localStorage.removeItem('accessToken');
+        // localStorage.removeItem('refreshToken');
+        // window.location.href = '/login'; 
+
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // Para todos os outros erros, apenas os rejeita.
+    return Promise.reject(error);
+  }
 );
 
 

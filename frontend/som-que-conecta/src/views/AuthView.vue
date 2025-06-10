@@ -528,7 +528,7 @@ const handleSubmit = async () => {
       // ... (código de sucesso do login)
       localStorage.setItem('accessToken', response.data.access);
       localStorage.setItem('refreshToken', response.data.refresh);
-      router.push('/dashboard');
+      router.push('/');
 
     } else {
       // --- LÓGICA DE REGISTRO (A PARTE NOVA) ---

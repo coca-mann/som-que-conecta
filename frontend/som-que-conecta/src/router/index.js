@@ -1,15 +1,6 @@
+console.log("Executando router/index.js");
+
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import ArticlesView from '../views/ArticlesView.vue'
-import CoursesView from '../views/CoursesView.vue'
-import InstrumentsView from '../views/InstrumentsView.vue'
-import ProfileView from '../views/ProfileView.vue'
-import CreateArticle from '../views/CreateArticle.vue'
-import ContactView from '../views/ContactView.vue'
-import HelpCenterView from '../views/HelpCenter.vue'
-import TermsOfUseView from '../views/TermsOfUse.vue'
-import PrivacyPolicyView from '../views/PrivacyPolicy.vue'
-import AuthView from '../views/AuthView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,17 +8,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: () => import('../views/HomeView.vue')
     },
     {
       path: '/auth',
       name: 'auth',
-      component: AuthView
+      component: () => import('../views/AuthView.vue')
     },
     {
       path: '/articles',
       name: 'articles',
-      component: ArticlesView
+      component: () => import('../views/ArticlesView.vue')
     },
     {
       path: '/article/:id',
@@ -37,7 +28,7 @@ const router = createRouter({
     {
       path: '/courses',
       name: 'courses',
-      component: CoursesView
+      component: () => import('../views/CoursesView.vue')
     },
     {
       path: '/course/:id',
@@ -47,68 +38,79 @@ const router = createRouter({
     {
       path: '/course/:courseId/task/:taskId',
       name: 'course-task-detail',
-      component: () => import('../views/CourseTaskDetail.vue')
+      component: () => import('../views/CourseTaskDetail.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/instruments',
       name: 'instruments',
-      component: InstrumentsView
+      component: () => import('../views/InstrumentsView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/profile',
       name: 'profile',
-      component: ProfileView
+      component: () => import('../views/ProfileView.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/manage-instruments',
       name: 'manage-instruments',
-      component: () => import('../views/ManageInstruments.vue')
+      component: () => import('../views/ManageInstruments.vue'),
+      meta: { requiresAuth: true, requiresTeacher: true }
     },
     {
       path: '/articles/create',
       name: 'create-article',
-      component: CreateArticle
+      component: () => import('../views/CreateArticle.vue'),
+      meta: { requiresAuth: true, requiresTeacher: true }
     },
     {
       path: '/articles/edit/:id',
       name: 'edit-article',
-      component: CreateArticle
+      component: () => import('../views/CreateArticle.vue'),
+      meta: { requiresAuth: true, requiresTeacher: true }
     },
     {
       path: '/contact',
       name: 'contact',
-      component: ContactView
+      component: () => import('../views/ContactView.vue')
     },
     {
       path: '/help',
       name: 'help',
-      component: HelpCenterView
+      component: () => import('../views/HelpCenter.vue')
     },
     {
       path: '/terms',
       name: 'terms',
-      component: TermsOfUseView
+      component: () => import('../views/TermsOfUse.vue')
     },
     {
       path: '/privacy',
       name: 'privacy',
-      component: PrivacyPolicyView
+      component: () => import('../views/PrivacyPolicy.vue')
     }
   ]
 })
 
 // Navigation guards
-router.beforeEach((to, from, next) => {
-  const isLoggedIn = false // Replace with actual auth check
-  const userRole = 'student' // Replace with actual user role
+router.beforeEach(async (to, from, next) => {
+  // Importamos o store AQUI DENTRO da função.
+  const { useAuthStore } = await import('@/stores/auth.store')
+  const authStore = useAuthStore()
+
+  const isLoggedIn = authStore.isAuthenticated
+  const userRole = authStore.user?.role // ex: 'student', 'teacher'
   
   if (to.meta.requiresAuth && !isLoggedIn) {
-    // Redirect to login or show login modal
-    next('/')
+    // Se a rota exige login e o usuário não está logado, redireciona para o login
+    next({ name: 'auth' })
   } else if (to.meta.requiresTeacher && userRole !== 'teacher' && userRole !== 'admin') {
-    // Redirect if user doesn't have teacher/admin privileges
-    next('/')
+    // Se a rota exige professor/admin e o usuário não é, redireciona para o início
+    next({ name: 'home' })
   } else {
+    // Em todos os outros casos, permite a navegação
     next()
   }
 })
