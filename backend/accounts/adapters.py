@@ -1,5 +1,5 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from backend.accounts.models import User, UserType
+from backend.accounts.models import User
 
 
 class MySocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -18,11 +18,9 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         user.save()
 
         if not hasattr(user, "userprofile"):
-            default_type, _ = UserType.objects.get_or_create(name="Padrão")
             User.objects.create(
                 username=user,
                 auth_provider="google",
                 sso_id=sso_id,
                 profile_picture=picture,
-                user_type=default_type,
             )

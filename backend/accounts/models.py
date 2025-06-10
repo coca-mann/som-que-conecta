@@ -26,21 +26,6 @@ HISTORY_ACTIONS = [
     # ... etc
 ]
 
-
-class UserType(models.Model):
-    # Este modelo não muda, pois não tem relação direta com o User
-    name = models.CharField(max_length=50, null=False, blank=False, verbose_name='Nome')
-    description = models.TextField(null=True, blank=True, verbose_name='Descrição')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Tipo de usuário'
-        verbose_name_plural = 'Tipos de usuários'
-
-
 # --- O NOVO MODELO DE USUÁRIO ---
 class User(AbstractUser):
     # 1. Removemos o username e definimos o email como campo de login
@@ -51,13 +36,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['first_name', 'last_name'] # Campos pedidos no 'createsuperuser'
 
     # 2. Movemos todos os campos do antigo UserProfile para cá
-    user_type = models.ForeignKey(
-        UserType,
-        on_delete=models.PROTECT,
-        null=True, # Torne nulo para facilitar a migração de dados
-        blank=True,
-        verbose_name='Tipo de Usuário',
-    )
     birthday = models.DateField(null=True, blank=True, verbose_name='Data de Nascimento')
     bio = models.TextField(null=True, blank=True, verbose_name='Biografia')
     profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.jpg', blank=True, verbose_name='Foto de Perfil')
