@@ -41,3 +41,39 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             # Passe quaisquer outros campos aqui
         )
         return user
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializador ajustado para refletir a nova estrutura de roles.
+    """
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 
+            'email', 
+            'first_name', 
+            'last_name',
+            'bio', 
+            'profile_picture', 
+            'birthday',
+            'gender',
+            'skill_level',
+            'is_ong',
+            'is_professor',
+            'role',
+        ]
+
+    def get_role(self, obj):
+        """
+        Cria o valor para o campo 'role' baseado nos campos booleanos.
+        'obj' é a instância do modelo User.
+        """
+        if obj.is_superuser or obj.is_staff:
+            return 'admin'
+        if obj.is_professor:
+            return 'teacher'
+        if obj.is_ong:
+            return 'ong'
+        return 'student'
