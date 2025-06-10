@@ -22,6 +22,11 @@ const authService = {
     // O segundo argumento (`credentials`) é o corpo (body) da requisição.
     return api.post('/token/', credentials);
   },
+  register(userData) {
+    // Assumindo que seu endpoint de registro está em /register/
+    // O DRF espera snake_case (first_name), então mapeamos aqui se necessário.
+    return api.post('/register/', userData);
+  },
 
   // No futuro, você pode adicionar outras funções aqui:
   //

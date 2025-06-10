@@ -513,49 +513,59 @@ const clearForm = () => {
 
 // Substitua a sua função handleSubmit por esta
 const handleSubmit = async () => {
-  errorMessage.value = null; 
-  if (!isFormValid.value) return;
-  
-  isLoading.value = true;
-  
-  try {
-    if (isLogin.value) {
-      // 2. AQUI ESTÁ A MUDANÇA!
-      // Em vez de chamar a API diretamente, chamamos a função do nosso serviço.
-      const response = await authService.login({
-        email: form.value.email, 
-        password: form.value.password,
-      });
+  errorMessage.value = null; 
+  if (!isFormValid.value) return;
+  
+  isLoading.value = true;
+  
+  try {
+    // Lógica de Login (continua a mesma)
+    if (isLogin.value) {
+      const response = await authService.login({
+        email: form.value.email, 
+        password: form.value.password,
+      });
+      // ... (código de sucesso do login)
+      localStorage.setItem('accessToken', response.data.access);
+      localStorage.setItem('refreshToken', response.data.refresh);
+      router.push('/dashboard');
 
-      // O resto da lógica de sucesso continua igual
-      localStorage.setItem('accessToken', response.data.access);
-      localStorage.setItem('refreshToken', response.data.refresh);
-      
-      // Opcional: Se sua instância 'api' é usada em outros lugares,
-      // você pode querer manter esta linha para que requisições
-      // futuras na mesma sessão já tenham o token.
-      // api.defaults.headers['Authorization'] = `Bearer ${response.data.access}`;
-
-      const redirectTo = route.query.redirect || '/';
-      router.push(redirectTo);
-
-    } else {
-      // A lógica de registro permanece a mesma por enquanto
-      console.log('Register attempt:', { /* ... */ });
-      // ...
-    }
-    
-  } catch (error) {
-    // A lógica de erro permanece a mesma
-    console.error('Auth error:', error);
-    if (error.response && (error.response.status === 400 || error.response.status === 401)) {
-        errorMessage.value = 'Email ou senha inválidos. Tente novamente.';
     } else {
-        errorMessage.value = 'Não foi possível conectar ao servidor. Verifique sua conexão.';
+      // --- LÓGICA DE REGISTRO (A PARTE NOVA) ---
+      
+      // 1. Chama o serviço de registro com os dados do formulário
+      await authService.register({
+        email: form.value.email,
+        password: form.value.password,
+        first_name: form.value.firstName, // Mapeando de camelCase para snake_case
+        last_name: form.value.lastName,   // que o DRF espera.
+      });
+
+      // 2. Se o registro for bem-sucedido:
+      alert('Conta criada com sucesso! Por favor, faça o login para continuar.');
+      setMode('login'); // Leva o usuário para a tela de login
     }
-  } finally {
-    isLoading.value = false;
-  }
+    
+  } catch (error) {
+    console.error('Auth error:', error);
+
+    // 3. Tratamento de erro melhorado
+    if (error.response && error.response.data) {
+        // Se o DRF retornar erros de validação (ex: {"email": ["Este email já existe."]})
+        const errorData = error.response.data;
+        let errorMessages = [];
+        for (const field in errorData) {
+            // Pega a mensagem de erro de cada campo e junta em uma string
+            errorMessages.push(`${field}: ${errorData[field].join(', ')}`);
+        }
+        errorMessage.value = errorMessages.join(' | ');
+    } else {
+        // Erro genérico de comunicação
+        errorMessage.value = 'Não foi possível conectar ao servidor. Tente novamente mais tarde.';
+    }
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 const signInWithGoogle = async () => {
