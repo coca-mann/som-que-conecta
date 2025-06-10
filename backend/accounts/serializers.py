@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
 from backend.accounts.validators import (
     validate_username,
     validate_email,
@@ -22,24 +23,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        """
-        Sobrescreve o método create para usar create_user,
-        que lida com o hashing da senha.
-        """
-        # Extrai os dados do dicionário validado
-        email = validated_data.get('email')
-        password = validated_data.get('password')
-        first_name = validated_data.get('first_name', '')
-        last_name = validated_data.get('last_name', '')
-
-        # Usa o método create_user do nosso CustomUserManager
-        user = User.objects.create_user(
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name
-            # Passe quaisquer outros campos aqui
-        )
+        user = User.objects.create_user(**validated_data)
+        
+        # 3. Geramos os tokens para o usuário recém-criado
+        refresh = RefreshToken.for_user(user)
+        
+        # 4. Adicionamos os tokens ao objeto 'user' para que o serializer os inclua na resposta
+        user.refresh = str(refresh)
+        user.access = str(refresh.access_token)
         return user
 
 class UserSerializer(serializers.ModelSerializer):
