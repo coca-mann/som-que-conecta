@@ -65,6 +65,8 @@ class User(AbstractUser):
     sso_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='ID de SSO')
     gender = models.CharField(choices=GENDER_CHOICES, blank=True, null=True, max_length=1, verbose_name='Gênero')
     skill_level = models.CharField(choices=SKILL_LEVEL, blank=True, null=True, max_length=20, verbose_name='Nível de habilidade')
+    is_ong = models.BooleanField(default=False, verbose_name='Usuário ONG')
+    is_professor = models.BooleanField(default=False, verbose_name='Professor')
     objects = CustomUserManager()
     
     def __str__(self):
