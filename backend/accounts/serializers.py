@@ -11,6 +11,7 @@ from backend.accounts.validators import (
     validate_profile_picture,
 )
 from backend.lessons.models import Lesson, UserTask
+from backend.accounts.models import UserHistory
 
 User = get_user_model()
 
@@ -187,3 +188,47 @@ class InProgressCourseSerializer(serializers.ModelSerializer):
         # 3. Calcula a porcentagem
         progress_percentage = (completed_tasks / total_tasks) * 100
         return int(progress_percentage) # Retorna como um inteiro (ex: 75)
+
+
+class RecentActivitySerializer(serializers.ModelSerializer):
+    """
+    Serializer para a lista de atividades recentes do usuário.
+    """
+    # get_action_display() é um método do Django que pega o valor legível do campo 'choices'.
+    action_display = serializers.CharField(source='get_action_display', read_only=True)
+    description = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserHistory
+        fields = [
+            'id',
+            'action',          # ex: 'ADD_INSTRUMENT'
+            'action_display',  # ex: 'Adicionou o instrumento'
+            'description',     # A descrição completa que vamos gerar
+            'created_at',
+        ]
+
+    def get_description(self, obj):
+        """
+        Gera uma descrição amigável para a atividade.
+        'obj' é a instância de UserHistory.
+        """
+        # A view passará os objetos pré-buscados no contexto para performance.
+        prefetched_data = self.context.get('prefetched_data', {})
+        
+        # Pega o objeto relacionado do dicionário pré-buscado
+        related_object = prefetched_data.get(obj.object_name, {}).get(obj.object_id)
+
+        if related_object:
+            # Gera a descrição baseada no tipo de objeto e ação
+            if obj.action == 'ADD_INSTRUMENT':
+                return f"Adicionou o instrumento: {related_object.name}"
+            elif obj.action == 'COMPLETE_TASK':
+                return f"Concluiu a tarefa: '{related_object.title}'"
+            # Adicione outras lógicas aqui...
+            # ...
+            else: # Fallback
+                return f"{obj.get_action_display()} {obj.object_name}: {related_object}"
+        
+        # Fallback se o objeto relacionado foi deletado
+        return f"{obj.get_action_display()} um(a) {obj.object_name.lower()} que foi removido(a)"

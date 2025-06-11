@@ -4,8 +4,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count
 from django.contrib.auth import get_user_model
-from backend.accounts.serializers import UserRegistrationSerializer, UserSerializer, ProfileSerializer, InProgressCourseSerializer
-from backend.lessons.models import Lesson, UserTask
+from backend.accounts.serializers import (
+    UserRegistrationSerializer,
+    UserSerializer,
+    ProfileSerializer,
+    InProgressCourseSerializer,
+    RecentActivitySerializer
+)
+from backend.lessons.models import Lesson, UserTask, Task
+from backend.instruments.models import Instrument
+from backend.accounts.models import UserHistory
 
 
 User = get_user_model()
@@ -96,3 +104,41 @@ class InProgressCourseListView(generics.ListAPIView):
         Isso é crucial para que o get_progress() possa acessar o request.user.
         """
         return {'request': self.request}
+    
+
+class RecentActivityListView(generics.ListAPIView):
+    serializer_class = RecentActivitySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Retorna as 20 atividades mais recentes do usuário logado
+        return UserHistory.objects.filter(user=self.request.user).order_by('-created_at')[:20]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        
+        # --- Lógica de Otimização (Prefetch Manual) ---
+        history_items = list(queryset)
+        
+        # 1. Agrupa os IDs por tipo de objeto
+        object_ids_by_type = {}
+        for item in history_items:
+            object_ids_by_type.setdefault(item.object_name, set()).add(item.object_id)
+            
+        # 2. Busca todos os objetos relacionados em poucas queries
+        prefetched_data = {}
+        if 'Instrument' in object_ids_by_type:
+            instruments = Instrument.objects.in_bulk(object_ids_by_type['Instrument'])
+            prefetched_data['Instrument'] = instruments
+            
+        if 'Task' in object_ids_by_type:
+            tasks = Task.objects.in_bulk(object_ids_by_type['Task'])
+            prefetched_data['Task'] = tasks
+        
+        # Adicione outros modelos aqui se precisar (ex: Article)
+
+        # 3. Passa os dados pré-buscados para o serializer através do contexto
+        serializer_context = {'request': request, 'prefetched_data': prefetched_data}
+        serializer = self.get_serializer(history_items, many=True, context=serializer_context)
+        
+        return Response(serializer.data)
