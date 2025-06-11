@@ -231,50 +231,39 @@
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-semibold text-gray-900">Meus Instrumentos</h3>
-              <router-link 
-                to="/manage-instruments" 
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
-              >
+              <router-link to="/manage-instruments" class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
                 Gerenciar
                 <ChevronRight class="h-4 w-4" />
               </router-link>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div v-for="instrument in userInstruments" :key="instrument.id" class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div class="text-center">
-                  <img :src="instrument.image" :alt="instrument.name" class="w-20 h-20 rounded-lg object-cover mx-auto mb-3">
-                  <h4 class="font-semibold text-gray-900 mb-1">{{ instrument.name }}</h4>
-                  <p class="text-sm text-gray-600 mb-2">{{ instrument.brand }}</p>
-                  
-                  <div class="flex items-center justify-center gap-2 mb-3">
-                    <span :class="[
-                      'px-2 py-1 text-xs rounded-full',
-                      instrument.condition === 'excellent' ? 'bg-green-100 text-green-800' :
-                      instrument.condition === 'good' ? 'bg-blue-100 text-blue-800' :
-                      instrument.condition === 'fair' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    ]">
-                      {{ getConditionLabel(instrument.condition) }}
-                    </span>
-                  </div>
-                  
-                  <div class="text-xs text-gray-500">
-                    Adquirido em {{ formatDate(instrument.acquiredDate) }}
-                  </div>
-                </div>
+            <div v-if="areInstrumentsLoading" class="text-center py-8 text-gray-600">
+              Carregando seus instrumentos...
+            </div>
+
+            <div v-else-if="instrumentsError" class="text-center py-8 text-red-600">
+              {{ instrumentsError }}
+            </div>
+
+            <div v-else-if="myInstruments.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div v-for="instrument in myInstruments" :key="instrument.id" class="border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow relative">
+                <div 
+                  v-if="instrument.color"
+                  class="absolute top-2 left-2 w-4 h-4 rounded-full border border-gray-200"
+                  :style="{ backgroundColor: instrument.color }"
+                  :title="instrument.color"
+                ></div>
+                <img :src="instrument.main_image" :alt="instrument.name" class="w-20 h-20 rounded-lg object-cover mx-auto mb-3">
+                <h4 class="font-semibold text-gray-900 mb-1">{{ instrument.name }}</h4>
+                <p class="text-sm text-gray-600">{{ instrument.brand_name }} | {{ instrument.type_name }}</p>
               </div>
             </div>
 
-            <!-- Empty State -->
-            <div v-if="userInstruments.length === 0" class="text-center py-8">
+            <div v-else class="text-center py-8">
               <Music class="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h4 class="text-lg font-medium text-gray-900 mb-2">Nenhum instrumento cadastrado</h4>
               <p class="text-gray-600 mb-4">Adicione seus instrumentos para melhor organização</p>
-              <router-link 
-                to="/manage-instruments" 
-                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
+              <router-link to="/manage-instruments" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 Adicionar Instrumento
               </router-link>
             </div>
@@ -424,7 +413,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getProfile, updateProfile, getInProgressCourses } from '@/services/profileService';
+import { getProfile, updateProfile, getInProgressCourses, getMyInstruments } from '@/services/profileService';
 import { 
   User, 
   Edit, 
@@ -453,6 +442,11 @@ const newAvatarFile = ref(null);
 const isProfileLoading = ref(true);
 const areCoursesLoading = ref(true);
 const isSaving = ref(false);
+
+// --- NOVO: Estados para os instrumentos ---
+const myInstruments = ref([]);
+const areInstrumentsLoading = ref(true);
+const instrumentsError = ref(null);
 
 const authStore = useAuthStore();
 
@@ -499,10 +493,26 @@ const fetchCourses = async () => {
   }
 };
 
+const fetchMyInstruments = async () => {
+  areInstrumentsLoading.value = true;
+  instrumentsError.value = null;
+  try {
+    const response = await getMyInstruments();
+    myInstruments.value = response.data;
+  } catch (error) {
+    console.error('Erro ao buscar instrumentos:', error);
+    instrumentsError.value = 'Não foi possível carregar seus instrumentos.';
+  } finally {
+    areInstrumentsLoading.value = false;
+  }
+};
+
+
 // --- CHAMA A FUNÇÃO AO MONTAR O COMPONENTE ---
 onMounted(() => {
   fetchProfile();
   fetchCourses();
+  fetchMyInstruments();
 });
 
 

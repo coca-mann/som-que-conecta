@@ -17,3 +17,8 @@ export const updateProfile = (profileData) => {
 export const getInProgressCourses = () => {
   return api.get('/profile/in-progress-courses/');
 };
+
+export const getMyInstruments = () => {
+  return api.get('/profile/my-instruments/');
+};
+
