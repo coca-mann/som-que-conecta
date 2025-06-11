@@ -8,6 +8,7 @@ GENDER_CHOICES = [
     ('M', 'Masculino'),
     ('F', 'Feminino'),
     ('O', 'Outros'),
+    ('N', 'Prefiro não informar'),
 ]
 
 AUTH_PROVIDER = [
