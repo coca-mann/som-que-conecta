@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
 from .models import (
     InstrumentTypes,
@@ -30,13 +30,21 @@ class InstrumentBookingViewSet(viewsets.ModelViewSet):
     serializer_class = InstrumentBookingsSerializer
 
 
-class UserInstrumentViewSet(viewsets.ModelViewSet):
-    queryset = Instrument.objects.all()
+class UserInstrumentListView(generics.ListAPIView):
     serializer_class = UserInstrumentSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Instrument.objects.filter(user_id=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(user_id=self.request.user)
+        """
+        Filtra os instrumentos pelo usuário e otimiza a consulta para
+        incluir os dados relacionados (marca, tipo e fotos).
+        """
+        user = self.request.user
+        
+        return Instrument.objects.filter(
+            user_id=user  # Usa 'user_id' conforme seu modelo
+        ).select_related(
+            'brand', 'type'  # Otimiza a busca dos nomes da marca e tipo
+        ).prefetch_related(
+            'instrumentpictures_set'  # Pré-busca todas as fotos de uma vez
+        )

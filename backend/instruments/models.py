@@ -124,7 +124,7 @@ class Instrument(models.Model):
     )
 
     def __str__(self):
-        return f"{self.instrument_type_id.name} {self.color}"
+        return f"{self.type.name} {self.color}"
 
     class Meta:
         verbose_name = 'Instrumento'
