@@ -80,6 +80,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     # O campo 'role' que você já tinha é perfeito para o frontend.
     role = serializers.SerializerMethodField()
+    lessons_counter = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = User
@@ -98,6 +99,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             'is_ong',
             'is_professor',
             'role',
+            'lessons_counter',
         ]
         read_only_fields = ['id', 'email', 'role', 'is_ong', 'is_professor']
 

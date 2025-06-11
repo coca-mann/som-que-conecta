@@ -130,10 +130,10 @@ class Task(models.Model):
         verbose_name_plural = 'Tarefas'
     
     def __str__(self):
-        return f"{self.title} - {self.lesson_title}"
+        return f"{self.title}"
     
 
-class TaksAditionalResource(models.Model):
+class TaskAditionalResource(models.Model):
     task_id = models.ForeignKey(
         Task,
         on_delete=models.CASCADE,
@@ -164,7 +164,7 @@ class TaksAditionalResource(models.Model):
         return f"{self.task_id_title} - {self.type} - {self.description}"
     
     
-class UserTaks(models.Model):
+class UserTask(models.Model):
     user_id = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
