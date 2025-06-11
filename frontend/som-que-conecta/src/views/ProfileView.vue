@@ -273,23 +273,30 @@
           <div class="bg-white rounded-lg shadow-sm p-6">
             <h3 class="text-xl font-semibold text-gray-900 mb-6">Atividade Recente</h3>
             
-            <div class="space-y-4">
+            <div v-if="isActivityLoading" class="text-center text-gray-500">Carregando...</div>
+
+            <div v-else-if="activityError" class="text-center text-red-500">{{ activityError }}</div>
+
+            <div v-else-if="recentActivity.length > 0" class="space-y-4">
               <div v-for="activity in recentActivity" :key="activity.id" class="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
                 <div :class="[
-                  'p-2 rounded-full',
-                  activity.type === 'course' ? 'bg-blue-100 text-blue-600' :
-                  activity.type === 'instrument' ? 'bg-green-100 text-green-600' :
-                  'bg-purple-100 text-purple-600'
-                ]">
-                  <component :is="getActivityIcon(activity.type)" class="h-4 w-4" />
+                    'p-2 rounded-full',
+                    // A lógica de cor pode ser baseada na ação
+                    activity.action.includes('INSTRUMENT') ? 'bg-green-100 text-green-600' :
+                    activity.action.includes('ARTICLE') ? 'bg-purple-100 text-purple-600' :
+                    'bg-blue-100 text-blue-600'
+                  ]">
+                  <component :is="getActivityIcon(activity.action)" class="h-4 w-4" />
                 </div>
                 
                 <div class="flex-1">
                   <p class="text-sm text-gray-900">{{ activity.description }}</p>
-                  <p class="text-xs text-gray-500 mt-1">{{ formatRelativeTime(activity.date) }}</p>
+                  <p class="text-xs text-gray-500 mt-1">{{ formatRelativeTime(new Date(activity.created_at)) }}</p>
                 </div>
               </div>
             </div>
+
+            <div v-else class="text-center text-gray-500 py-4">Nenhuma atividade recente.</div>
           </div>
 
           <!-- Learning Goals -->
@@ -413,7 +420,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getProfile, updateProfile, getInProgressCourses, getMyInstruments } from '@/services/profileService';
+import { getProfile, updateProfile, getInProgressCourses, getMyInstruments, getRecentActivity } from '@/services/profileService';
 import { 
   User, 
   Edit, 
@@ -447,6 +454,11 @@ const isSaving = ref(false);
 const myInstruments = ref([]);
 const areInstrumentsLoading = ref(true);
 const instrumentsError = ref(null);
+
+// --- NOVO: Estados para a atividade recente ---
+const recentActivity = ref([]);
+const isActivityLoading = ref(true);
+const activityError = ref(null);
 
 const authStore = useAuthStore();
 
@@ -507,12 +519,27 @@ const fetchMyInstruments = async () => {
   }
 };
 
+const fetchRecentActivity = async () => {
+  isActivityLoading.value = true;
+  activityError.value = null;
+  try {
+    const response = await getRecentActivity();
+    recentActivity.value = response.data;
+  } catch (error) {
+    console.error('Erro ao buscar atividades recentes:', error);
+    activityError.value = 'Não foi possível carregar as atividades.';
+  } finally {
+    isActivityLoading.value = false;
+  }
+};
+
 
 // --- CHAMA A FUNÇÃO AO MONTAR O COMPONENTE ---
 onMounted(() => {
   fetchProfile();
   fetchCourses();
   fetchMyInstruments();
+  fetchRecentActivity();
 });
 
 
@@ -579,68 +606,6 @@ const handleAvatarUpload = (event) => {
   reader.readAsDataURL(file);
 };
 
-const userInstruments = ref([
-  {
-    id: 1,
-    name: 'Violão Yamaha',
-    brand: 'Yamaha',
-    type: 'Violão',
-    color: 'Natural',
-    condition: 'excellent',
-    image: '/placeholder.svg?height=80&width=80',
-    acquiredDate: new Date('2023-03-15'),
-    description: 'Violão clássico em excelente estado'
-  },
-  {
-    id: 2,
-    name: 'Piano Digital',
-    brand: 'Casio',
-    type: 'Piano',
-    color: 'Preto',
-    condition: 'good',
-    image: '/placeholder.svg?height=80&width=80',
-    acquiredDate: new Date('2023-08-20'),
-    description: 'Piano digital com 88 teclas'
-  },
-  {
-    id: 3,
-    name: 'Ukulele Soprano',
-    brand: 'Kala',
-    type: 'Ukulele',
-    color: 'Mahogany',
-    condition: 'excellent',
-    image: '/placeholder.svg?height=80&width=80',
-    acquiredDate: new Date('2024-01-10'),
-    description: 'Ukulele soprano tradicional'
-  }
-])
-
-const recentActivity = ref([
-  {
-    id: 1,
-    type: 'course',
-    description: 'Completou a aula "Acordes Básicos" do curso Violão para Iniciantes',
-    date: new Date('2024-01-20T14:30:00')
-  },
-  {
-    id: 2,
-    type: 'instrument',
-    description: 'Adicionou novo instrumento: Ukulele Soprano',
-    date: new Date('2024-01-18T10:15:00')
-  },
-  {
-    id: 3,
-    type: 'article',
-    description: 'Publicou o artigo "Dicas para Iniciantes no Violão"',
-    date: new Date('2024-01-15T16:45:00')
-  },
-  {
-    id: 4,
-    type: 'course',
-    description: 'Iniciou o curso "Piano Clássico"',
-    date: new Date('2024-01-12T09:20:00')
-  }
-])
 
 const learningGoals = ref([
   {
@@ -684,24 +649,17 @@ const continueCourse = (course) => {
   router.push(`/lessons/${course.id}`);
 }
 
-const getConditionLabel = (condition) => {
-  const labels = {
-    excellent: 'Excelente',
-    good: 'Bom',
-    fair: 'Regular',
-    poor: 'Ruim'
-  }
-  return labels[condition] || condition
-}
 
-const getActivityIcon = (type) => {
-  const icons = {
-    course: BookOpen,
-    instrument: Music,
-    article: PenTool
-  }
-  return icons[type] || BookOpen
-}
+const getActivityIcon = (action) => {
+  const actionType = action.split('_')[0].toLowerCase(); // ex: 'ADD_INSTRUMENT' -> 'add'
+  
+  // Mapeia o tipo de ação para o tipo de ícone
+  if (action.includes('INSTRUMENT')) return Music;
+  if (action.includes('LESSON') || action.includes('TASK')) return BookOpen;
+  if (action.includes('ARTICLE')) return PenTool;
+
+  return BookOpen; // Ícone padrão
+};
 
 const getGoalStatusLabel = (status) => {
   const labels = {

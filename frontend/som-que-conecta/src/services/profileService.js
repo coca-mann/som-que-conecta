@@ -22,3 +22,7 @@ export const getMyInstruments = () => {
   return api.get('/profile/my-instruments/');
 };
 
+export const getRecentActivity = () => {
+  return api.get('/profile/recent-activity/');
+};
+
