@@ -116,7 +116,7 @@
             <!-- Stats -->
             <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
               <div class="text-center">
-                <div class="text-2xl font-bold text-blue-600">{{ userStats.totalCourses }}</div>
+                <div class="text-2xl font-bold text-blue-600">{{ userProfile.lessons_counter }}</div>
                 <div class="text-sm text-gray-600">Cursos</div>
               </div>
               <div class="text-center">
