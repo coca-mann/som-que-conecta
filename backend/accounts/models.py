@@ -23,8 +23,22 @@ SKILL_LEVEL = [
 ]
 
 HISTORY_ACTIONS = [
-    ('CREATE', 'Criado'),
-    # ... etc
+    # Ações genéricas
+    ('CREATE', 'Criou'),
+    ('UPDATE', 'Atualizou'),
+    ('DELETE', 'Deletou'),
+    
+    # Ações específicas de Lições/Tarefas
+    ('START_LESSON', 'Iniciou a lição'),
+    ('COMPLETE_LESSON', 'Concluiu a lição'),
+    ('COMPLETE_TASK', 'Concluiu a tarefa'),
+    
+    # Ações de Instrumentos
+    ('ADD_INSTRUMENT', 'Adicionou o instrumento'),
+    
+    # Ações Sociais/Comunidade
+    ('CREATE_ARTICLE', 'Publicou o artigo'),
+    ('POST_COMMENT', 'Comentou em'),
 ]
 
 # --- O NOVO MODELO DE USUÁRIO ---
@@ -75,16 +89,20 @@ class UserGoals(models.Model):
         return self.title
 
 class UserHistory(models.Model):
-    # 4. Apontamos a chave estrangeira para o novo modelo de usuário
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, # Usa a configuração do settings.py
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         verbose_name='Usuário',
         related_name='history'
     )
     action = models.CharField(choices=HISTORY_ACTIONS, max_length=20, verbose_name='Ação')
-    object = models.CharField(max_length=255, null=False, blank=False, verbose_name='Objeto')
+    # O campo 'object' foi renomeado para 'object_name' para evitar conflito com a palavra reservada 'object'
+    object_name = models.CharField(max_length=255, null=False, blank=False, verbose_name='Nome do Objeto')
     object_id = models.PositiveIntegerField(null=False, blank=False, verbose_name='ID do objeto')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Ocorrido em')
     
     def __str__(self):
-        return f"{self.user.email} - {self.action} - {self.object}"
+        return f"{self.user.email} - {self.get_action_display()} - {self.object_name}"
+
+    class Meta:
+        ordering = ['-created_at']
