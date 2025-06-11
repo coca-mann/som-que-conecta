@@ -120,12 +120,12 @@
                 <div class="text-sm text-gray-600">Cursos</div>
               </div>
               <div class="text-center">
-                <div class="text-2xl font-bold text-green-600">{{ userStats.totalInstruments }}</div>
-                <div class="text-sm text-gray-600">Instrumentos</div>
+                <div class="text-2xl font-bold text-green-600">{{ userProfile.completed_tasks_counter }}</div>
+                <div class="text-sm text-gray-600">Tarefas concluídas</div>
               </div>
               <div class="text-center">
-                <div class="text-2xl font-bold text-purple-600">{{ userStats.totalHours }}</div>
-                <div class="text-sm text-gray-600">Horas</div>
+                <div class="text-2xl font-bold text-purple-600">{{ userProfile.instruments_counter }}</div>
+                <div class="text-sm text-gray-600">Instrumentos</div>
               </div>
             </div>
           </div>
