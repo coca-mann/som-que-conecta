@@ -10,7 +10,8 @@ from backend.instruments.serializers import (
     InstrumentTypeSerializer,
     UserInstrumentSerializer,
     InstrumentBrandsSerializer,
-    InstrumentBookingsSerializer
+    InstrumentBookingsSerializer,
+    InstrumentSerializer
 )
 
 
@@ -48,3 +49,25 @@ class UserInstrumentListView(generics.ListAPIView):
         ).prefetch_related(
             'instrumentpictures_set'  # Pré-busca todas as fotos de uma vez
         )
+
+
+class InstrumentViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para gerenciar (CRUD) os Instrumentos do usuário.
+    """
+    serializer_class = InstrumentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Esta view deve retornar uma lista de todos os instrumentos
+        para o usuário atualmente autenticado.
+        """
+        return Instrument.objects.filter(user_id=self.request.user).select_related('brand', 'type').prefetch_related('instrumentpictures_set', 'instrumentbookings_set')
+
+    def perform_create(self, serializer):
+        """
+        Associa o instrumento ao usuário logado ao salvar.
+        """
+        serializer.save(user_id=self.request.user)
+

@@ -3,8 +3,53 @@ from backend.instruments.models import (
     InstrumentBookings,
     InstrumentBrands,
     InstrumentTypes,
-    Instrument
+    Instrument,
+    InstrumentPictures
 )
+
+
+class InstrumentPictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InstrumentPictures
+        fields = ['id', 'picture']
+
+
+class InstrumentSerializer(serializers.ModelSerializer):
+    # Para ler os nomes, em vez dos IDs
+    type_name = serializers.CharField(source='type.name', read_only=True)
+    brand_name = serializers.CharField(source='brand.name', read_only=True)
+
+    # Para receber o ID ao criar/atualizar
+    type = serializers.PrimaryKeyRelatedField(queryset=InstrumentTypes.objects.all(), write_only=True)
+    brand = serializers.PrimaryKeyRelatedField(queryset=InstrumentBrands.objects.all(), write_only=True)
+
+    # Para contar agendamentos (opcional, mas legal para o card)
+    bookings_count = serializers.SerializerMethodField()
+    
+    # Para lidar com imagens
+    images = InstrumentPictureSerializer(source='instrumentpictures_set', many=True, read_only=True)
+    main_image = serializers.SerializerMethodField()
+
+
+    class Meta:
+        model = Instrument
+        fields = [
+            'id', 'name', 'description', 'color', 'status', 'featured', 
+            'location', 'type', 'brand', 'type_name', 
+            'brand_name', 'bookings_count', 'images', 'main_image', 'availability'
+        ]
+        read_only_fields = ['user_id'] # O user será pego do request
+
+    def get_bookings_count(self, obj):
+        # obj é a instância do Instrumento
+        return obj.instrumentbookings_set.count()
+
+    def get_main_image(self, obj):
+        request = self.context.get('request')
+        first_picture = obj.instrumentpictures_set.first()
+        if first_picture and request:
+            return request.build_absolute_uri(first_picture.picture.url)
+        return None
 
 
 class InstrumentTypeSerializer(serializers.ModelSerializer):

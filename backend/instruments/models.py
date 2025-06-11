@@ -3,6 +3,12 @@ from django.conf import settings
 from backend.instruments.validators import validate_booking_conflict
 
 
+STATUS_CHOICES = [
+        ('available', 'Disponível'),
+        ('unavailable', 'Indisponível'),
+        ('maintenance', 'Em Manutenção'),
+    ]
+
 STATUS_BOOKING = [
     ('PENDING', 'Pendente'),
     ('APPROVED', 'Aprovado'),
@@ -74,6 +80,16 @@ class Instrument(models.Model):
         null=False,
         verbose_name='Marca'
     )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='available',
+        verbose_name='Status'
+    )
+    featured = models.BooleanField(
+        default=False,
+        verbose_name='Destaque'
+    )
     name = models.CharField(
         max_length=255,
         null=False,
@@ -85,6 +101,12 @@ class Instrument(models.Model):
         blank=True,
         null=True,
         verbose_name='Cor'
+    )
+    color_name = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='Nome da Cor'
     )
     description = models.TextField(
         blank=True,
