@@ -1,10 +1,11 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from backend.accounts.views import UserRegistrationViewSet, UserDetailView, ProfileView, InProgressCourseListView, RecentActivityListView
+from backend.accounts.views import UserRegistrationViewSet, UserDetailView, ProfileView, InProgressCourseListView, RecentActivityListView, UserGoalViewSet
 from backend.instruments.views import UserInstrumentListView
 
 router = DefaultRouter()
 router.register(r'register', UserRegistrationViewSet, basename='register')
+router.register(r'goals', UserGoalViewSet, basename='usergoal')
 
 urlpatterns = [
     path('', include(router.urls)),

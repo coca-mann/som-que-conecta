@@ -84,6 +84,7 @@ class UserGoals(models.Model):
     title = models.CharField(max_length=255, null=False, blank=False, verbose_name='Título')
     description = models.TextField(null=False, blank=False, verbose_name='Descrição')
     to_do_date = models.DateField(null=False, blank=False, verbose_name='Prazo')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
     
     def __str__(self):
         return self.title

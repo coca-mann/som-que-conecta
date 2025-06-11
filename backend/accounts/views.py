@@ -9,11 +9,12 @@ from backend.accounts.serializers import (
     UserSerializer,
     ProfileSerializer,
     InProgressCourseSerializer,
-    RecentActivitySerializer
+    RecentActivitySerializer,
+    UserGoalSerializer
 )
 from backend.lessons.models import Lesson, UserTask, Task
 from backend.instruments.models import Instrument
-from backend.accounts.models import UserHistory
+from backend.accounts.models import UserHistory, UserGoals
 
 
 User = get_user_model()
@@ -142,3 +143,24 @@ class RecentActivityListView(generics.ListAPIView):
         serializer = self.get_serializer(history_items, many=True, context=serializer_context)
         
         return Response(serializer.data)
+
+
+class UserGoalViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint que permite que as metas do usuário sejam visualizadas ou editadas.
+    """
+    serializer_class = UserGoalSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Esta view deve retornar uma lista de todas as metas
+        para o usuário autenticado atualmente.
+        """
+        return UserGoals.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """
+        Associa automaticamente a nova meta ao usuário logado ao salvar.
+        """
+        serializer.save(user=self.request.user)

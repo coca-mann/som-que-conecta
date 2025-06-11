@@ -1,17 +1,11 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-from backend.accounts.validators import (
-    validate_username,
-    validate_email,
-    validate_auth_provider_sso_id,
-    validate_date_of_birth,
-    validate_profile_picture,
-)
 from backend.lessons.models import Lesson, UserTask
-from backend.accounts.models import UserHistory
+from backend.accounts.models import UserHistory, UserGoals
 
 User = get_user_model()
 
@@ -232,3 +226,51 @@ class RecentActivitySerializer(serializers.ModelSerializer):
         
         # Fallback se o objeto relacionado foi deletado
         return f"{obj.get_action_display()} um(a) {obj.object_name.lower()} que foi removido(a)"
+
+
+class UserGoalSerializer(serializers.ModelSerializer):
+    progress = serializers.SerializerMethodField()
+    daysLeft = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserGoals
+        fields = [
+            'id',
+            'title',
+            'description',
+            'to_do_date',
+            'created_at',
+            'progress',  # Campo calculado
+            'daysLeft',  # Campo calculado
+        ]
+        read_only_fields = ['created_at', 'progress', 'daysLeft']
+
+    def get_progress(self, obj):
+        """
+        Calcula o progresso com base no tempo decorrido desde a criação da meta até o prazo.
+        """
+        today = timezone.now().date()
+        start_date = obj.created_at.date()
+        end_date = obj.to_do_date
+
+        if today >= end_date:
+            return 100
+        if today < start_date:
+            return 0
+        
+        total_duration = (end_date - start_date).days
+        elapsed_duration = (today - start_date).days
+
+        if total_duration <= 0:
+            return 100 # Se o prazo é no mesmo dia da criação, considera 100%
+
+        progress = (elapsed_duration / total_duration) * 100
+        return min(int(progress), 100) # Garante que não passe de 100
+
+    def get_daysLeft(self, obj):
+        """
+        Calcula quantos dias faltam para o prazo.
+        """
+        today = timezone.now().date()
+        days_left = (obj.to_do_date - today).days
+        return max(0, days_left) # Retorna 0 se a data já passou
