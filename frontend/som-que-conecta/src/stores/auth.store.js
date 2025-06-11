@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import authService from '@/services/authService';
-import { jwtDecode } from 'jwt-decode';
 
 export const useAuthStore = defineStore({
     id: 'auth',
@@ -11,6 +10,14 @@ export const useAuthStore = defineStore({
     }),
     getters: {
         isAuthenticated: (state) => !!state.accessToken,
+        canManageInstrumentDetails: (state) => {
+            // Garante que o usuário existe antes de tentar ler a 'role'
+            if (!state.user || !state.user.role) {
+                return false;
+            }
+            const restrictedRoles = ['student', 'normal'];
+            return !restrictedRoles.includes(state.user.role);
+        },
     },
     actions: {
         async login(credentials) {

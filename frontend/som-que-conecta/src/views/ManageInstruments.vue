@@ -35,7 +35,7 @@
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div v-for="instrument in filteredInstruments" :key="instrument.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
         <div class="relative">
-          <img :src="instrument.image" :alt="instrument.name" class="w-full h-48 object-cover">
+          <img :src="instrument.main_image || '/placeholder.svg'" :alt="instrument.name" class="w-full h-48 object-cover">
           <div class="absolute top-3 right-3">
             <span :class="getStatusColor(instrument.status)" class="px-2 py-1 text-white text-xs rounded-full font-medium">
               {{ getStatusLabel(instrument.status) }}
@@ -53,8 +53,8 @@
         
         <div class="p-6">
           <div class="flex items-center justify-between mb-3">
-            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">{{ instrument.type }}</span>
-            <span class="text-sm font-medium text-gray-600">{{ instrument.brand }}</span>
+            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">{{ instrument.type_name }}</span>
+            <span class="text-sm font-medium text-gray-600">{{ instrument.brand_name }}</span>
           </div>
           
           <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ instrument.name }}</h3>
@@ -62,7 +62,7 @@
           <div class="space-y-2 mb-4">
             <div class="flex items-center gap-2 text-sm text-gray-600">
               <div class="w-4 h-4 rounded-full border-2 border-gray-300" :style="{ backgroundColor: instrument.color }"></div>
-              <span class="capitalize">{{ instrument.colorName }}</span>
+              <span class="capitalize">{{ instrument.color }}</span>
             </div>
             <p class="text-gray-600 text-sm leading-relaxed">{{ instrument.description }}</p>
           </div>
@@ -74,11 +74,11 @@
             </div>
             <div class="flex items-center gap-2 text-sm text-gray-600">
               <Clock class="h-4 w-4" />
-              <span>{{ instrument.availableHours }}</span>
+              <span>{{ instrument.availability }}</span>
             </div>
             <div class="flex items-center gap-2 text-sm text-gray-600">
               <Calendar class="h-4 w-4" />
-              <span>{{ instrument.bookings }} agendamentos</span>
+              <span>{{ instrument.bookings_count }} agendamentos</span>
             </div>
           </div>
           
@@ -138,9 +138,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth.store'
 import { Plus, Edit, Trash2, Star, MapPin, Clock, Calendar, AlertTriangle } from 'lucide-vue-next'
 import InstrumentFormModal from '../components/modals/InstrumentFormModal.vue'
+import instrumentService from '@/services/instrumentService'
+
+const authStore = useAuthStore()
 
 const selectedType = ref('')
 const selectedStatus = ref('')
@@ -148,90 +152,42 @@ const showAddModal = ref(false)
 const editingInstrument = ref(null)
 const instrumentToDelete = ref(null)
 
-const instruments = ref([
-  {
-    id: 1,
-    name: 'Violão Clássico Yamaha C40',
-    type: 'Cordas',
-    brand: 'Yamaha',
-    color: '#8B4513',
-    colorName: 'Natural',
-    description: 'Violão clássico com tampo em abeto sólido, ideal para iniciantes e estudantes. Possui excelente projeção sonora e acabamento impecável.',
-    location: 'Centro - Sala 101',
-    availableHours: 'Seg-Sex: 14h-18h',
-    status: 'available',
-    featured: true,
-    bookings: 12,
-    image: '/placeholder.svg?height=200&width=300'
-  },
-  {
-    id: 2,
-    name: 'Teclado Yamaha PSR-E373',
-    type: 'Teclas',
-    brand: 'Yamaha',
-    color: '#000000',
-    colorName: 'Preto',
-    description: 'Teclado eletrônico com 61 teclas sensíveis ao toque, 622 vozes de alta qualidade e 205 estilos de acompanhamento.',
-    location: 'Zona Norte - Estúdio A',
-    availableHours: 'Sáb-Dom: 9h-17h',
-    status: 'available',
-    featured: false,
-    bookings: 8,
-    image: '/placeholder.svg?height=200&width=300'
-  },
-  {
-    id: 3,
-    name: 'Flauta Transversal Pearl PF-505E',
-    type: 'Sopro',
-    brand: 'Pearl',
-    color: '#C0C0C0',
-    colorName: 'Prata',
-    description: 'Flauta transversal profissional em prata maciça com chaves abertas. Excelente resposta em todos os registros.',
-    location: 'Zona Sul - Conservatório',
-    availableHours: 'Ter-Qui: 10h-16h',
-    status: 'maintenance',
-    featured: false,
-    bookings: 5,
-    image: '/placeholder.svg?height=200&width=300'
-  },
-  {
-    id: 4,
-    name: 'Guitarra Elétrica Fender Stratocaster',
-    type: 'Cordas',
-    brand: 'Fender',
-    color: '#FF0000',
-    colorName: 'Vermelho',
-    description: 'Guitarra elétrica clássica com corpo em alder, braço em maple e escala em rosewood. Três captadores single-coil.',
-    location: 'Zona Oeste - Escola de Rock',
-    availableHours: 'Seg-Sex: 19h-22h',
-    status: 'available',
-    featured: true,
-    bookings: 15,
-    image: '/placeholder.svg?height=200&width=300'
-  },
-  {
-    id: 5,
-    name: 'Bateria Acústica Pearl Export',
-    type: 'Percussão',
-    brand: 'Pearl',
-    color: '#000080',
-    colorName: 'Azul',
-    description: 'Kit completo de bateria acústica com 5 tambores, caixa, bumbo, dois tons e floor tom. Inclui pratos e acessórios.',
-    location: 'Centro - Estúdio de Percussão',
-    availableHours: 'Ter-Dom: 10h-20h',
-    status: 'available',
-    featured: false,
-    bookings: 20,
-    image: '/placeholder.svg?height=200&width=300'
+const canManageDetails = computed(() => authStore.canManageInstrumentDetails)
+
+// --- 2. Refs para controlar o estado ---
+const instruments = ref([]) // Começa vazio, será preenchido pela API
+const isLoading = ref(false) // Para mostrar um feedback de carregamento (ex: um spinner)
+const error = ref(null) // Para guardar mensagens de erro
+
+// --- 3. A função para buscar os dados ---
+const fetchInstruments = async () => {
+  isLoading.value = true
+  error.value = null
+  try {
+    const response = await instrumentService.getInstruments()
+    instruments.value = response.data
+    console.log('Instrumentos carregados da API:', response.data)
+  } catch (err) {
+    console.error("Erro ao buscar instrumentos:", err)
+    error.value = "Não foi possível carregar os instrumentos. Tente novamente mais tarde."
+  } finally {
+    isLoading.value = false
   }
-])
+}
+
+// --- 4. Chamar a função quando o componente for montado ---
+onMounted(() => {
+  fetchInstruments()
+})
 
 const filteredInstruments = computed(() => {
+  // A lógica de filtro continua funcionando normalmente!
   let filtered = instruments.value
 
   if (selectedType.value) {
-    filtered = filtered.filter(instrument => 
-      instrument.type.toLowerCase().includes(selectedType.value.toLowerCase())
+    // Ajuste aqui para usar 'type_name' que vem da API
+    filtered = filtered.filter(instrument =>
+      instrument.type_name.toLowerCase().includes(selectedType.value.toLowerCase())
     )
   }
 
