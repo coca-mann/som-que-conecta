@@ -166,28 +166,31 @@
 
         <!-- Right Column - Dashboard -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Current Courses -->
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-semibold text-gray-900">Cursos em Andamento</h3>
-              <router-link 
-                to="/courses" 
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
-              >
+              <router-link to="/courses" class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
                 Ver todos
                 <ChevronRight class="h-4 w-4" />
               </router-link>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-4">
-              <div v-for="course in currentCourses" :key="course.id" class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div v-if="areCoursesLoading" class="text-center py-8 text-gray-600">
+              Carregando seus cursos...
+            </div>
+
+            <div v-else-if="coursesError" class="text-center py-8 text-red-600">
+              {{ coursesError }}
+            </div>
+
+            <div v-else-if="inProgressCourses.length > 0" class="grid md:grid-cols-2 gap-4">
+              <div v-for="course in inProgressCourses" :key="course.id" class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-start gap-4">
-                  <img :src="course.image" :alt="course.title" class="w-16 h-16 rounded-lg object-cover">
+                  <img :src="course.cover" :alt="course.title" class="w-16 h-16 rounded-lg object-cover">
                   <div class="flex-1 min-w-0">
                     <h4 class="font-semibold text-gray-900 truncate">{{ course.title }}</h4>
-                    <p class="text-sm text-gray-600 mb-2">{{ course.instructor }}</p>
+                    <p class="text-sm text-gray-600 mb-2">{{ course.instructor_name }}</p>
                     
-                    <!-- Progress Bar -->
                     <div class="space-y-1">
                       <div class="flex justify-between text-sm">
                         <span class="text-gray-600">Progresso</span>
@@ -201,8 +204,7 @@
                       </div>
                     </div>
                     
-                    <div class="flex items-center justify-between mt-3">
-                      <span class="text-xs text-gray-500">{{ course.completedLessons }}/{{ course.totalLessons }} aulas</span>
+                    <div class="flex items-center justify-end mt-3">
                       <button 
                         @click="continueCourse(course)"
                         class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
@@ -215,15 +217,11 @@
               </div>
             </div>
 
-            <!-- Empty State -->
-            <div v-if="currentCourses.length === 0" class="text-center py-8">
+            <div v-else class="text-center py-8">
               <BookOpen class="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h4 class="text-lg font-medium text-gray-900 mb-2">Nenhum curso em andamento</h4>
               <p class="text-gray-600 mb-4">Comece sua jornada musical hoje mesmo!</p>
-              <router-link 
-                to="/courses" 
-                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
+              <router-link to="/courses" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 Explorar Cursos
               </router-link>
             </div>
@@ -426,7 +424,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getProfile, updateProfile } from '@/services/profileService';
+import { getProfile, updateProfile, getInProgressCourses } from '@/services/profileService';
 import { 
   User, 
   Edit, 
@@ -450,19 +448,16 @@ const showGoalsModal = ref(false)
 const avatarInput = ref(null)
 const userProfile = ref({});
 const editForm = ref({});
-const isLoading = ref(true);
-const isSaving = ref(false);
 const newAvatarFile = ref(null);
+
+const isProfileLoading = ref(true);
+const areCoursesLoading = ref(true);
+const isSaving = ref(false);
 
 const authStore = useAuthStore();
 
-const userStats = ref({
-  totalCourses: 8,
-  totalInstruments: 3,
-  totalHours: 127,
-  completedCourses: 3,
-  articlesWritten: 2
-})
+const inProgressCourses = ref([]);
+const coursesError = ref(null); // Estado para erros ao buscar cursos
 
 const fetchProfile = async () => {
   try {
@@ -485,13 +480,29 @@ const fetchProfile = async () => {
     console.error('Erro ao buscar perfil:', error);
     // TODO: Mostrar uma mensagem de erro para o usuário
   } finally {
-    isLoading.value = false;
+    isProfileLoading.value = false;
+  }
+};
+
+const fetchCourses = async () => {
+  areCoursesLoading.value = true;
+  coursesError.value = null;
+  try {
+    const response = await getInProgressCourses();
+    inProgressCourses.value = response.data;
+
+  } catch (error) {
+    console.error('Erro ao buscar cursos em andamento:', error);
+    coursesError.value = 'Não foi possível carregar os cursos.';
+  } finally {
+    areCoursesLoading.value = false;
   }
 };
 
 // --- CHAMA A FUNÇÃO AO MONTAR O COMPONENTE ---
 onMounted(() => {
   fetchProfile();
+  fetchCourses();
 });
 
 
@@ -557,39 +568,6 @@ const handleAvatarUpload = (event) => {
   };
   reader.readAsDataURL(file);
 };
-
-const currentCourses = ref([
-  {
-    id: 1,
-    title: 'Violão para Iniciantes',
-    instructor: 'Carlos Mendes',
-    image: '/placeholder.svg?height=64&width=64',
-    progress: 75,
-    completedLessons: 15,
-    totalLessons: 20,
-    lastAccessed: new Date('2024-01-20')
-  },
-  {
-    id: 2,
-    title: 'Teoria Musical Avançada',
-    instructor: 'Ana Carolina',
-    image: '/placeholder.svg?height=64&width=64',
-    progress: 45,
-    completedLessons: 9,
-    totalLessons: 20,
-    lastAccessed: new Date('2024-01-18')
-  },
-  {
-    id: 3,
-    title: 'Piano Clássico',
-    instructor: 'Maria Fernanda',
-    image: '/placeholder.svg?height=64&width=64',
-    progress: 30,
-    completedLessons: 6,
-    totalLessons: 20,
-    lastAccessed: new Date('2024-01-15')
-  }
-])
 
 const userInstruments = ref([
   {
@@ -691,10 +669,9 @@ const newGoal = ref({
 })
 
 const continueCourse = (course) => {
-  // Encontra a primeira tarefa não concluída ou a última tarefa concluída
-  const nextTaskIndex = course.completedLessons
-  const taskId = course.totalLessons > nextTaskIndex ? nextTaskIndex + 1 : nextTaskIndex
-  router.push(`/course/${course.id}/task/${taskId}`)
+  // Redireciona para a página principal da lição (curso)
+  // A página de destino pode então decidir qual tarefa mostrar.
+  router.push(`/lessons/${course.id}`);
 }
 
 const getConditionLabel = (condition) => {

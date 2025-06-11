@@ -13,3 +13,7 @@ export const updateProfile = (profileData) => {
     },
   });
 };
+
+export const getInProgressCourses = () => {
+  return api.get('/profile/in-progress-courses/');
+};
