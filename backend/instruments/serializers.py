@@ -34,7 +34,7 @@ class InstrumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Instrument
         fields = [
-            'id', 'name', 'description', 'color', 'status', 'featured', 
+            'id', 'name', 'description', 'color', 'color_name', 'status', 'featured', 
             'location', 'type', 'brand', 'type_name', 
             'brand_name', 'bookings_count', 'images', 'main_image', 'availability'
         ]
