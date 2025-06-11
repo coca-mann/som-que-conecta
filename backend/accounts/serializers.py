@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.db.models import Count
+from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from backend.accounts.validators import (
     validate_username,
@@ -80,7 +81,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     # O campo 'role' que você já tinha é perfeito para o frontend.
     role = serializers.SerializerMethodField()
-    lessons_counter = serializers.IntegerField(read_only=True)
+    lessons_counter = serializers.SerializerMethodField(read_only=True)
+    completed_tasks_counter = serializers.SerializerMethodField()
+    instruments_counter = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -100,8 +103,27 @@ class ProfileSerializer(serializers.ModelSerializer):
             'is_professor',
             'role',
             'lessons_counter',
+            'completed_tasks_counter',
+            'instruments_counter',
         ]
         read_only_fields = ['id', 'email', 'role', 'is_ong', 'is_professor']
+        
+    def get_lessons_counter(self, obj):
+        result = obj.usertask_set.aggregate(
+            total_lessons=Count('task_id__lesson', distinct=True)
+        )
+        return result['total_lessons']
+    
+    def get_completed_tasks_counter(self, obj):
+        """
+        Cálculo ISOLADO para o contador de tarefas completas.
+        'obj' aqui é a instância do usuário (User).
+        """
+        return obj.usertask_set.filter(is_completed=True).count()
+    
+    def get_instruments_counter(self, obj):
+        result = obj.instrument_set.aggregate(total_instrument=Count('user_id__instrument'))
+        return result['total_instrument']
 
     def get_role(self, obj):
         """

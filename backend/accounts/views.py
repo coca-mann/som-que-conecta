@@ -31,35 +31,24 @@ class UserDetailView(APIView):
 
 
 class ProfileView(APIView):
-    """
-    Endpoint para que o usuário logado possa visualizar e atualizar seu perfil.
-    """
     permission_classes = [IsAuthenticated]
 
-    # 1. Renomeamos para get_object e removemos o 'request' que não era usado
     def get_object(self, pk):
         """
-        Busca o objeto User e anota com o campo extra.
+        Este método agora só busca o usuário. Simples e direto.
         """
         try:
-            # Atenção aqui: o nome do seu model é UserTaks, então a relação reversa
-            # deve ser 'usertaks_set' ou o 'related_name' que você definiu.
-            # Vou usar 'usertaks' como no seu código anterior.
-            return User.objects.annotate(
-                lessons_counter=Count('usertask__task_id__lesson', distinct=True)
-            ).get(pk=pk)
+            return User.objects.get(pk=pk)
         except User.DoesNotExist:
             return None
 
     def get(self, request):
-        """
-        Retorna os dados do perfil do usuário autenticado.
-        """
-        # 2. CHAMAMOS NOSSO MÉTODO get_object em vez de usar request.user
+        # A view não se preocupa mais com cálculos.
         user = self.get_object(request.user.pk)
         if user is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
             
+        # A mágica agora acontece dentro do serializer.
         serializer = ProfileSerializer(user)
         return Response(serializer.data)
 
