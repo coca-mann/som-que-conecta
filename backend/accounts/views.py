@@ -1,9 +1,9 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from backend.accounts.serializers import UserRegistrationSerializer, UserSerializer
+from backend.accounts.serializers import UserRegistrationSerializer, UserSerializer, ProfileSerializer
 
 
 User = get_user_model()
@@ -27,3 +27,33 @@ class UserDetailView(APIView):
         # O 'request.user' é o objeto do usuário logado, populado pelo DRF.
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+class ProfileView(APIView):
+    """
+    Endpoint para que o usuário logado possa visualizar e atualizar seu perfil.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Retorna os dados do perfil do usuário autenticado.
+        """
+        user = request.user
+        serializer = ProfileSerializer(user)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        """
+        Atualiza parcialmente os dados do perfil do usuário autenticado.
+        O método PATCH é ideal aqui, pois permite que o frontend envie apenas
+        os campos que foram alterados.
+        """
+        user = request.user
+        serializer = ProfileSerializer(user, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

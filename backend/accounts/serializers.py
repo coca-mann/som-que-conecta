@@ -68,3 +68,52 @@ class UserSerializer(serializers.ModelSerializer):
         if obj.is_ong:
             return 'ong'
         return 'student'
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer para visualização e atualização do perfil do usuário logado.
+    """
+    # Usamos o campo 'get_gender_display' para retornar o nome legível ("Masculino")
+    # em vez da chave ("M"). `source` aponta para o método do modelo.
+    gender_display = serializers.CharField(source='get_gender_display', read_only=True)
+    
+    # O campo 'role' que você já tinha é perfeito para o frontend.
+    role = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = User
+        fields = [
+            'id', 
+            'email', 
+            'first_name', 
+            'last_name',
+            'profile_picture', # Este campo vai lidar com o upload
+            'gender',
+            'gender_display', # Campo extra para exibição no frontend
+            'bio', 
+            'birthday',
+            'skill_level',
+            # Campos booleanos para lógica de UI
+            'is_ong',
+            'is_professor',
+            'role',
+        ]
+        read_only_fields = ['id', 'email', 'role', 'is_ong', 'is_professor']
+
+    def get_role(self, obj):
+        """
+        Mantemos sua lógica para determinar o papel do usuário.
+        """
+        if obj.is_superuser or obj.is_staff:
+            return 'admin'
+        if obj.is_professor:
+            return 'teacher'
+        if obj.is_ong:
+            return 'ong'
+        return 'student'
+
+    def update(self, instance, validated_data):
+        # A lógica padrão de 'update' do ModelSerializer já trata
+        # a atualização dos campos e do arquivo de imagem corretamente.
+        return super().update(instance, validated_data)
