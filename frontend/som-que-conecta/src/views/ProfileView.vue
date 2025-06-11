@@ -334,7 +334,11 @@
                     <span class="font-medium">{{ goal.progress }}%</span>
                   </div>
                   <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-600 h-2 rounded-full" :style="{ width: goal.progress + '%' }"></div>
+                    <div 
+                      class="h-2 rounded-full transition-all duration-300" 
+                      :class="goal.progress === 100 ? 'bg-green-600' : 'bg-blue-600'"
+                      :style="{ width: goal.progress + '%' }"
+                    ></div>
                   </div>
                 </div>
                 
@@ -367,8 +371,12 @@
                 v-model="newGoal.title"
                 type="text" 
                 placeholder="Ex: Aprender 5 acordes básicos"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                :class="[
+                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                  goalErrors.title ? 'border-red-500' : 'border-gray-300'
+                ]"
               >
+              <p v-if="goalErrors.title" class="mt-1 text-sm text-red-600">{{ goalErrors.title }}</p>
             </div>
             
             <div>
@@ -377,8 +385,12 @@
                 v-model="newGoal.description"
                 rows="3"
                 placeholder="Descreva sua meta em detalhes..."
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                :class="[
+                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none',
+                  goalErrors.description ? 'border-red-500' : 'border-gray-300'
+                ]"
               ></textarea>
+              <p v-if="goalErrors.description" class="mt-1 text-sm text-red-600">{{ goalErrors.description }}</p>
             </div>
             
             <div>
@@ -386,8 +398,12 @@
               <input 
                 v-model="newGoal.deadline"
                 type="date" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                :class="[
+                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                  goalErrors.deadline ? 'border-red-500' : 'border-gray-300'
+                ]"
               >
+              <p v-if="goalErrors.deadline" class="mt-1 text-sm text-red-600">{{ goalErrors.deadline }}</p>
             </div>
           </div>
           
@@ -488,6 +504,7 @@ const goalsError = ref(null);
 
 const newGoal = ref({ title: '', description: '', deadline: '' });
 const isCreatingGoal = ref(false); // para o estado de loading do botão de criar
+const goalErrors = ref({ title: '', description: '', deadline: '' }); // Novo estado para erros
 
 const authStore = useAuthStore();
 
@@ -692,22 +709,40 @@ const formatDate = (dateString) => {
   }).format(date);
 };
 
-// --- MUDANÇA: Lógica do modal para criar a meta via API ---
+const validateGoalForm = () => {
+  let isValid = true;
+  goalErrors.value = { title: '', description: '', deadline: '' };
+
+  if (!newGoal.value.title.trim()) {
+    goalErrors.value.title = 'O título é obrigatório';
+    isValid = false;
+  }
+
+  if (!newGoal.value.description.trim()) {
+    goalErrors.value.description = 'A descrição é obrigatória';
+    isValid = false;
+  }
+
+  if (!newGoal.value.deadline) {
+    goalErrors.value.deadline = 'O prazo é obrigatório';
+    isValid = false;
+  }
+
+  return isValid;
+};
+
 const addGoal = async () => {
-  if (!newGoal.value.title || !newGoal.value.deadline) {
-    alert('Por favor, preencha pelo menos o título e o prazo.');
+  if (!validateGoalForm()) {
     return;
   }
+
   isCreatingGoal.value = true;
   try {
-    // Chama a função do service para criar a meta no backend
     await createGoal(newGoal.value);
-    
-    // Sucesso! Fecha o modal, reseta o formulário e busca a lista atualizada
     showGoalsModal.value = false;
     newGoal.value = { title: '', description: '', deadline: '' };
-    await fetchGoals(); // Re-busca a lista para incluir a nova meta
-    
+    goalErrors.value = { title: '', description: '', deadline: '' };
+    await fetchGoals();
   } catch (error) {
     console.error('Erro ao criar meta:', error.response?.data || error);
     alert('Ocorreu um erro ao criar a meta. Tente novamente.');
