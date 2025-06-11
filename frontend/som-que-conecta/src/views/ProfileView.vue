@@ -303,68 +303,62 @@
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-semibold text-gray-900">Metas de Aprendizado</h3>
-              <button 
-                @click="showGoalsModal = true"
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
-              >
+              <button @click="showGoalsModal = true" class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
                 <Plus class="h-4 w-4" />
                 Nova Meta
               </button>
             </div>
 
-            <div class="space-y-4">
+            <div v-if="areGoalsLoading" class="text-center text-gray-500">Carregando metas...</div>
+            <div v-else-if="goalsError" class="text-center text-red-500">{{ goalsError }}</div>
+            
+            <div v-else-if="learningGoals.length > 0" class="space-y-4">
               <div v-for="goal in learningGoals" :key="goal.id" class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start justify-between mb-3">
                   <div>
                     <h4 class="font-semibold text-gray-900">{{ goal.title }}</h4>
                     <p class="text-sm text-gray-600">{{ goal.description }}</p>
                   </div>
-                  <span :class="[
-                    'px-2 py-1 text-xs rounded-full',
-                    goal.status === 'completed' ? 'bg-green-100 text-green-800' :
-                    goal.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
-                  ]">
-                    {{ getGoalStatusLabel(goal.status) }}
-                  </span>
+                  <button 
+                    @click="confirmDeleteGoal(goal)"
+                    class="p-2 text-gray-400 hover:text-red-600 transition-colors border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200"
+                    title="Excluir meta"
+                  >
+                    <X class="h-5 w-5" />
+                  </button>
                 </div>
                 
                 <div class="space-y-1">
                   <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Progresso</span>
+                    <span class="text-gray-600">Progresso (por tempo)</span>
                     <span class="font-medium">{{ goal.progress }}%</span>
                   </div>
                   <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      :class="[
-                        'h-2 rounded-full transition-all duration-300',
-                        goal.status === 'completed' ? 'bg-green-600' : 'bg-blue-600'
-                      ]"
-                      :style="{ width: goal.progress + '%' }"
-                    ></div>
+                    <div class="bg-blue-600 h-2 rounded-full" :style="{ width: goal.progress + '%' }"></div>
                   </div>
                 </div>
                 
                 <div class="flex items-center justify-between mt-3 text-xs text-gray-500">
-                  <span>Prazo: {{ formatDate(goal.deadline) }}</span>
+                  <span>Prazo: {{ formatDate(goal.to_do_date) }}</span>
                   <span>{{ goal.daysLeft }} dias restantes</span>
                 </div>
               </div>
             </div>
+            
+            <div v-else class="text-center text-gray-500 py-4">Nenhuma meta definida. Crie uma para começar!</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Goals Modal -->
-    <div v-if="showGoalsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg w-full max-w-md mx-4">
+    <div v-if="showGoalsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg w-full max-w-md mx-4 shadow-xl">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-lg font-semibold">Nova Meta de Aprendizado</h3>
-          <button @click="showGoalsModal = false" class="text-gray-400 hover:text-gray-600">
-            <X class="h-6 w-6" />
-          </button>
+          <button @click="showGoalsModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
         </div>
+        
         <div class="p-6">
           <div class="space-y-4">
             <div>
@@ -406,9 +400,36 @@
             </button>
             <button 
               @click="addGoal"
-              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              :disabled="isCreatingGoal"
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
             >
-              Criar Meta
+              {{ isCreatingGoal ? 'Criando...' : 'Criar Meta' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Goal Confirmation Modal -->
+    <div v-if="showDeleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg w-full max-w-sm mx-4 shadow-xl">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Confirmar Exclusão</h3>
+          <p class="text-gray-600 mb-6">Tem certeza que deseja excluir a meta "{{ goalToDelete?.title }}"? Esta ação não pode ser desfeita.</p>
+          
+          <div class="flex gap-3">
+            <button 
+              @click="showDeleteModal = false"
+              class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button 
+              @click="deleteGoal"
+              :disabled="isDeletingGoal"
+              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-red-400 disabled:cursor-not-allowed"
+            >
+              {{ isDeletingGoal ? 'Excluindo...' : 'Excluir Meta' }}
             </button>
           </div>
         </div>
@@ -420,7 +441,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getProfile, updateProfile, getInProgressCourses, getMyInstruments, getRecentActivity } from '@/services/profileService';
+import { getProfile, updateProfile, getInProgressCourses, getMyInstruments, getRecentActivity, getGoals, createGoal, deleteGoal as deleteGoalApi } from '@/services/profileService';
 import { 
   User, 
   Edit, 
@@ -460,10 +481,23 @@ const recentActivity = ref([]);
 const isActivityLoading = ref(true);
 const activityError = ref(null);
 
+// --- NOVO: Estados para as metas ---
+const learningGoals = ref([]);
+const areGoalsLoading = ref(true);
+const goalsError = ref(null);
+
+const newGoal = ref({ title: '', description: '', deadline: '' });
+const isCreatingGoal = ref(false); // para o estado de loading do botão de criar
+
 const authStore = useAuthStore();
 
 const inProgressCourses = ref([]);
 const coursesError = ref(null); // Estado para erros ao buscar cursos
+
+// Estados para o modal de exclusão
+const showDeleteModal = ref(false);
+const goalToDelete = ref(null);
+const isDeletingGoal = ref(false);
 
 const fetchProfile = async () => {
   try {
@@ -533,6 +567,19 @@ const fetchRecentActivity = async () => {
   }
 };
 
+const fetchGoals = async () => {
+  areGoalsLoading.value = true;
+  goalsError.value = null;
+  try {
+    const response = await getGoals();
+    learningGoals.value = response.data;
+  } catch (error) {
+    console.error('Erro ao buscar metas:', error);
+    goalsError.value = 'Não foi possível carregar as metas.';
+  } finally {
+    areGoalsLoading.value = false;
+  }
+};
 
 // --- CHAMA A FUNÇÃO AO MONTAR O COMPONENTE ---
 onMounted(() => {
@@ -540,6 +587,7 @@ onMounted(() => {
   fetchCourses();
   fetchMyInstruments();
   fetchRecentActivity();
+  fetchGoals();
 });
 
 
@@ -607,42 +655,6 @@ const handleAvatarUpload = (event) => {
 };
 
 
-const learningGoals = ref([
-  {
-    id: 1,
-    title: 'Dominar 10 acordes básicos',
-    description: 'Aprender e praticar os 10 acordes mais utilizados no violão',
-    progress: 80,
-    status: 'in_progress',
-    deadline: new Date('2024-02-15'),
-    daysLeft: 25
-  },
-  {
-    id: 2,
-    title: 'Tocar primeira música completa',
-    description: 'Conseguir tocar uma música completa no piano',
-    progress: 100,
-    status: 'completed',
-    deadline: new Date('2024-01-30'),
-    daysLeft: 0
-  },
-  {
-    id: 3,
-    title: 'Estudar teoria musical',
-    description: 'Completar curso básico de teoria musical',
-    progress: 45,
-    status: 'in_progress',
-    deadline: new Date('2024-03-01'),
-    daysLeft: 40
-  }
-])
-
-const newGoal = ref({
-  title: '',
-  description: '',
-  deadline: ''
-})
-
 const continueCourse = (course) => {
   // Redireciona para a página principal da lição (curso)
   // A página de destino pode então decidir qual tarefa mostrar.
@@ -670,13 +682,39 @@ const getGoalStatusLabel = (status) => {
   return labels[status] || status
 }
 
-const formatDate = (date) => {
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
   return new Intl.DateTimeFormat('pt-BR', { 
     day: 'numeric', 
     month: 'short',
-    year: 'numeric' 
-  }).format(date)
-}
+    year: 'numeric',
+    timeZone: 'UTC' // Importante para evitar problemas de fuso horário
+  }).format(date);
+};
+
+// --- MUDANÇA: Lógica do modal para criar a meta via API ---
+const addGoal = async () => {
+  if (!newGoal.value.title || !newGoal.value.deadline) {
+    alert('Por favor, preencha pelo menos o título e o prazo.');
+    return;
+  }
+  isCreatingGoal.value = true;
+  try {
+    // Chama a função do service para criar a meta no backend
+    await createGoal(newGoal.value);
+    
+    // Sucesso! Fecha o modal, reseta o formulário e busca a lista atualizada
+    showGoalsModal.value = false;
+    newGoal.value = { title: '', description: '', deadline: '' };
+    await fetchGoals(); // Re-busca a lista para incluir a nova meta
+    
+  } catch (error) {
+    console.error('Erro ao criar meta:', error.response?.data || error);
+    alert('Ocorreu um erro ao criar a meta. Tente novamente.');
+  } finally {
+    isCreatingGoal.value = false;
+  }
+};
 
 const formatRelativeTime = (date) => {
   const now = new Date()
@@ -691,35 +729,28 @@ const formatRelativeTime = (date) => {
   return formatDate(date)
 }
 
-const addGoal = () => {
-  if (!newGoal.value.title || !newGoal.value.deadline) {
-    alert('Por favor, preencha pelo menos o título e o prazo.')
-    return
-  }
+const confirmDeleteGoal = (goal) => {
+  goalToDelete.value = goal;
+  showDeleteModal.value = true;
+};
 
-  const deadline = new Date(newGoal.value.deadline)
-  const now = new Date()
-  const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24))
-
-  learningGoals.value.push({
-    id: Date.now(),
-    title: newGoal.value.title,
-    description: newGoal.value.description,
-    progress: 0,
-    status: 'pending',
-    deadline: deadline,
-    daysLeft: Math.max(0, daysLeft)
-  })
-
-  // Reset form
-  newGoal.value = {
-    title: '',
-    description: '',
-    deadline: ''
-  }
+const deleteGoal = async () => {
+  if (!goalToDelete.value) return;
   
-  showGoalsModal.value = false
-}
+  isDeletingGoal.value = true;
+  try {
+    await deleteGoalApi(goalToDelete.value.id);
+    await fetchGoals(); // Recarrega a lista de metas
+    showDeleteModal.value = false;
+    goalToDelete.value = null;
+  } catch (error) {
+    console.error('Erro ao excluir meta:', error);
+    alert('Não foi possível excluir a meta. Tente novamente.');
+  } finally {
+    isDeletingGoal.value = false;
+  }
+};
+
 </script>
 
 <style scoped>
