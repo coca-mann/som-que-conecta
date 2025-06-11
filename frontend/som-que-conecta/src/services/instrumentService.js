@@ -25,7 +25,7 @@ const instrumentService = {
    * @param {object} instrumentData - Os dados do formulário.
    */
   updateInstrument(id, instrumentData) {
-    return api.put(`/instruments/${id}/`, instrumentData);
+    return api.patch(`/instruments/${id}/`, instrumentData);
   },
 
   /**
@@ -36,10 +36,22 @@ const instrumentService = {
   deleteInstrument(id) {
     return api.delete(`/instruments/${id}/`);
   },
-  
-  // No futuro, você pode adicionar chamadas para buscar Marcas e Tipos
-  // getInstrumentTypes() { ... }
-  // getInstrumentBrands() { ... }
+  /**
+   * Busca a lista de todos os tipos de instrumentos cadastrados.
+   * Corresponde ao `list` do seu InstrumentTypeViewSet.
+   */
+  getInstrumentTypes() {
+    return api.get('/instrumenttype/');
+  },
+
+  /**
+   * Busca a lista de todas as marcas de instrumentos cadastradas.
+   * Corresponde ao `list` do seu InstrumentBrandsViewSet.
+   */
+  getInstrumentBrands() {
+    return api.get('/instrumentbrand/');
+  },
 };
+
 
 export default instrumentService;

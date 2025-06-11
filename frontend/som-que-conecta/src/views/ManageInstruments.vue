@@ -243,11 +243,6 @@ const confirmDelete = () => {
   console.log('Instrument deleted')
 }
 
-const closeModal = () => {
-  showAddModal.value = false
-  editingInstrument.value = null
-}
-
 const handleInstrumentSaved = (instrumentData) => {
   if (editingInstrument.value) {
     // Update existing instrument
@@ -266,5 +261,12 @@ const handleInstrumentSaved = (instrumentData) => {
     })
   }
   closeModal()
+  fetchInstruments();
 }
+
+const closeModal = () => {
+  showAddModal.value = false
+  editingInstrument.value = null
+}
+
 </script>
