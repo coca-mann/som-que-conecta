@@ -10,6 +10,7 @@ from backend.accounts.validators import (
     validate_date_of_birth,
     validate_profile_picture,
 )
+from backend.lessons.models import Lesson, UserTask
 
 User = get_user_model()
 
@@ -141,3 +142,48 @@ class ProfileSerializer(serializers.ModelSerializer):
         # A lógica padrão de 'update' do ModelSerializer já trata
         # a atualização dos campos e do arquivo de imagem corretamente.
         return super().update(instance, validated_data)
+
+
+class InProgressCourseSerializer(serializers.ModelSerializer):
+    """
+    Serializer para a lista de cursos em andamento do usuário.
+    """
+    # Campo para o nome do instrutor, buscando o nome completo do autor
+    instructor_name = serializers.CharField(source='author.get_full_name', read_only=True)
+    
+    # Campo calculado para o progresso
+    progress = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Lesson
+        fields = [
+            'id',
+            'title',           # Nome do curso
+            'cover',           # Imagem de capa
+            'instructor_name', # Nome do instrutor
+            'progress',        # Progresso em porcentagem
+        ]
+
+    def get_progress(self, obj):
+        """
+        Calcula o progresso do usuário na lição (curso).
+        'obj' é a instância de Lesson.
+        """
+        # Para acessar o 'request.user', precisamos que ele seja passado no contexto pela view
+        user = self.context['request'].user
+
+        # 1. Pega o total de tarefas que esta lição possui
+        total_tasks = obj.tasks_count
+        if total_tasks == 0:
+            return 0 # Evita divisão por zero se a lição não tiver tarefas
+
+        # 2. Conta quantas tarefas DESTA lição o usuário CONCLUIU
+        completed_tasks = UserTask.objects.filter(
+            task_id__lesson=obj,  # Filtra tarefas da lição atual
+            user_id=user,         # Filtra para o usuário logado
+            is_completed=True
+        ).count()
+
+        # 3. Calcula a porcentagem
+        progress_percentage = (completed_tasks / total_tasks) * 100
+        return int(progress_percentage) # Retorna como um inteiro (ex: 75)

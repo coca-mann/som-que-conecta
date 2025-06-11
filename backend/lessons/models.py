@@ -72,6 +72,14 @@ class Lesson(models.Model):
         auto_now=True,
         verbose_name='Modificado em'
     )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='lessons_created',
+        blank=False,
+        null=False,
+        verbose_name='Usuário'
+    )
 
     def __str__(self):
         return self.title

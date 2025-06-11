@@ -1,10 +1,11 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count
 from django.contrib.auth import get_user_model
-from backend.accounts.serializers import UserRegistrationSerializer, UserSerializer, ProfileSerializer
+from backend.accounts.serializers import UserRegistrationSerializer, UserSerializer, ProfileSerializer, InProgressCourseSerializer
+from backend.lessons.models import Lesson, UserTask
 
 
 User = get_user_model()
@@ -69,3 +70,29 @@ class ProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class InProgressCourseListView(generics.ListAPIView):
+    """
+    Retorna uma lista de cursos (lições) que o usuário logado iniciou.
+    """
+    serializer_class = InProgressCourseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # 1. Pega o usuário logado
+        user = self.request.user
+
+        # 2. Descobre os IDs de todas as lições únicas que o usuário tem tarefas associadas
+        in_progress_lesson_ids = UserTask.objects.filter(
+            user_id=user
+        ).values_list('task_id__lesson_id', flat=True).distinct()
+
+        # 3. Retorna os objetos Lesson correspondentes a esses IDs
+        return Lesson.objects.filter(pk__in=in_progress_lesson_ids).select_related('author')
+
+    def get_serializer_context(self):
+        """
+        Garante que o 'request' seja passado para o serializer.
+        Isso é crucial para que o get_progress() possa acessar o request.user.
+        """
+        return {'request': self.request}
