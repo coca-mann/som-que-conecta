@@ -61,6 +61,16 @@ export const useAuthStore = defineStore({
                 throw error;
             }
         },
+        /**
+         * --- NOVA AÇÃO PARA ATUALIZAR O USUÁRIO ---
+         * Atualiza os dados do usuário no estado da store e no localStorage.
+         * @param {object} newUserData - O objeto de usuário atualizado vindo da API.
+         */
+        updateUser(newUserData) {
+            this.user = newUserData;
+            localStorage.setItem('user', JSON.stringify(this.user));
+            console.log('Dados do usuário atualizados na store Pinia.');
+        },
         logout() {
             this.accessToken = null;
             this.refreshToken = null;

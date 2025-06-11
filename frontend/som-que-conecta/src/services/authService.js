@@ -23,7 +23,7 @@ const authService = {
     return api.post('/register/', userData);
   },
   getMe() {
-    return api.get('/user/');
+    return api.get('/profile/');
   }
 
   // No futuro, você pode adicionar outras funções aqui:

@@ -35,13 +35,6 @@
         </div>
 
         <div class="flex items-center space-x-4">
-          <button 
-            @click="toggleSearch"
-            class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 group"
-          >
-            <Search class="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-          </button>
-
           <div v-if="authStore.isAuthenticated" class="relative user-menu">
             <button 
               class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 p-2 rounded-lg transition-all duration-300 group"
@@ -49,7 +42,7 @@
             >
               <div class="relative">
                 <img 
-                  :src="authStore.user?.profile_picture || '/placeholder.svg?height=32&width=32'" 
+                  :src="profilePictureUrl" 
                   :alt="userName"
                   class="h-8 w-8 rounded-full border-2 border-transparent group-hover:border-blue-200 transition-all duration-300"
                 />
@@ -74,7 +67,7 @@
                 <div class="px-4 py-3 border-b border-gray-100">
                   <div class="flex items-center space-x-3">
                     <img 
-                      :src="authStore.user?.profile_picture || '/placeholder.svg?height=40&width=40'" 
+                      :src="profilePictureUrl" 
                       :alt="userName"
                       class="h-10 w-10 rounded-full"
                     />
@@ -197,6 +190,14 @@ const navigationLinks = [
 const userName = computed(() => {
   // O '?' (optional chaining) evita erros se o usuário for nulo
   return authStore.user?.first_name || 'Usuário'; 
+})
+
+// Propriedade computada para a URL da imagem de perfil
+const profilePictureUrl = computed(() => {
+  if (authStore.user?.profile_picture) {
+    return `http://127.0.0.1:8000${authStore.user.profile_picture}`;
+  }
+  return '/placeholder.svg?height=32&width=32';
 })
 
 const handleLogout = () => {

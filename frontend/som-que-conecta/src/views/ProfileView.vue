@@ -11,13 +11,15 @@
           
           <button 
             @click="toggleEditMode" 
+            :disabled="isSaving"
             :class="[
               'px-6 py-2 rounded-lg transition-colors flex items-center gap-2',
-              isEditing ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-blue-600 text-white hover:bg-blue-700'
+              isSaving ? 'bg-gray-400 cursor-not-allowed' : 
+              (isEditing ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-blue-600 text-white hover:bg-blue-700')
             ]"
           >
             <component :is="isEditing ? Save : Edit" class="h-5 w-5" />
-            {{ isEditing ? 'Salvar Alterações' : 'Editar Perfil' }}
+            {{ isSaving ? 'Salvando...' : (isEditing ? 'Salvar Alterações' : 'Editar Perfil') }}
           </button>
         </div>
       </div>
@@ -62,11 +64,11 @@
 
               <!-- Name -->
               <div v-if="!isEditing">
-                <h2 class="text-2xl font-bold text-gray-900">{{ userProfile.name }} {{ userProfile.lastName }}</h2>
+                <h2 class="text-2xl font-bold text-gray-900">{{ userProfile.first_name }} {{ userProfile.last_name }}</h2>
                 <p class="text-gray-600 mt-1">{{ userProfile.email }}</p>
                 <div class="flex items-center justify-center gap-2 mt-2">
                   <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                    {{ userProfile.level }}
+                    {{ userProfile.skill_level }}
                   </span>
                   <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
                     {{ userProfile.gender === 'M' ? 'Masculino' : userProfile.gender === 'F' ? 'Feminino' : 'Outro' }}
@@ -78,13 +80,13 @@
               <div v-else class="space-y-4">
                 <div class="grid grid-cols-2 gap-3">
                   <input 
-                    v-model="editForm.name" 
+                    v-model="editForm.first_name" 
                     type="text" 
                     placeholder="Nome"
                     class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   >
                   <input 
-                    v-model="editForm.lastName" 
+                    v-model="editForm.last_name" 
                     type="text" 
                     placeholder="Sobrenome"
                     class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
@@ -422,8 +424,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { getProfile, updateProfile } from '@/services/profileService';
 import { 
   User, 
   Edit, 
@@ -438,32 +441,20 @@ import {
   Target,
   Clock,
   Award
-} from 'lucide-vue-next'
+} from 'lucide-vue-next';
+import { useAuthStore } from '@/stores/auth.store';
 
 const router = useRouter()
 const isEditing = ref(false)
 const showGoalsModal = ref(false)
 const avatarInput = ref(null)
+const userProfile = ref({});
+const editForm = ref({});
+const isLoading = ref(true);
+const isSaving = ref(false);
+const newAvatarFile = ref(null);
 
-const userProfile = ref({
-  id: 1,
-  name: 'João',
-  lastName: 'Silva',
-  email: 'joao.silva@email.com',
-  avatar: '/placeholder.svg?height=128&width=128',
-  gender: 'M',
-  level: 'Intermediário',
-  joinDate: new Date('2023-06-15'),
-  bio: 'Apaixonado por música há mais de 10 anos. Toco violão e piano.'
-})
-
-const editForm = ref({
-  name: userProfile.value.name,
-  lastName: userProfile.value.lastName,
-  email: userProfile.value.email,
-  gender: userProfile.value.gender,
-  avatar: userProfile.value.avatar
-})
+const authStore = useAuthStore();
 
 const userStats = ref({
   totalCourses: 8,
@@ -472,6 +463,100 @@ const userStats = ref({
   completedCourses: 3,
   articlesWritten: 2
 })
+
+const fetchProfile = async () => {
+  try {
+    // Não precisa setar isLoading aqui, já começa como true
+    const response = await getProfile();
+    const profileData = response.data;
+    
+    // Constrói a URL completa da imagem de perfil
+    if (profileData.profile_picture) {
+      // Assumindo que a API está em http://127.0.0.1:8000
+      profileData.avatar = `http://127.0.0.1:8000${profileData.profile_picture}`;
+    } else {
+      profileData.avatar = null;
+    }
+
+    userProfile.value = profileData;
+    editForm.value = { ...profileData };
+    
+  } catch (error) {
+    console.error('Erro ao buscar perfil:', error);
+    // TODO: Mostrar uma mensagem de erro para o usuário
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// --- CHAMA A FUNÇÃO AO MONTAR O COMPONENTE ---
+onMounted(() => {
+  fetchProfile();
+});
+
+
+// --- LÓGICA DE EDIÇÃO E SALVAMENTO (sem alterações, já estava correta) ---
+const toggleEditMode = async () => {
+  if (isEditing.value) {
+    isSaving.value = true;
+    const formData = new FormData();
+    
+    formData.append('first_name', editForm.value.first_name || '');
+    formData.append('last_name', editForm.value.last_name || '');
+    formData.append('gender', editForm.value.gender || '');
+    
+    if (editForm.value.bio) formData.append('bio', editForm.value.bio);
+    if (editForm.value.birthday) formData.append('birthday', editForm.value.birthday);
+    if (editForm.value.skill_level) formData.append('skill_level', editForm.value.skill_level);
+    if (newAvatarFile.value) formData.append('profile_picture', newAvatarFile.value);
+
+    try {
+      const response = await updateProfile(formData);
+
+      const updatedProfileData = response.data;
+      if (updatedProfileData.profile_picture) {
+        updatedProfileData.avatar = `http://127.0.0.1:8000${updatedProfileData.profile_picture}`;
+      } else {
+        updatedProfileData.avatar = null;
+      }
+
+      authStore.updateUser(updatedProfileData);
+      userProfile.value = updatedProfileData;
+      isEditing.value = false;
+      newAvatarFile.value = null;
+    } catch (error) {
+      console.error('Erro ao atualizar o perfil:', error.response?.data || error);
+      alert('Não foi possível salvar as alterações. Verifique os dados e tente novamente.');
+    } finally {
+      isSaving.value = false;
+    }
+  } else {
+    editForm.value = { ...userProfile.value };
+    isEditing.value = true;
+  }
+};
+
+// --- UPLOAD DO AVATAR (sem alterações, já estava correta) ---
+const handleAvatarUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('Por favor, selecione apenas arquivos de imagem.');
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    alert('O arquivo deve ter no máximo 5MB.');
+    return;
+  }
+
+  newAvatarFile.value = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    editForm.value.avatar = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
 
 const currentCourses = ref([
   {
@@ -604,39 +689,6 @@ const newGoal = ref({
   description: '',
   deadline: ''
 })
-
-const toggleEditMode = () => {
-  if (isEditing.value) {
-    // Save changes
-    Object.assign(userProfile.value, editForm.value)
-    console.log('Profile updated:', userProfile.value)
-  } else {
-    // Enter edit mode
-    Object.assign(editForm.value, userProfile.value)
-  }
-  isEditing.value = !isEditing.value
-}
-
-const handleAvatarUpload = (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-
-  if (!file.type.startsWith('image/')) {
-    alert('Por favor, selecione apenas arquivos de imagem.')
-    return
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    alert('O arquivo deve ter no máximo 5MB.')
-    return
-  }
-
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    editForm.value.avatar = e.target.result
-  }
-  reader.readAsDataURL(file)
-}
 
 const continueCourse = (course) => {
   // Encontra a primeira tarefa não concluída ou a última tarefa concluída

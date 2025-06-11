@@ -4,7 +4,10 @@ import axios from 'axios';
 // NENHUMA importação do auth.store aqui no topo
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/', // Sua URL base
+    baseURL: 'http://127.0.0.1:8000/api/',
+    headers: {
+    'Content-Type': 'application/json',
+    },
 });
 
 // Interceptor de REQUEST: Esta parte está perfeita e não precisa mudar.
