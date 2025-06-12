@@ -27,7 +27,15 @@ const instrumentService = {
   updateInstrument(id, instrumentData) {
     return api.post(`/instruments/${id}/update_with_files/`, instrumentData);
   },
-
+  /**
+   * ATUALIZAÇÃO PARCIAL: Usado para alterar apenas campos específicos,
+   * como o status 'is_active'.
+   * @param {number} id O ID do instrumento.
+   * @param {object} data Os dados a serem atualizados. Ex: { is_active: false }
+   */
+  patchInstrument(id, data) {
+    return api.patch(`/instruments/${id}/`, data);
+  },
   /**
    * Deleta um instrumento.
    * Corresponde ao `destroy` do seu InstrumentViewSet.

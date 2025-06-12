@@ -151,7 +151,7 @@
         </div>
 
         <!-- Localização e Disponibilidade -->
-        <div v-if="showLocationFields" class="grid md:grid-cols-2 gap-4">
+        <div v-if="props.showDetailedFields" class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Localização</label>
             <input 
@@ -199,16 +199,16 @@ const props = defineProps({
   instrument: {
     type: Object,
     default: null
+  },
+  showDetailedFields: { // <-- Nova prop recebida do pai
+    type: Boolean,
+    default: false
   }
 });
 
+
 const emit = defineEmits(['close', 'saved']);
 const authStore = useAuthStore();
-
-// Computed para verificar se o usuário é ONG ou Professor
-const showLocationFields = computed(() => {
-  return authStore.user?.is_ong || authStore.user?.is_professor;
-});
 
 // Estado do Formulário
 const form = ref({

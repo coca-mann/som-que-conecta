@@ -15,19 +15,18 @@
 
     <!-- Filters -->
     <div class="mb-8 flex flex-wrap gap-4">
-      <select v-model="selectedType" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      <select v-model="selectedType" class="px-4 py-2 border border-gray-300 rounded-lg ...">
         <option value="">Todos os Tipos</option>
-        <option value="cordas">Cordas</option>
-        <option value="sopro">Sopro</option>
-        <option value="percussao">Percussão</option>
-        <option value="teclas">Teclas</option>
+        <option v-for="type in instrumentTypes" :key="type.id" :value="type.name">
+          {{ type.name }}
+        </option>
       </select>
       
-      <select v-model="selectedStatus" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      <select v-model="selectedStatus" class="px-4 py-2 border border-gray-300 rounded-lg ...">
         <option value="">Todos os Status</option>
-        <option value="available">Disponível</option>
-        <option value="unavailable">Indisponível</option>
-        <option value="maintenance">Em Manutenção</option>
+        <option v-for="option in statusOptions" :key="option.text" :value="option.value">
+          {{ option.text }}
+        </option>
       </select>
     </div>
 
@@ -37,17 +36,9 @@
         <div class="relative">
           <img :src="instrument.main_image || '/placeholder.svg'" :alt="instrument.name" class="w-full h-48 object-cover">
           <div class="absolute top-3 right-3">
-            <span :class="getStatusColor(instrument.status)" class="px-2 py-1 text-white text-xs rounded-full font-medium">
-              {{ getStatusLabel(instrument.status) }}
+            <span :class="getStatusColor(instrument.is_active)" class="px-2 py-1 text-white text-xs rounded-full font-medium">
+              {{ getStatusLabel(instrument.is_active) }}
             </span>
-          </div>
-          <div class="absolute top-3 left-3">
-            <button @click="toggleFeatured(instrument)" :class="[
-              'p-2 rounded-full transition-colors',
-              instrument.featured ? 'bg-yellow-500 text-white' : 'bg-white text-gray-600 hover:bg-gray-100'
-            ]">
-              <Star :class="instrument.featured ? 'fill-current' : ''" class="h-4 w-4" />
-            </button>
           </div>
         </div>
         
@@ -67,20 +58,25 @@
             <p class="text-gray-600 text-sm leading-relaxed">{{ instrument.description }}</p>
           </div>
           
-          <div class="space-y-2 mb-4 pt-4 border-t border-gray-100">
-            <div class="flex items-center gap-2 text-sm text-gray-600">
-              <MapPin class="h-4 w-4" />
-              <span>{{ instrument.location }}</span>
+          <div class="p-6">
+            <template v-if="showDetailedInfo">
+              <div class="space-y-2 mb-4 pt-4 border-t border-gray-100">
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  <MapPin class="h-4 w-4" />
+                  <span>{{ instrument.location || 'Localização não informada' }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  <Clock class="h-4 w-4" />
+                  <span>{{ instrument.availability || 'Disponibilidade não informada' }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  <Calendar class="h-4 w-4" />
+                  <span>{{ instrument.bookings_count }} agendamentos</span>
+                </div>
+              </div>
+            </template>
+
             </div>
-            <div class="flex items-center gap-2 text-sm text-gray-600">
-              <Clock class="h-4 w-4" />
-              <span>{{ instrument.availability }}</span>
-            </div>
-            <div class="flex items-center gap-2 text-sm text-gray-600">
-              <Calendar class="h-4 w-4" />
-              <span>{{ instrument.bookings_count }} agendamentos</span>
-            </div>
-          </div>
           
           <div class="flex gap-2">
             <button @click="editInstrument(instrument)" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
@@ -89,11 +85,11 @@
             </button>
             <button @click="toggleAvailability(instrument)" :class="[
               'flex-1 px-4 py-2 rounded-lg transition-colors text-sm',
-              instrument.status === 'available' 
+              instrument.is_active 
                 ? 'bg-red-100 text-red-700 hover:bg-red-200' 
                 : 'bg-green-100 text-green-700 hover:bg-green-200'
             ]">
-              {{ instrument.status === 'available' ? 'Desativar' : 'Ativar' }}
+              {{ instrument.is_active ? 'Desativar' : 'Ativar' }}
             </button>
             <button @click="deleteInstrument(instrument)" class="px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">
               <Trash2 class="h-4 w-4" />
@@ -108,7 +104,9 @@
       v-if="showAddModal || editingInstrument" 
       :instrument="editingInstrument"
       @close="closeModal" 
-      @saved="handleInstrumentSaved" 
+      @saved="handleInstrumentSaved"
+      
+      :show-detailed-fields="showDetailedInfo"
     />
 
     <!-- Delete Confirmation Modal -->
@@ -148,119 +146,126 @@ const authStore = useAuthStore()
 
 const selectedType = ref('')
 const selectedStatus = ref('')
+const statusOptions = ref([
+  { text: 'Ativo', value: true },
+  { text: 'Inativo', value: false }
+]);
 const showAddModal = ref(false)
 const editingInstrument = ref(null)
 const instrumentToDelete = ref(null)
 
-const canManageDetails = computed(() => authStore.canManageInstrumentDetails)
-
 // --- 2. Refs para controlar o estado ---
 const instruments = ref([]) // Começa vazio, será preenchido pela API
+const instrumentTypes = ref([])
 const isLoading = ref(false) // Para mostrar um feedback de carregamento (ex: um spinner)
 const error = ref(null) // Para guardar mensagens de erro
 
 // --- 3. A função para buscar os dados ---
-const fetchInstruments = async () => {
+const fetchInstrumentsAndTypes = async () => {
   isLoading.value = true
   error.value = null
   try {
-    const response = await instrumentService.getInstruments()
-    instruments.value = response.data
-    console.log('Instrumentos carregados da API:', response.data)
+    // 2. Usamos Promise.all para buscar tudo de uma vez
+    const [instrumentsResponse, typesResponse] = await Promise.all([
+      instrumentService.getInstruments(),
+      instrumentService.getInstrumentTypes()
+    ]);
+    instruments.value = instrumentsResponse.data
+    instrumentTypes.value = typesResponse.data
   } catch (err) {
-    console.error("Erro ao buscar instrumentos:", err)
-    error.value = "Não foi possível carregar os instrumentos. Tente novamente mais tarde."
+    console.error("Erro ao carregar dados:", err)
+    error.value = "Não foi possível carregar os dados da página."
   } finally {
     isLoading.value = false
   }
 }
 
+
+const showDetailedInfo = computed(() => {
+  const userRole = authStore.user?.role;
+  const privilegedRoles = ['admin', 'ong', 'professor'];
+
+  // ------------------------------------------------
+
+  return privilegedRoles.includes(userRole);
+});
+
 // --- 4. Chamar a função quando o componente for montado ---
 onMounted(() => {
-  fetchInstruments()
+  fetchInstrumentsAndTypes()
 })
 
 const filteredInstruments = computed(() => {
-  // A lógica de filtro continua funcionando normalmente!
   let filtered = instruments.value
 
+  // Filtro por tipo (já deve estar funcionando se o value for o nome)
   if (selectedType.value) {
-    // Ajuste aqui para usar 'type_name' que vem da API
-    filtered = filtered.filter(instrument =>
-      instrument.type_name.toLowerCase().includes(selectedType.value.toLowerCase())
-    )
+    filtered = filtered.filter(instrument => instrument.type_name === selectedType.value)
   }
 
-  if (selectedStatus.value) {
-    filtered = filtered.filter(instrument => instrument.status === selectedStatus.value)
+  // Filtro por status (lógica ajustada)
+  if (selectedStatus.value !== '') { // Verifica se um status foi selecionado
+    filtered = filtered.filter(instrument => instrument.is_active === selectedStatus.value)
   }
 
   return filtered
 })
 
-const getStatusColor = (status) => {
-  const colors = {
-    available: 'bg-green-500',
-    unavailable: 'bg-red-500',
-    maintenance: 'bg-yellow-500'
-  }
-  return colors[status] || 'bg-gray-500'
+
+const getStatusColor = (isActive) => {
+  return isActive ? 'bg-green-500' : 'bg-gray-500'; // Verde para Ativo, Cinza para Inativo
 }
 
-const getStatusLabel = (status) => {
-  const labels = {
-    available: 'Disponível',
-    unavailable: 'Indisponível',
-    maintenance: 'Manutenção'
-  }
-  return labels[status] || 'Desconhecido'
-}
-
-const toggleFeatured = (instrument) => {
-  instrument.featured = !instrument.featured
-  console.log('Featured toggled:', instrument.id, instrument.featured)
+const getStatusLabel = (isActive) => {
+  return isActive ? 'Ativo' : 'Inativo';
 }
 
 const editInstrument = (instrument) => {
   editingInstrument.value = { ...instrument }
 }
 
-const toggleAvailability = (instrument) => {
-  instrument.status = instrument.status === 'available' ? 'unavailable' : 'available'
-  console.log('Availability toggled:', instrument.id, instrument.status)
+const toggleAvailability = async (instrument) => {
+  const newStatus = !instrument.is_active;
+  const originalStatus = instrument.is_active;
+
+  // Atualização Otimista: muda na UI primeiro para uma resposta rápida
+  instrument.is_active = newStatus;
+
+  try {
+    // Chama a API para persistir a mudança
+    await instrumentService.patchInstrument(instrument.id, { is_active: newStatus });
+    // Se deu certo, ótimo! A UI já está atualizada.
+  } catch (err) {
+    console.error("Erro ao atualizar status:", err);
+    // Se deu erro, reverte a mudança na UI
+    instrument.is_active = originalStatus;
+    alert("Não foi possível atualizar o status do instrumento.");
+  }
 }
 
 const deleteInstrument = (instrument) => {
   instrumentToDelete.value = instrument
 }
 
-const confirmDelete = () => {
-  const index = instruments.value.findIndex(i => i.id === instrumentToDelete.value.id)
-  if (index !== -1) {
-    instruments.value.splice(index, 1)
+const confirmDelete = async () => {
+  if (!instrumentToDelete.value) return;
+
+  try {
+    await instrumentService.deleteInstrument(instrumentToDelete.value.id);
+
+    instrumentToDelete.value = null;
+
+    fetchInstruments();
+  } catch (err) {
+    console.error("Erro ao excluir instrumento:", err);
+    alert("Não foi possível excluir o instrumento.");
+    instrumentToDelete.value = null; // Fecha o modal mesmo se der erro
   }
-  instrumentToDelete.value = null
-  console.log('Instrument deleted')
 }
 
-const handleInstrumentSaved = (instrumentData) => {
-  if (editingInstrument.value) {
-    // Update existing instrument
-    const index = instruments.value.findIndex(i => i.id === editingInstrument.value.id)
-    if (index !== -1) {
-      instruments.value[index] = { ...instrumentData, id: editingInstrument.value.id }
-    }
-  } else {
-    // Add new instrument
-    instruments.value.push({
-      ...instrumentData,
-      id: Date.now(),
-      status: 'available',
-      featured: false,
-      bookings: 0
-    })
-  }
-  closeModal()
+const handleInstrumentSaved = () => {
+  // Apenas fecha o modal e busca a lista de instrumentos atualizada. Simples e eficaz.
+  closeModal();
   fetchInstruments();
 }
 

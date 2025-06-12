@@ -96,23 +96,29 @@ const router = createRouter({
 
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
-  // Importamos o store AQUI DENTRO da função.
   const { useAuthStore } = await import('@/stores/auth.store')
   const authStore = useAuthStore()
 
   const isLoggedIn = authStore.isAuthenticated
-  const userRole = authStore.user?.role // ex: 'student', 'teacher'
+  const userRole = authStore.user?.role
   
+  // 1. A rota precisa de autenticação, mas o usuário não está logado?
   if (to.meta.requiresAuth && !isLoggedIn) {
-    // Se a rota exige login e o usuário não está logado, redireciona para o login
-    next({ name: 'auth' })
-  } else if (to.meta.requiresTeacher && userRole !== 'teacher' && userRole !== 'admin') {
-    // Se a rota exige professor/admin e o usuário não é, redireciona para o início
-    next({ name: 'home' })
-  } else {
-    // Em todos os outros casos, permite a navegação
-    next()
+    // Redireciona para a página de login, guardando a rota que ele tentou acessar
+    return next({ name: 'auth', query: { redirect: to.fullPath } })
   }
+
+  // 2. A rota precisa de um papel de administrador/privilegiado?
+  if (to.meta.requiresAdmin) {
+    const privilegedRoles = ['admin', 'ong', 'professor'] // Defina os papéis privilegiados
+    if (!privilegedRoles.includes(userRole)) {
+      // Se o usuário não tem o papel necessário, redireciona para a home
+      return next({ name: 'home' })
+    }
+  }
+
+  // 3. Se passou por todas as verificações, permite o acesso
+  next()
 })
 
 export default router
