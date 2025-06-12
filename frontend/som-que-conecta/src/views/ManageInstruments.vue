@@ -252,21 +252,21 @@ const confirmDelete = async () => {
 
   try {
     await instrumentService.deleteInstrument(instrumentToDelete.value.id);
-
     instrumentToDelete.value = null;
 
-    fetchInstruments();
+    fetchInstrumentsAndTypes(); // <-- Nome correto da função
+
   } catch (err) {
     console.error("Erro ao excluir instrumento:", err);
     alert("Não foi possível excluir o instrumento.");
-    instrumentToDelete.value = null; // Fecha o modal mesmo se der erro
+    instrumentToDelete.value = null;
   }
 }
 
 const handleInstrumentSaved = () => {
-  // Apenas fecha o modal e busca a lista de instrumentos atualizada. Simples e eficaz.
+  // Apenas fecha o modal e busca a lista de instrumentos atualizada.
   closeModal();
-  fetchInstruments();
+  fetchInstrumentsAndTypes(); // <-- Nome correto da função
 }
 
 const closeModal = () => {
