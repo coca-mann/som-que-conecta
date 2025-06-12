@@ -25,7 +25,7 @@
           <!-- Imagens existentes -->
           <div v-if="existingImages.length > 0" class="grid grid-cols-3 sm:grid-cols-5 gap-4 mb-4">
             <div v-for="image in existingImages" :key="image.id" class="relative group">
-              <img :src="image.url" :alt="'Foto do instrumento ' + image.id" 
+              <img :src="image.picture" :alt="'Foto do instrumento ' + image.id" 
                    class="w-full h-24 object-cover rounded-md border">
               <button 
                 @click="markImageForDeletion(image.id)" 
@@ -368,7 +368,7 @@ const handleSubmit = async () => {
 
   // Adicionar novos arquivos de imagem
   newFiles.value.forEach(file => {
-    formData.append('images', file);
+    formData.append('new_pictures', file);
   });
 
   // Adicionar lista de IDs para deletar

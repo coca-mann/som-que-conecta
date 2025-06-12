@@ -25,7 +25,7 @@ const instrumentService = {
    * @param {object} instrumentData - Os dados do formulário.
    */
   updateInstrument(id, instrumentData) {
-    return api.patch(`/instruments/${id}/`, instrumentData);
+    return api.post(`/instruments/${id}/update_with_files/`, instrumentData);
   },
 
   /**
