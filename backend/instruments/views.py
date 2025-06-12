@@ -39,6 +39,7 @@ class InstrumentBookingViewSet(viewsets.ModelViewSet):
 
 
 class UserInstrumentListView(generics.ListAPIView):
+    """ Utilizado nas URLs de Accounts para mostrar instrumentos na pagina de perfil do usuário """
     serializer_class = UserInstrumentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -165,3 +166,23 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         
         final_serializer = self.get_serializer(instrument)
         return Response(final_serializer.data)
+    
+
+class InstrumentPublicListView(viewsets.ModelViewSet):
+    """
+    View para listar todos os instrumentos ATIVOS para qualquer usuário logado.
+    """
+    # Use o seu serializer existente que já atende aos requisitos.
+    serializer_class = InstrumentSerializer # <--- A ÚNICA MUDANÇA É AQUI
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Retorna apenas instrumentos com is_active=True.
+        Otimiza a query usando select_related e prefetch_related.
+        """
+        return Instrument.objects.filter(is_active=True).select_related(
+            'type', 'brand', 'user_id'
+        ).prefetch_related(
+            'instrumentpictures_set' # Necessário para o get_main_image funcionar eficientemente
+        )

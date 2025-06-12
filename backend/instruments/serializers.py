@@ -26,6 +26,8 @@ class InstrumentSerializer(serializers.ModelSerializer):
 
     # Para contar agendamentos (opcional, mas legal para o card)
     bookings_count = serializers.SerializerMethodField()
+
+    provider = serializers.CharField(source='user_id.get_full_name', read_only=True)
     
     # Para lidar com imagens
     images = InstrumentPictureSerializer(source='instrumentpictures_set', many=True, read_only=True)
@@ -37,7 +39,7 @@ class InstrumentSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'color', 'color_name', 'status', 'featured', 
             'location', 'type', 'brand', 'type_name', 
-            'brand_name', 'bookings_count', 'images', 'main_image', 'availability', 'is_active'
+            'brand_name', 'bookings_count', 'images', 'main_image', 'availability', 'is_active', 'provider', 'is_loanable'
         ]
         read_only_fields = ['user_id'] # O user será pego do request
 
