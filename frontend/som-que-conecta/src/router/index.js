@@ -45,7 +45,7 @@ const router = createRouter({
       path: '/instruments',
       name: 'instruments',
       component: () => import('../views/InstrumentsView.vue'),
-      meta: { requiresAuth: true }
+      // meta: { requiresAuth: true } //
     },
     {
       path: '/profile',

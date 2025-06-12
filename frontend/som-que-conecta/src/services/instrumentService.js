@@ -59,6 +59,11 @@ const instrumentService = {
   getInstrumentBrands() {
     return api.get('/instrumentbrand/');
   },
+
+  getPublicInstruments() {
+    return api.get('/instruments-public-list/');
+  },
+  
 };
 
 
