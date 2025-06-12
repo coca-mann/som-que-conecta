@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 from backend.instruments.models import (
     InstrumentBookings,
@@ -36,7 +37,7 @@ class InstrumentSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'color', 'color_name', 'status', 'featured', 
             'location', 'type', 'brand', 'type_name', 
-            'brand_name', 'bookings_count', 'images', 'main_image', 'availability'
+            'brand_name', 'bookings_count', 'images', 'main_image', 'availability', 'is_active'
         ]
         read_only_fields = ['user_id'] # O user será pego do request
 
@@ -45,11 +46,20 @@ class InstrumentSerializer(serializers.ModelSerializer):
         return obj.instrumentbookings_set.count()
 
     def get_main_image(self, obj):
+        """
+        Retorna a URL da primeira foto do instrumento.
+        Se não houver fotos, retorna a URL de uma imagem padrão.
+        """
         request = self.context.get('request')
         first_picture = obj.instrumentpictures_set.first()
-        if first_picture and request:
+
+        if first_picture and hasattr(first_picture.picture, 'url'):
+            # Se uma foto real existir e tiver uma URL, retorne a URL completa
             return request.build_absolute_uri(first_picture.picture.url)
-        return None
+        else:
+            # Caso contrário, construa e retorne a URL da imagem padrão
+            default_image_url = f"{settings.MEDIA_URL}instruments_media/pictures/default.png"
+            return request.build_absolute_uri(default_image_url)
 
 
 class InstrumentTypeSerializer(serializers.ModelSerializer):
