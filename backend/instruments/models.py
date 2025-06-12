@@ -204,5 +204,5 @@ class InstrumentBookings(models.Model):
 
 
 class InstrumentPictures(models.Model):
-    instrument_id = models.ForeignKey(Instrument, on_delete=models.SET_NULL, null=True, verbose_name='Instrumento')
+    instrument_id = models.ForeignKey(Instrument, on_delete=models.CASCADE, null=True, verbose_name='Instrumento')
     picture = models.ImageField(upload_to='instruments_media/pictures/', verbose_name='Foto')

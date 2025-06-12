@@ -1,6 +1,7 @@
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.settings import api_settings
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import action
 from django.db import transaction
@@ -63,7 +64,18 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     """
     serializer_class = InstrumentSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
+    
+    def get_parser_classes(self):
+        """
+        Seleciona o parser correto com base na ação.
+        """
+        # Para a nossa ação de upload de arquivos, usamos o MultiPartParser.
+        if self.action == 'update_with_files':
+            return [MultiPartParser(), FormParser()]
+        
+        # Para todas as outras ações (GET, DELETE, PATCH de JSON),
+        # usamos os parsers padrão do DRF.
+        return api_settings.DEFAULT_PARSER_CLASSES
 
     def get_queryset(self):
         """
