@@ -53,7 +53,7 @@
           <div class="space-y-2 mb-4">
             <div class="flex items-center gap-2 text-sm text-gray-600">
               <div class="w-4 h-4 rounded-full border-2 border-gray-300" :style="{ backgroundColor: instrument.color }"></div>
-              <span class="capitalize">{{ instrument.color }}</span>
+              <span class="capitalize">{{ instrument.color_name || instrument.color }}</span>
             </div>
             <p class="text-gray-600 text-sm leading-relaxed">{{ instrument.description }}</p>
           </div>
