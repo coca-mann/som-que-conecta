@@ -142,8 +142,8 @@ const handleSubmit = async () => {
   const payload = {
     instrument_id: props.instrument.id,
     reservation_date: date.value,
-    start_time: startTime.value,
-    end_time: endTime.value,
+    reservation_starttime: startTime.value,
+    reservation_endtime: endTime.value,
   };
 
   try {
