@@ -28,7 +28,54 @@
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div v-for="instrument in filteredInstruments" :key="instrument.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
         <div class="relative">
-          <img :src="instrument.main_image" :alt="instrument.name" class="w-full h-48 object-cover">
+          <div class="relative w-full h-48 overflow-hidden">
+            <div class="flex transition-transform duration-300 ease-in-out" :style="{ transform: `translateX(-${currentImageIndex[instrument.id] * 100}%)` }">
+              <img 
+                v-for="(image, index) in instrument.images" 
+                :key="image.id"
+                :src="image.picture" 
+                :alt="`${instrument.name} - Imagem ${index + 1}`"
+                class="w-full h-48 object-cover flex-shrink-0"
+              >
+            </div>
+            
+            <!-- Controles do carrossel -->
+            <div v-if="instrument.images.length > 1" class="absolute inset-0 flex items-center">
+              <div class="absolute left-2">
+                <button 
+                  v-show="currentImageIndex[instrument.id] > 0"
+                  @click="previousImage(instrument.id)"
+                  class="rounded-full p-1 text-white transition-all duration-200 bg-black/20 hover:bg-black/40"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              </div>
+              <div class="absolute right-2">
+                <button 
+                  v-show="currentImageIndex[instrument.id] < instrument.images.length - 1"
+                  @click="nextImage(instrument.id)"
+                  class="rounded-full p-1 text-white transition-all duration-200 bg-black/20 hover:bg-black/40"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Indicadores -->
+            <div v-if="instrument.images.length > 1" class="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+              <button 
+                v-for="(_, index) in instrument.images" 
+                :key="index"
+                @click="currentImageIndex[instrument.id] = index"
+                class="w-2 h-2 rounded-full transition-colors"
+                :class="currentImageIndex[instrument.id] === index ? 'bg-white' : 'bg-white bg-opacity-50'"
+              ></button>
+            </div>
+          </div>
           <div class="absolute top-3 right-3">
             <span :class="instrument.is_loanable ? 'bg-green-500' : 'bg-red-500'" class="px-2 py-1 text-white text-xs rounded-full font-medium">
               {{ instrument.is_loanable ? 'Disponível' : 'Indisponível' }}
@@ -125,6 +172,9 @@ const selectedInstrument = ref(null)
 const instrumentTypes = ref([])
 const instrumentBrands = ref([])
 
+// Estado para controlar o índice da imagem atual de cada instrumento
+const currentImageIndex = ref({})
+
 onMounted(async () => {
   console.log('Componente montado. Forçando a chamada da API para teste.');
   await Promise.all([
@@ -162,6 +212,10 @@ const fetchInstruments = async () => {
   try {
     const response = await instrumentService.getPublicInstruments();
     instruments.value = response.data;
+    // Inicializar o índice de imagens para cada instrumento
+    instruments.value.forEach(instrument => {
+      currentImageIndex.value[instrument.id] = 0
+    })
   } catch (err) {
     console.error("Erro ao buscar instrumentos:", err);
     error.value = err.response?.data?.detail || "Não foi possível conectar ao servidor.";
@@ -196,5 +250,22 @@ const requestScheduling = (instrument) => {
 const handleScheduled = (schedulingData) => {
   console.log('Agendamento solicitado:', schedulingData)
   selectedInstrument.value = null
+}
+
+// Funções para controlar o carrossel
+const nextImage = (instrumentId) => {
+  if (!currentImageIndex.value[instrumentId]) {
+    currentImageIndex.value[instrumentId] = 0
+  }
+  const instrument = instruments.value.find(i => i.id === instrumentId)
+  if (currentImageIndex.value[instrumentId] < instrument.images.length - 1) {
+    currentImageIndex.value[instrumentId]++
+  }
+}
+
+const previousImage = (instrumentId) => {
+  if (currentImageIndex.value[instrumentId] > 0) {
+    currentImageIndex.value[instrumentId]--
+  }
 }
 </script>
