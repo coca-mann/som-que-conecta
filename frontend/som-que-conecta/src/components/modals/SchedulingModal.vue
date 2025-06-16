@@ -23,6 +23,11 @@
         </div>
       </div>
 
+      <div v-if="error" class="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+        <p><b>Erro ao agendar:</b></p>
+        <p>{{ error }}</p>
+      </div>
+
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Data</label>
@@ -34,13 +39,50 @@
           >
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Horário</label>
-          <input 
-            v-model="time"
-            type="time"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          >
+          <label class="block text-sm font-medium text-gray-700">Horário Início</label>
+          <div class="flex gap-2">
+            <select 
+              v-model="startHour"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            >
+              <option v-for="hour in hours" :key="hour" :value="hour">
+                {{ hour.toString().padStart(2, '0') }}h
+              </option>
+            </select>
+            <select 
+              v-model="startMinute"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            >
+              <option v-for="minute in minutes" :key="minute" :value="minute">
+                {{ minute.toString().padStart(2, '0') }}min
+              </option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Horário Fim</label>
+          <div class="flex gap-2">
+            <select 
+              v-model="endHour"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            >
+              <option v-for="hour in hours" :key="hour" :value="hour">
+                {{ hour.toString().padStart(2, '0') }}h
+              </option>
+            </select>
+            <select 
+              v-model="endMinute"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              required
+            >
+              <option v-for="minute in minutes" :key="minute" :value="minute">
+                {{ minute.toString().padStart(2, '0') }}min
+              </option>
+            </select>
+          </div>
         </div>
         <div class="flex justify-end space-x-2 mt-6">
           <button 
@@ -52,9 +94,10 @@
           </button>
           <button 
             type="submit"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+            :disabled="isLoading"
           >
-            Agendar
+            {{ isLoading ? 'Agendando...' : 'Agendar' }}
           </button>
         </div>
       </form>
@@ -63,8 +106,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { MapPin, Clock, X } from 'lucide-vue-next'
+import instrumentService from '@/services/instrumentService'
 
 const props = defineProps({
   instrument: {
@@ -73,18 +117,65 @@ const props = defineProps({
   }
 })
 
-const date = ref('')
-const time = ref('')
-
-const handleSubmit = () => {
-  const schedulingData = {
-    instrumentId: props.instrument.id,
-    instrumentName: props.instrument.name,
-    date: date.value,
-    time: time.value
-  }
-  emit('scheduled', schedulingData)
-}
-
 const emit = defineEmits(['close', 'scheduled'])
+
+const date = ref('')
+const startHour = ref('09')
+const startMinute = ref('00')
+const endHour = ref('10')
+const endMinute = ref('00')
+const isLoading = ref(false)
+const error = ref(null)
+
+// Arrays para as opções de horas e minutos
+const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'))
+const minutes = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'))
+
+// Computed properties para formatar os horários
+const startTime = computed(() => `${startHour.value}:${startMinute.value}`)
+const endTime = computed(() => `${endHour.value}:${endMinute.value}`)
+
+const handleSubmit = async () => {
+  isLoading.value = true;
+  error.value = null;
+
+  const payload = {
+    instrument_id: props.instrument.id,
+    reservation_date: date.value,
+    start_time: startTime.value,
+    end_time: endTime.value,
+  };
+
+  try {
+    const response = await instrumentService.createBooking(payload);
+    emit('scheduled', response.data);
+    emit('close');
+  } catch (err) {
+    const apiError = err.response?.data;
+    
+    // LÓGICA DE ERRO ATUALIZADA
+    if (apiError && typeof apiError === 'object') {
+      // Se o erro for um objeto, formata as mensagens
+      let errorMessages = [];
+      for (const [key, value] of Object.entries(apiError)) {
+        if (Array.isArray(value)) {
+          // Se o valor for um array, junta as mensagens (comportamento esperado do DRF)
+          errorMessages.push(`${key}: ${value.join(', ')}`);
+        } else {
+          // Se não for um array (como o erro 405), apenas mostra o valor
+          errorMessages.push(`${value}`);
+        }
+      }
+      error.value = errorMessages.join('; ');
+    } else if (apiError) {
+      // Se o erro for um texto simples
+      error.value = apiError;
+    } else {
+      error.value = "Ocorreu um erro inesperado. Tente novamente.";
+    }
+    console.error("Erro no agendamento:", err.response?.data || err.message);
+  } finally {
+    isLoading.value = false;
+  }
+}
 </script> 

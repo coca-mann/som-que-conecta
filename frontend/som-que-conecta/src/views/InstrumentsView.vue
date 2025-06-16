@@ -54,17 +54,19 @@
           
           <div class="space-y-2 mb-4 pt-4 border-t border-gray-100">
             <div class="flex items-center gap-2 text-sm text-gray-600">
-              <MapPin class="h-4 w-4" />
-              <span>{{ instrument.location }}</span>
-            </div>
-            <div class="flex items-center gap-2 text-sm text-gray-600">
               <User class="h-4 w-4" />
               <span>{{ instrument.provider }}</span>
             </div>
-            <div class="flex items-center gap-2 text-sm text-gray-600">
-              <Clock class="h-4 w-4" />
-              <span>{{ instrument.availability }}</span>
-            </div>
+            <template v-if="instrument.is_loanable">
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <MapPin class="h-4 w-4" />
+                <span>{{ instrument.location }}</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <Clock class="h-4 w-4" />
+                <span>{{ instrument.availability }}</span>
+              </div>
+            </template>
           </div>
           
           <div class="mt-auto pt-4">

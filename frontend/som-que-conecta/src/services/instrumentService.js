@@ -63,6 +63,24 @@ const instrumentService = {
   getPublicInstruments() {
     return api.get('/instruments-public-list/');
   },
+
+  createBooking(bookingData) {
+    // A URL agora aponta para a raiz do ViewSet, como definido pelo DefaultRouter
+    return api.post('/bookings/', bookingData);
+  },
+
+  getBookings() {
+    return api.get('/bookings/');
+  },
+  
+  updateBookingStatus(bookingId, status, reason = '') {
+    // O serializer de update espera um objeto com o status
+    const payload = { 
+      status: status,
+      reservation_refusal_reason: reason
+    };
+    return apiClient.patch(`/bookings/${bookingId}/`, payload);
+  }
   
 };
 
