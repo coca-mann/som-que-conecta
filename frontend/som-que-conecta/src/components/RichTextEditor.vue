@@ -37,8 +37,7 @@ const props = defineProps({
 
 defineEmits(['update:modelValue']);
 
-const LICENSE_KEY =
-	'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NTEzMjc5OTksImp0aSI6IjJmYjk4YjBiLTE3ZTEtNDFmNy1hODFkLTc4YTA3MDZjODhjZiIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6ImYxMzI4YTE2In0.lA9Nj0s2e6XALdG5UYXYLhCaimaDxHsIC_k-8Qo5MrJ6Y6z4Wdr9Lceasba5nXhkSIGFAPzXNs8QMGXcSlbObQ';
+const LICENSE_KEY = import.meta.env.VITE_CKEDITOR_LICENSE_KEY;
 
 const cloud = useCKEditorCloud({ version: '45.2.0' });
 
