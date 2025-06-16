@@ -1,9 +1,10 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.filters import OrderingFilter
+from django.db.models import F, Q, Count
 from backend.articles.models import (
     ArticleFavorites,
     Article,
@@ -27,28 +28,57 @@ class ArticleCategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
-    # serializer_class = ArticleSerializer # Remova o atributo de classe
+    """
+    ViewSet para gerenciar Artigos com a lógica de filtro e ordenação corrigida.
+    """
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['created_at', 'rating', 'read_count', 'popularity']
+    ordering = ['-created_at']
 
     def get_serializer_class(self):
-        """
-        Retorna um serializer diferente para a ação 'list' (mais leve)
-        e outro para as demais ações como 'retrieve', 'create', etc. (completo).
-        """
         if self.action == 'list':
             return ArticleListSerializer
-        return ArticleSerializer # Serializer padrão para as outras ações
+        return ArticleSerializer
 
     def get_queryset(self):
-        # Sua lógica de queryset continua a mesma
+        """
+        Constrói o queryset na ordem correta:
+        1. Filtra por publicação (a regra de negócio principal).
+        2. Aplica filtros de query (categoria, busca).
+        3. Anota para permitir ordenação por popularidade.
+        """
         user = self.request.user
-        queryset = Article.objects.all() if user.is_authenticated and user.is_staff else Article.objects.filter(is_published=True)
-        # ... resto da sua lógica de filtro ...
-        return queryset
+
+        # PASSO 1: Define o queryset base com a regra de publicação.
+        if user.is_authenticated and user.is_staff:
+            base_queryset = Article.objects.all()
+        else:
+            base_queryset = Article.objects.filter(is_published=True)
+        
+        # PASSO 2: Aplica os filtros da URL sobre o queryset base.
+        category_param = self.request.query_params.get("category")
+        if category_param:
+            base_queryset = base_queryset.filter(category__name__iexact=category_param)
+
+        search_param = self.request.query_params.get("search")
+        if search_param:
+            base_queryset = base_queryset.filter(
+                Q(title__icontains=search_param) | 
+                Q(short_description__icontains=search_param)
+            )
+        
+        # PASSO 3: Aplica a anotação para ordenação.
+        # Isso deve ser feito após os filtros para otimização.
+        final_queryset = base_queryset.annotate(
+            popularity=F('like_count') + F('read_count'),
+            comments_count=Count('articlecomments')
+        )
+            
+        return final_queryset
 
     def perform_create(self, serializer):
-        # Sua lógica de perform_create continua a mesma
+        """ Associa o artigo ao usuário logado ao criar. """
         serializer.save(author=self.request.user)
 
 

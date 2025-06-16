@@ -101,8 +101,8 @@ class Article(models.Model):
         verbose_name='Motivo de rejeição de publicação',
     )
     rating = models.IntegerField(
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
         verbose_name='Avaliação',
     )
     created_at = models.DateTimeField(
