@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from backend.instruments.validators import validate_booking_conflict
 
 
@@ -171,10 +172,15 @@ class InstrumentBookings(models.Model):
         null=False,
         verbose_name='Data de agendamento'
     )
-    reservation_time = models.TimeField(
+    reservation_starttime = models.TimeField(
         blank=True,
         null=True,
-        verbose_name='Hora do agendamento'
+        verbose_name='Hora inicial do agendamento'
+    )
+    reservation_endtime = models.TimeField(
+        blank=True,
+        null=True,
+        verbose_name='Hora final do agendamento'
     )
     status = models.CharField(
         choices=STATUS_BOOKING,
@@ -192,9 +198,18 @@ class InstrumentBookings(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
 
     def clean(self):
+        # 1. Valida a lógica interna do próprio agendamento
+        if self.reservation_starttime and self.reservation_endtime:
+            if self.reservation_starttime >= self.reservation_endtime:
+                raise ValidationError({
+                    'reservation_endtime': 'O horário final do agendamento deve ser maior que o horário inicial.'
+                })
+
+        # 2. Chama o validador externo para checar conflitos com outros registros
         validate_booking_conflict(self)
 
     def save(self, *args, **kwargs):
+        # A chamada full_clean() garante que o método clean() acima seja executado
         self.full_clean()
         super().save(*args, **kwargs)
 

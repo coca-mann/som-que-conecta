@@ -76,10 +76,67 @@ class InstrumentBrandsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class InstrumentBookingsSerializer(serializers.ModelSerializer):
+# --- Serializer para LEITURA (GET) ---
+# Mostra todos os dados, incluindo informações aninhadas do instrumento e do usuário.
+class InstrumentBookingDetailSerializer(serializers.ModelSerializer):
+    instrument = serializers.CharField(source='instrument_id.name', read_only=True)
+    user = serializers.CharField(source='user_id.username', read_only=True)
+
     class Meta:
         model = InstrumentBookings
-        fields = '__all__'
+        fields = [
+            'id',
+            'instrument',
+            'user',
+            'reservation_date',
+            'reservation_starttime',
+            'reservation_endtime',
+            'status',
+            'reservation_refusal_reason',
+            'created_at',
+        ]
+
+
+# --- Serializer para CRIAÇÃO (POST) ---
+class InstrumentBookingCreateSerializer(serializers.ModelSerializer):
+    # Pega o usuário logado automaticamente. Este campo não aparecerá no formulário da API.
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    instrument_id = serializers.PrimaryKeyRelatedField(
+        queryset=Instrument.objects.filter(is_active=True),
+        label="Instrumento"
+    )
+
+    class Meta:
+        model = InstrumentBookings
+        fields = [
+            'instrument_id',
+            'user_id',
+            'reservation_date',
+            'reservation_starttime',
+            'reservation_endtime',
+        ]
+    
+    def validate(self, data):
+        """ Executa a validação de conflito definida no modelo. """
+        # Cria uma instância temporária para chamar o método clean() do modelo
+        instance = InstrumentBookings(**data)
+        instance.clean()
+        return data
+
+
+# --- Serializer para ATUALIZAÇÃO (PATCH) ---
+# Permite alterar SOMENTE o status e, opcionalmente, o motivo da recusa.
+class InstrumentBookingUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InstrumentBookings
+        fields = ['status', 'reservation_refusal_reason']
+
+    def validate_status(self, value):
+        """ Garante que o status seja uma escolha válida. """
+        valid_statuses = [status[0] for status in InstrumentBookings._meta.get_field('status').choices]
+        if value not in valid_statuses:
+            raise serializers.ValidationError("Status inválido.")
+        return value
 
 
 class UserInstrumentSerializer(serializers.ModelSerializer):

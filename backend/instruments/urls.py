@@ -12,10 +12,10 @@ from backend.instruments.views import (
 router = DefaultRouter()
 router.register('instrumenttype', InstrumentTypeViewSet)
 router.register('instrumentbrand', InstrumentBrandsViewSet)
-router.register('instrumentbooking', InstrumentBookingViewSet)
+router.register(r'bookings', InstrumentBookingViewSet, basename='instrument-booking')
 router.register('instruments', InstrumentViewSet, basename='instruments')
-router.register('instruments-public-list', InstrumentPublicListView, basename='instruments-public')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('instruments-public-list/', InstrumentPublicListView.as_view(), name='instruments-public')
 ]

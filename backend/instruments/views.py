@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets, generics, status, mixins
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.settings import api_settings
@@ -16,9 +16,12 @@ from backend.instruments.serializers import (
     InstrumentTypeSerializer,
     UserInstrumentSerializer,
     InstrumentBrandsSerializer,
-    InstrumentBookingsSerializer,
-    InstrumentSerializer
+    InstrumentSerializer,
+    InstrumentBookingCreateSerializer,
+    InstrumentBookingDetailSerializer,
+    InstrumentBookingUpdateSerializer
 )
+from backend.instruments.permissions import CanUpdateBookingStatus
 import json
 
 
@@ -33,9 +36,52 @@ class InstrumentBrandsViewSet(viewsets.ModelViewSet):
     serializer_class = InstrumentBrandsSerializer
 
 
-class InstrumentBookingViewSet(viewsets.ModelViewSet):
-    queryset = InstrumentBookings.objects.all()
-    serializer_class = InstrumentBookingsSerializer
+class InstrumentBookingViewSet(mixins.CreateModelMixin,      # Para POST (create)
+                               mixins.RetrieveModelMixin,   # Para GET de um item (retrieve)
+                               mixins.UpdateModelMixin,     # Para PUT e PATCH (update)
+                               mixins.ListModelMixin,       # Para GET de lista (list)
+                               viewsets.GenericViewSet):    # Base para combinar os mixins
+    """
+    ViewSet para Agendamentos de Instrumentos.
+    - Permite: Criar, Listar, Ver Detalhes e Atualizar.
+    - Não Permite: Excluir.
+    """
+    queryset = InstrumentBookings.objects.all().order_by('-reservation_date')
+
+    def get_serializer_class(self):
+        """ Retorna o serializer apropriado com base na ação. """
+        if self.action in ['update', 'partial_update']:
+            return InstrumentBookingUpdateSerializer
+        if self.action == 'create':
+            return InstrumentBookingCreateSerializer
+        return InstrumentBookingDetailSerializer
+
+    def get_permissions(self):
+        """
+        Retorna as permissões apropriadas com base na ação.
+        - Para criar, basta estar autenticado.
+        - Para atualizar, precisa ser o dono do instrumento ou quem agendou.
+        """
+        if self.action in ['update', 'partial_update']:
+            return [IsAuthenticated(), CanUpdateBookingStatus()]
+        return [IsAuthenticated()]
+
+    def get_queryset(self):
+        """
+        Filtra os agendamentos para que os usuários vejam apenas o que lhes diz respeito.
+        - Alunos veem seus próprios agendamentos.
+        - Professores/ONGs veem os agendamentos de seus instrumentos.
+        """
+        user = self.request.user
+        # Filtra por agendamentos feitos pelo usuário
+        bookings_by_user = InstrumentBookings.objects.filter(user_id=user)
+        # Filtra por agendamentos dos instrumentos que pertencem ao usuário
+        bookings_for_user_instruments = InstrumentBookings.objects.filter(instrument_id__user_id=user)
+        
+        # Combina os dois querysets sem duplicatas
+        return (bookings_by_user | bookings_for_user_instruments).distinct().select_related(
+            'instrument_id', 'user_id'
+        )
 
 
 class UserInstrumentListView(generics.ListAPIView):
@@ -168,7 +214,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         return Response(final_serializer.data)
     
 
-class InstrumentPublicListView(viewsets.ModelViewSet):
+class InstrumentPublicListView(generics.ListAPIView):
     """
     View para listar todos os instrumentos ATIVOS para qualquer usuário logado.
     """
