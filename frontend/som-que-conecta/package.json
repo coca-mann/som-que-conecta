@@ -10,8 +10,13 @@
     "watch:css": "tailwindcss -i ./src/assets/tailwind.css -o ./dist/output.css --watch"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-vue": "^7.3.0",
     "@tailwindcss/cli": "^4.1.7",
+    "@tiptap/extension-link": "^2.14.0",
+    "@tiptap/starter-kit": "^2.14.0",
+    "@tiptap/vue-3": "^2.14.0",
     "axios": "^1.9.0",
+    "ckeditor5": "^45.2.0",
     "core-js": "^3.8.3",
     "jwt-decode": "^4.0.0",
     "lucide-vue-next": "^0.511.0",

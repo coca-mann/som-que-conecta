@@ -15,21 +15,32 @@ const router = createRouter({
       name: 'auth',
       component: () => import('../views/AuthView.vue')
     },
+    // --- Bloco de Artigos (Corrigido e Unificado) ---
     {
       path: '/articles',
       name: 'ArticleList',
       component: () => import('../views/ArticlesView.vue')
     },
     {
-      path: '/articles/:id',
-      name: 'ArticleDetail',
-      component: () => import('../views/ArticleDetail.vue')
-    },
-    {
+      // Rota específica de criação vem ANTES da rota dinâmica com :id
       path: '/articles/create',
       name: 'ArticleCreate',
-      // E este caminho?
       component: () => import('../views/ArticleCreateView.vue'),
+      meta: { requiresAuth: true, requiresTeacher: true }
+    },
+    {
+      path: '/articles/edit/:id',
+      name: 'ArticleEdit',
+      // Reutiliza o mesmo componente de criação, que já lida com o modo de edição
+      component: () => import('../views/ArticleCreateView.vue'),
+      meta: { requiresAuth: true, requiresTeacher: true }
+    },
+    {
+      // Rota dinâmica com :id vem por último
+      path: '/articles/:id',
+      name: 'ArticleDetail',
+      // CORREÇÃO: O nome do arquivo agora inclui "View"
+      component: () => import('../views/ArticleDetail.vue'),
     },
     {
       path: '/courses',
@@ -63,18 +74,6 @@ const router = createRouter({
       path: '/manage-instruments',
       name: 'manage-instruments',
       component: () => import('../views/ManageInstruments.vue'),
-      meta: { requiresAuth: true, requiresTeacher: true }
-    },
-    {
-      path: '/articles/create',
-      name: 'create-article',
-      component: () => import('../views/ArticleCreateView.vue'),
-      meta: { requiresAuth: true, requiresTeacher: true }
-    },
-    {
-      path: '/articles/edit/:id',
-      name: 'edit-article',
-      component: () => import('../views/ArticleCreateView.vue'),
       meta: { requiresAuth: true, requiresTeacher: true }
     },
     {

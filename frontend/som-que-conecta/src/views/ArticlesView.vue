@@ -18,21 +18,24 @@
     </div>
 
     <!-- Filters -->
-    <div class="mb-8 flex flex-wrap gap-4">
+    <div class="flex gap-4 mb-6">
       <select v-model="selectedCategory" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         <option value="">Todas as Categorias</option>
-        <option value="teoria">Teoria Musical</option>
-        <option value="pratica">Prática</option>
-        <option value="instrumentos">Instrumentos</option>
-        <option value="historia">História da Música</option>
-        <option value="iniciantes">Iniciantes</option>
+        
+        <option 
+          v-for="category in categories" 
+          :key="category.id" 
+          :value="category.name"
+        >
+          {{ category.name }}
+        </option>
       </select>
       
-      <select v-model="sortBy" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <option value="recent">Mais Recentes</option>
-        <option value="popular">Mais Populares</option>
-        <option value="rating">Melhor Avaliados</option>
-        <option value="views">Mais Visualizados</option>
+      <select v-model="sortBy" class="px-4 py-2 border border-gray-300 rounded-lg   focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <option value="-created_at">Mais Recentes</option>
+        <option value="-popularity">Mais Populares</option>
+        <option value="-rating">Melhor Avaliados</option>
+        <option value="-read_count">Mais Visualizados</option>
       </select>
       
       <div class="flex-1 max-w-md">
@@ -47,7 +50,14 @@
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <article v-for="article in filteredArticles" :key="article.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" @click="openArticle(article)">
         <div class="relative">
-          <img :src="article.image" :alt="article.title" class="w-full h-48 object-cover">
+          <img :src="article.cover_image" :alt="article.title" class="w-full h-48 object-cover">
+          
+          <div v-if="!article.is_published" class="absolute inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center text-white p-4">
+            <EyeOff class="h-8 w-8 mb-2" />
+            <span class="font-bold text-lg">Não Publicado</span>
+            <span class="text-sm opacity-80">(Visível apenas para você)</span>
+          </div>
+          
           <div class="absolute top-3 right-3">
             <span class="px-2 py-1 bg-blue-600 text-white text-xs rounded-full font-medium">
               {{ article.category }}
@@ -55,7 +65,7 @@
           </div>
           <div class="absolute bottom-3 left-3">
             <span class="px-2 py-1 bg-black bg-opacity-70 text-white text-xs rounded-full">
-              {{ article.readTime }} min
+              {{ article.reading_time }} min
             </span>
           </div>
         </div>
@@ -73,7 +83,7 @@
               </div>
               <div class="flex items-center gap-1">
                 <MessageCircle class="h-4 w-4" />
-                <span>{{ article.commentsCount }}</span>
+                <span>{{ article.comments_count }}</span>
               </div>
             </div>
             
@@ -90,10 +100,10 @@
           <!-- Author Info -->
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <img :src="article.authorAvatar" :alt="article.author" class="w-8 h-8 rounded-full">
+              <img :src="article.author?.avatar" :alt="article.author?.name" class="w-8 h-8 rounded-full">
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ article.author }}</p>
-                <p class="text-xs text-gray-500">{{ formatDate(article.createdAt) }}</p>
+                <p class="text-sm font-medium text-gray-900">{{ article.author?.name }}</p>
+                <p class="text-xs text-gray-500">{{ formatDate(article.created_at) }}</p>
               </div>
             </div>
             
@@ -174,9 +184,11 @@ const fetchArticles = async () => {
 const fetchCategories = async () => {
     try {
         const response = await articleService.getCategories();
-        categories.value = response.data;
-    } catch (e) { console.error(e) }
-}
+        categories.value = response.data; // Armazena os resultados na ref
+    } catch (e) {
+        console.error("Erro ao buscar categorias:", e);
+    }
+};
 
 // Observa mudanças nos filtros para buscar novamente
 watch([selectedCategory, sortBy, searchQuery], fetchArticles);
@@ -232,19 +244,35 @@ const filteredArticles = computed(() => {
 })
 
 const formatDate = (date) => {
-  return new Intl.DateTimeFormat('pt-BR', { 
-    day: 'numeric', 
-    month: 'short',
-    year: 'numeric' 
-  }).format(date)
+  if (!date) return '';
+  
+  try {
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return '';
+    
+    return new Intl.DateTimeFormat('pt-BR', { 
+      day: 'numeric', 
+      month: 'short',
+      year: 'numeric' 
+    }).format(dateObj);
+  } catch (error) {
+    console.error('Erro ao formatar data:', error);
+    return '';
+  }
 }
 
 const formatNumber = (num) => {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'k'
+  // Se o número for nulo ou indefinido, retorna '0' para não quebrar.
+  if (num === null || num === undefined) {
+    return '0';
   }
-  return num.toString()
-}
+  
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace('.', ',') + 'k';
+  }
+  
+  return num.toString();
+};
 
 const toggleBookmark = (article) => {
   article.isBookmarked = !article.isBookmarked
