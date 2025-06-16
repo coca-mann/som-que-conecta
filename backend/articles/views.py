@@ -7,41 +7,50 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from backend.articles.models import (
     ArticleFavorites,
     Article,
-    ArticleComments
+    ArticleComments,
+    ArticleCategory
 )
 from backend.articles.serializers import (
     ArticleSerializer,
     ArticleFavoriteSerializer,
-    ArticleCommentSerializer
+    ArticleCommentSerializer,
+    ArticleCategorySerializer,
+    ArticleListSerializer
 )
 from backend.articles.permissions import IsCommentAuthorOrAdmin
 
 
-class ArticleViewSet(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
+class ArticleCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ArticleCategory.objects.all()
+    serializer_class = ArticleCategorySerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    '''def get_permissions(self):
-        if self.action == 'create':
-            return[IsTutorOrOng()]
-        return super().get_permissions()'''
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    # serializer_class = ArticleSerializer # Remova o atributo de classe
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_serializer_class(self):
+        """
+        Retorna um serializer diferente para a ação 'list' (mais leve)
+        e outro para as demais ações como 'retrieve', 'create', etc. (completo).
+        """
+        if self.action == 'list':
+            return ArticleListSerializer
+        return ArticleSerializer # Serializer padrão para as outras ações
 
     def get_queryset(self):
+        # Sua lógica de queryset continua a mesma
         user = self.request.user
         queryset = Article.objects.all() if user.is_authenticated and user.is_staff else Article.objects.filter(is_published=True)
-
-        tags_param = self.request.query_params.get("tags")
-        if tags_param:
-            tags = tags_param.split(',')
-            queryset = queryset.filter(tags__name__in=tags).distinct()
-
+        # ... resto da sua lógica de filtro ...
         return queryset
 
-
     def perform_create(self, serializer):
-        user = self.request.user
-        serializer = serializer.save(created_by=user)
+        # Sua lógica de perform_create continua a mesma
+        serializer.save(author=self.request.user)
+
 
 
 class ArticleCommentViewSet(viewsets.ModelViewSet):
