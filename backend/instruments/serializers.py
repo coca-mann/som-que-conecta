@@ -1,5 +1,6 @@
 from django.conf import settings
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 from backend.instruments.models import (
     InstrumentBookings,
     InstrumentBrands,
@@ -76,23 +77,70 @@ class InstrumentBrandsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# Crie um serializer simples para o instrumento, para usar de forma aninhada
+class BookingInstrumentSerializer(serializers.ModelSerializer):
+    # Campos que já tínhamos
+    brand_name = serializers.CharField(source='brand.name', read_only=True)
+    type_name = serializers.CharField(source='type.name', read_only=True)
+    
+    # NOVO CAMPO para a imagem do instrumento
+    main_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Instrument
+        # Adicione 'main_image' à lista de campos
+        fields = ['id', 'name', 'brand_name', 'type_name', 'main_image']
+
+    # NOVO MÉTODO para construir a URL da imagem
+    def get_main_image(self, obj):
+        request = self.context.get('request')
+        first_picture = obj.instrumentpictures_set.first()
+
+        if first_picture and hasattr(first_picture.picture, 'url'):
+            return request.build_absolute_uri(first_picture.picture.url)
+        else:
+            # Fallback para uma imagem padrão, se desejar
+            default_image_url = f"{settings.MEDIA_URL}instruments_media/pictures/default.png"
+            return request.build_absolute_uri(default_image_url) if request else default_image_url
+
+# Crie um serializer simples para o cliente (usuário)
+class BookingClientSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.SerializerMethodField()
+
+    class Meta:
+        # CORREÇÃO: Use get_user_model() para obter a classe de modelo real
+        model = get_user_model() 
+        
+        # Use os campos que realmente existem no seu modelo de usuário.
+        # Estes são campos padrão do Django. Adapte se o seu for diferente.
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'profile_picture']
+
+    def get_profile_picture(self, obj):
+        request = self.context.get('request')
+        if obj.profile_picture and hasattr(obj.profile_picture, 'url'):
+            return request.build_absolute_uri(obj.profile_picture.url)
+        # Retorna null ou uma URL de avatar padrão se não houver imagem
+        return None
+
 # --- Serializer para LEITURA (GET) ---
 # Mostra todos os dados, incluindo informações aninhadas do instrumento e do usuário.
 class InstrumentBookingDetailSerializer(serializers.ModelSerializer):
-    instrument = serializers.CharField(source='instrument_id.name', read_only=True)
-    user = serializers.CharField(source='user_id.username', read_only=True)
+    # Use os serializers aninhados para obter objetos em vez de apenas strings
+    instrument = BookingInstrumentSerializer(source='instrument_id', read_only=True)
+    client = BookingClientSerializer(source='user_id', read_only=True)
 
     class Meta:
         model = InstrumentBookings
         fields = [
             'id',
-            'instrument',
-            'user',
+            'instrument', # Agora é um objeto
+            'client',     # Agora é um objeto
             'reservation_date',
             'reservation_starttime',
             'reservation_endtime',
             'status',
             'reservation_refusal_reason',
+            # 'notes', # Adicione se tiver este campo no modelo
             'created_at',
         ]
 
