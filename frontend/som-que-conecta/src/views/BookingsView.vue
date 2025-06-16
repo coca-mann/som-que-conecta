@@ -13,14 +13,13 @@
               <!-- Filter by Status -->
               <select 
                 v-model="selectedStatus" 
-                class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="px-4 py-2 border border-gray-300 rounded-lg ..."
               >
                 <option value="">Todos os Status</option>
-                <option value="pending">Pendente</option>
-                <option value="confirmed">Confirmado</option>
-                <option value="rejected">Rejeitado</option>
-                <option value="completed">Concluído</option>
-              </select>
+                <option value="PENDING">Pendente</option>
+                <option value="APPROVED">Aprovado</option>
+                <option value="REJECTED">Rejeitado</option>
+                </select>
               
               <!-- View Toggle -->
               <div class="flex bg-gray-100 rounded-lg p-1">
@@ -241,7 +240,7 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <img
-                        :src="booking.instrument.image"
+                        :src="booking.instrument.main_image"
                         :alt="booking.instrument.name"
                         class="h-10 w-10 rounded-lg object-cover"
                       />
@@ -258,7 +257,7 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <img
-                        :src="booking.client.avatar"
+                        :src="booking.client.profile_picture"
                         :alt="booking.client.name"
                         class="h-8 w-8 rounded-full"
                       />
@@ -277,7 +276,7 @@
                     <div class="text-gray-500">{{ formatTime(booking.startTime) }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ booking.duration }}h
+                    {{ calculateDuration(booking.startTime, booking.endTime) }}h
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span :class="[
@@ -320,7 +319,7 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="selectedBooking" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div v-if="selectedBooking" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <!-- Modal Header -->
             <div class="flex items-center justify-between p-6 border-b border-gray-200">
@@ -342,7 +341,7 @@
                   <h4 class="text-sm font-medium text-gray-500 mb-3">Instrumento</h4>
                   <div class="flex items-center space-x-3">
                     <img
-                      :src="selectedBooking.instrument.image"
+                      :src="selectedBooking.instrument.main_image"
                       :alt="selectedBooking.instrument.name"
                       class="h-16 w-16 rounded-lg object-cover"
                     />
@@ -359,7 +358,7 @@
                   <h4 class="text-sm font-medium text-gray-500 mb-3">Cliente</h4>
                   <div class="flex items-center space-x-3">
                     <img
-                      :src="selectedBooking.client.avatar"
+                      :src="selectedBooking.client.profile_picture"
                       :alt="selectedBooking.client.name"
                       class="h-16 w-16 rounded-full"
                     />
@@ -394,7 +393,7 @@
                   <h4 class="text-sm font-medium text-gray-500 mb-2">Duração</h4>
                   <div class="flex items-center space-x-2">
                     <Timer class="h-4 w-4 text-gray-400" />
-                    <span class="text-gray-900">{{ selectedBooking.duration }}h</span>
+                    <span class="text-gray-900">{{ calculateDuration(selectedBooking.startTime, selectedBooking.endTime) }}h</span>
                   </div>
                 </div>
               </div>
@@ -445,7 +444,7 @@
                 Fechar
               </button>
               
-              <div v-if="selectedBooking.status === 'pending'" class="flex space-x-3">
+              <div v-if="selectedBooking.status === 'PENDING'" class="flex space-x-3">
                 <button
                   @click="showRejectionForm ? rejectBooking() : (showRejectionForm = true)"
                   :disabled="isProcessing"
@@ -473,173 +472,178 @@
   </template>
   
   <script setup>
-  import { ref, computed, onMounted } from 'vue';
-  import { useAuthStore } from '@/stores/auth.store';
-  import instrumentService from '@/services/instrumentService';
-  import {
-    Calendar, List, Clock, CheckCircle, XCircle, TrendingUp,
-    ChevronLeft, ChevronRight, X, Timer, CalendarDays, MapPin
-  } from 'lucide-vue-next';
-  
-  // --- ESTADO PRINCIPAL ---
-  const authStore = useAuthStore();
-  const bookings = ref([]); // Começa vazio, será preenchido pela API
-  const isLoading = ref(true);
-  const error = ref(null);
-  
-  const currentView = ref('calendar');
-  const selectedStatus = ref('');
-  const currentDate = ref(new Date());
-  const selectedBooking = ref(null);
-  const showRejectionForm = ref(false);
-  const rejectionReason = ref('');
-  const isProcessing = ref(false);
-  
-  const dayHeaders = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-  
-  // --- LÓGICA DE DADOS ---
-  const fetchBookings = async () => {
-    isLoading.value = true;
-    error.value = null;
-    try {
-      const response = await instrumentService.getBookings();
-      // Mapeia os dados da API para o formato esperado pelo frontend (com objetos Date)
-      bookings.value = response.data.map(booking => ({
-        ...booking,
-        // Converte as strings de data/hora em objetos Date do JavaScript
-        startTime: new Date(`${booking.reservation_date}T${booking.reservation_starttime}`),
-        endTime: new Date(`${booking.reservation_date}T${booking.reservation_endtime}`),
-      }));
-    } catch (err) {
-      console.error("Erro ao buscar agendamentos:", err);
-      error.value = "Não foi possível carregar os agendamentos.";
-    } finally {
-      isLoading.value = false;
-    }
+import { ref, computed, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/auth.store';
+import instrumentService from '@/services/instrumentService';
+import {
+  Calendar, List, Clock, CheckCircle, XCircle, TrendingUp,
+  ChevronLeft, ChevronRight, X, Timer, CalendarDays, MapPin
+} from 'lucide-vue-next';
+console.log('Conteúdo do instrumentService importado:', instrumentService);
+
+// --- ESTADO PRINCIPAL ---
+const bookings = ref([]);
+const isLoading = ref(true);
+const error = ref(null);
+const currentView = ref('calendar');
+const selectedStatus = ref('');
+const currentDate = ref(new Date());
+const selectedBooking = ref(null);
+const showRejectionForm = ref(false);
+const rejectionReason = ref('');
+const isProcessing = ref(false);
+const dayHeaders = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+// --- LÓGICA DE DADOS ---
+const fetchBookings = async () => {
+  isLoading.value = true;
+  error.value = null;
+  try {
+    const response = await instrumentService.getBookings();
+    bookings.value = response.data.map(booking => ({
+      ...booking,
+      startTime: new Date(`${booking.reservation_date}T${booking.reservation_starttime}`),
+      endTime: new Date(`${booking.reservation_date}T${booking.reservation_endtime}`),
+    }));
+  } catch (err) {
+    console.error("Erro ao buscar agendamentos:", err);
+    error.value = "Não foi possível carregar os agendamentos.";
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchBookings();
+});
+
+// --- PROPRIEDADES COMPUTADAS (Corrigidas) ---
+const stats = computed(() => ({
+  pending: bookings.value.filter(b => b.status === 'PENDING').length,
+  confirmed: bookings.value.filter(b => b.status === 'APPROVED').length,
+  rejected: bookings.value.filter(b => b.status === 'REJECTED').length,
+  thisMonth: bookings.value.filter(b => new Date(b.startTime).getMonth() === new Date().getMonth()).length
+}));
+
+const filteredBookings = computed(() => {
+  if (!selectedStatus.value) return bookings.value;
+  return bookings.value.filter(booking => booking.status === selectedStatus.value);
+});
+
+const calendarDays = computed(() => {
+  const year = currentDate.value.getFullYear();
+  const month = currentDate.value.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startDate = new Date(firstDay);
+  startDate.setDate(startDate.getDate() - firstDay.getDay());
+  const days = [];
+  const current = new Date(startDate);
+  for (let i = 0; i < 42; i++) {
+    days.push({ date: new Date(current), isCurrentMonth: current.getMonth() === month });
+    current.setDate(current.getDate() + 1);
+  }
+  return days;
+});
+
+// --- MÉTODOS DE FORMATAÇÃO E UI (Adicionados) ---
+const formatMonthYear = date => new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(date);
+const formatDate = date => new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+const formatTime = date => new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(date);
+const isToday = date => new Date().toDateString() === date.toDateString();
+const getBookingsForDay = (date) => filteredBookings.value.filter(b => new Date(b.startTime).toDateString() === date.toDateString());
+
+const calculateDuration = (startTime, endTime) => {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  const diffInHours = (end - start) / (1000 * 60 * 60);
+  return diffInHours.toFixed(1);
+};
+
+const getStatusColor = (status) => {
+  const colors = {
+    PENDING: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+    APPROVED: 'bg-green-100 text-green-800 hover:bg-green-200',
+    REJECTED: 'bg-red-100 text-red-800 hover:bg-red-200',
+    COMPLETED: 'bg-blue-100 text-blue-800 hover:bg-blue-200'
   };
-  
-  onMounted(() => {
-    fetchBookings();
-  });
-  
-  // --- PROPRIEDADES COMPUTADAS ---
-  const stats = computed(() => {
-    const statusMap = {
-      pending: 'PENDING',
-      confirmed: 'APPROVED',
-      rejected: 'REJECTED',
-    };
-    const pending = bookings.value.filter(b => b.status === statusMap.pending).length;
-    const confirmed = bookings.value.filter(b => b.status === statusMap.confirmed).length;
-    const rejected = bookings.value.filter(b => b.status === statusMap.rejected).length;
-    
-    const thisMonth = bookings.value.filter(b => {
-      const bookingMonth = new Date(b.startTime).getMonth();
-      const currentMonth = new Date().getMonth();
-      return bookingMonth === currentMonth;
-    }).length;
-  
-    return { pending, confirmed, rejected, thisMonth };
-  });
-  
-  const filteredBookings = computed(() => {
-    if (!selectedStatus.value) return bookings.value;
-    const apiStatus = selectedStatus.value.toUpperCase(); // 'pending' -> 'PENDING'
-    return bookings.value.filter(booking => booking.status === apiStatus);
-  });
-  
-  const calendarDays = computed(() => {
-    const year = currentDate.value.getFullYear();
-    const month = currentDate.value.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
-    const days = [];
-    const current = new Date(startDate);
-    for (let i = 0; i < 42; i++) {
-      days.push({
-        date: new Date(current),
-        isCurrentMonth: current.getMonth() === month
-      });
-      current.setDate(current.getDate() + 1);
-    }
-    return days;
-  });
-  
-  // --- MÉTODOS DE FORMATAÇÃO E UI ---
-  const formatMonthYear = date => new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(date);
-  const formatDate = date => new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
-  const formatTime = date => new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(date);
-  const isToday = date => new Date().toDateString() === date.toDateString();
-  
-  const getBookingsForDay = (date) => {
-    return filteredBookings.value.filter(booking =>
-      new Date(booking.startTime).toDateString() === date.toDateString()
-    );
+  return colors[status] || 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+};
+
+const getStatusBadgeColor = (status) => {
+  const colors = {
+    PENDING: 'bg-yellow-100 text-yellow-800',
+    APPROVED: 'bg-green-100 text-green-800',
+    REJECTED: 'bg-red-100 text-red-800',
+    COMPLETED: 'bg-blue-100 text-blue-800'
   };
-  
-  // ...funções getStatusColor, getStatusBadgeColor, getStatusLabel (verifique se os nomes dos status correspondem: PENDING, APPROVED, etc.)
-  
-  const previousMonth = () => { currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1); };
-  const nextMonth = () => { currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1); };
-  const goToToday = () => { currentDate.value = new Date(); };
-  
-  const openBookingModal = (booking) => {
-    selectedBooking.value = booking;
-    showRejectionForm.value = false;
-    rejectionReason.value = '';
+  return colors[status] || 'bg-gray-100 text-gray-800';
+};
+
+const getStatusLabel = (status) => {
+  const labels = {
+    PENDING: 'Pendente',
+    APPROVED: 'Aprovado',
+    REJECTED: 'Rejeitado',
+    COMPLETED: 'Concluído'
   };
-  
-  const closeBookingModal = () => { selectedBooking.value = null; };
-  
-  // --- MÉTODOS DE AÇÃO (API) ---
-  const updateLocalBookingStatus = (bookingId, newStatus, reason = null) => {
-    const index = bookings.value.findIndex(b => b.id === bookingId);
-    if (index !== -1) {
-      bookings.value[index].status = newStatus;
-      if (reason) {
-        bookings.value[index].reservation_refusal_reason = reason;
-      }
-    }
+  return labels[status] || status;
+};
+
+// --- MÉTODOS DE AÇÃO ---
+const previousMonth = () => { currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1); };
+const nextMonth = () => { currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1); };
+const goToToday = () => { currentDate.value = new Date(); };
+
+const openBookingModal = (booking) => {
+  selectedBooking.value = booking;
+  showRejectionForm.value = false;
+  rejectionReason.value = '';
+};
+
+const closeBookingModal = () => { selectedBooking.value = null; };
+
+const updateLocalBookingStatus = (bookingId, newStatus, reason = null) => {
+  const index = bookings.value.findIndex(b => b.id === bookingId);
+  if (index !== -1) {
+    bookings.value[index].status = newStatus;
+    if (reason) bookings.value[index].reservation_refusal_reason = reason;
+  }
+};
+
+const acceptBooking = async () => {
+  if (!selectedBooking.value) return;
+  isProcessing.value = true;
+  try {
+    await instrumentService.updateBookingStatus(selectedBooking.value.id, { status: 'APPROVED' });
+    updateLocalBookingStatus(selectedBooking.value.id, 'APPROVED');
+    closeBookingModal();
+  } catch (error) {
+    alert("Falha ao aceitar o agendamento.");
+  } finally {
+    isProcessing.value = false;
+  }
+};
+
+const rejectBooking = async () => {
+  if (!selectedBooking.value || !rejectionReason.value.trim()) {
+    alert('Por favor, informe o motivo da rejeição.');
+    return;
+  }
+  isProcessing.value = true;
+  const payload = {
+    status: 'REJECTED',
+    reservation_refusal_reason: rejectionReason.value.trim()
   };
-  
-  const acceptBooking = async () => {
-    if (!selectedBooking.value) return;
-    isProcessing.value = true;
-    try {
-      await instrumentService.updateBookingStatus(selectedBooking.value.id, { status: 'APPROVED' });
-      updateLocalBookingStatus(selectedBooking.value.id, 'APPROVED');
-      closeBookingModal();
-    } catch (error) {
-      console.error('Error accepting booking:', error);
-      alert("Falha ao aceitar o agendamento.");
-    } finally {
-      isProcessing.value = false;
-    }
-  };
-  
-  const rejectBooking = async () => {
-    if (!selectedBooking.value || !rejectionReason.value.trim()) {
-      alert('Por favor, informe o motivo da rejeição.');
-      return;
-    }
-    isProcessing.value = true;
-    const payload = {
-      status: 'REJECTED',
-      reservation_refusal_reason: rejectionReason.value.trim()
-    };
-    try {
-      await instrumentService.updateBookingStatus(selectedBooking.value.id, payload);
-      updateLocalBookingStatus(selectedBooking.value.id, 'REJECTED', payload.reservation_refusal_reason);
-      closeBookingModal();
-    } catch (error) {
-      console.error('Error rejecting booking:', error);
-      alert("Falha ao rejeitar o agendamento.");
-    } finally {
-      isProcessing.value = false;
-    }
-  };
+  try {
+    await instrumentService.updateBookingStatus(selectedBooking.value.id, payload);
+    updateLocalBookingStatus(selectedBooking.value.id, 'REJECTED', payload.reservation_refusal_reason);
+    closeBookingModal();
+  } catch (error) {
+    alert("Falha ao rejeitar o agendamento.");
+  } finally {
+    isProcessing.value = false;
+  }
+};
   </script>
   
   const showDayBookings = (date) => { console.log('Show bookings for:', date); };

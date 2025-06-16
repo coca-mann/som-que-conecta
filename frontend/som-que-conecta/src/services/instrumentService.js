@@ -73,13 +73,8 @@ const instrumentService = {
     return api.get('/bookings/');
   },
   
-  updateBookingStatus(bookingId, status, reason = '') {
-    // O serializer de update espera um objeto com o status
-    const payload = { 
-      status: status,
-      reservation_refusal_reason: reason
-    };
-    return apiClient.patch(`/bookings/${bookingId}/`, payload);
+  updateBookingStatus(bookingId, payload) {
+    return api.patch(`/bookings/${bookingId}/`, payload);
   }
   
 };
