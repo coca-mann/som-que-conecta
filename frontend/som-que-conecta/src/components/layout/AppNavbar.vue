@@ -159,7 +159,7 @@ import { useAuthStore } from '@/stores/auth.store';
 
 import { 
   Music, User, ChevronDown, LogOut, Search, X, Home, FileText,
-  Guitar, BookOpen, Settings, HelpCircle
+  Guitar, BookOpen, Settings, HelpCircle, Calendar
 } from 'lucide-vue-next'
 
 // 2. CRIAMOS A INSTÂNCIA DO STORE PARA USAR NO COMPONENTE
@@ -209,9 +209,16 @@ const handleLogout = () => {
 const userMenuItems = computed(() => {
   const items = [
     { name: 'Meu Perfil', path: '/profile', icon: User },
-    { name: 'Gerenciar Instrumentos', path: '/manage-instruments', icon: Guitar },
-    { name: 'Ajuda', path: '/help', icon: HelpCircle }
+    { name: 'Gerenciar Instrumentos', path: '/manage-instruments', icon: Guitar }
   ]
+  
+  // Adiciona o item de agendamentos apenas para roles específicos
+  if (authStore.user?.role && ['admin', 'ong', 'professor'].includes(authStore.user.role)) {
+    items.push({ name: 'Gerenciar Agendamentos', path: '/bookings', icon: Calendar })
+  }
+  
+  // Adiciona o item de ajuda por último
+  items.push({ name: 'Ajuda', path: '/help', icon: HelpCircle })
   
   return items
 })
@@ -232,8 +239,6 @@ const toggleUserMenu = () => {
     showSearch.value = false
   }
 }
-const toggleSearch = async () => { /* ... */ }
-const closeSearch = () => { /* ... */ }
 
 // 5. A FUNÇÃO DE LOGOUT FOI REMOVIDA. Usaremos a do store diretamente no template.
 
