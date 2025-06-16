@@ -368,6 +368,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import articleService from '@/services/articleService';
 import { 
   ArrowLeft, 
   Save, 
@@ -384,6 +385,9 @@ import {
   Upload
 } from 'lucide-vue-next'
 
+const isEditing = computed(() => route.params.id !== undefined);
+const imageFile = ref(null);
+
 const router = useRouter()
 const route = useRoute()
 const editor = ref(null)
@@ -393,8 +397,6 @@ const newTag = ref('')
 const imageUploadMethod = ref('upload')
 const uploadProgress = ref(0)
 const imageInfo = ref(null)
-
-const isEditing = computed(() => route.params.id !== undefined)
 
 const form = ref({
   title: '',
@@ -476,54 +478,13 @@ const handleKeydown = (event) => {
   }
 }
 
-const handleFileUpload = async (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-
-  // Validate file type
-  if (!file.type.startsWith('image/')) {
-    alert('Por favor, selecione apenas arquivos de imagem.')
-    return
+const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    imageFile.value = file;
+    form.value.image = URL.createObjectURL(file); // Para preview
   }
-
-  // Validate file size (5MB max)
-  if (file.size > 5 * 1024 * 1024) {
-    alert('O arquivo deve ter no máximo 5MB.')
-    return
-  }
-
-  // Get image dimensions
-  const img = new Image()
-  const imageUrl = URL.createObjectURL(file)
-  
-  img.onload = () => {
-    imageInfo.value = {
-      name: file.name,
-      size: file.size,
-      dimensions: `${img.width}x${img.height}px`
-    }
-    URL.revokeObjectURL(imageUrl)
-  }
-  img.src = imageUrl
-
-  // Simulate upload progress
-  uploadProgress.value = 0
-  const interval = setInterval(() => {
-    uploadProgress.value += 10
-    if (uploadProgress.value >= 100) {
-      clearInterval(interval)
-      // In a real app, you would upload to your server here
-      form.value.image = imageUrl
-      setTimeout(() => {
-        uploadProgress.value = 0
-      }, 1000)
-    }
-  }, 100)
-
-  // For demo purposes, we'll use the blob URL
-  // In production, you would upload to your server and get back a URL
-  form.value.image = imageUrl
-}
+};
 
 const handleUrlInput = () => {
   if (form.value.imageUrl) {
@@ -581,46 +542,46 @@ const previewArticle = () => {
   showPreview.value = true
 }
 
-const handleSubmit = () => {
-  updateContent()
+const handleSubmit = async () => {
+  const formData = new FormData();
   
-  const articleData = {
-    ...form.value,
-    id: isEditing.value ? route.params.id : Date.now(),
-    createdAt: new Date(),
-    views: 0,
-    commentsCount: 0,
-    rating: 0,
-    isBookmarked: false
+  // Adiciona todos os campos do formulário ao FormData
+  Object.keys(form.value).forEach(key => {
+    if (key !== 'image') { // Não envie a URL de preview
+      formData.append(key, form.value[key]);
+    }
+  });
+
+  // Se uma nova imagem foi selecionada, adicione o arquivo
+  if (imageFile.value) {
+    formData.append('cover_image', imageFile.value);
+  } else if (!form.value.image) {
+    // Se a imagem foi removida, envie um valor vazio
+    formData.append('cover_image', '');
   }
   
-  console.log('Article submitted:', articleData)
-  
-  // Here you would send to your backend
-  router.push('/articles')
-}
+  try {
+    if (isEditing.value) {
+      await articleService.updateArticle(route.params.id, formData);
+    } else {
+      await articleService.createArticle(formData);
+    }
+    router.push('/articles'); // Redireciona para a lista
+  } catch (error) {
+    console.error("Erro ao salvar artigo:", error);
+    alert("Falha ao salvar o artigo.");
+  }
+};
 
 onMounted(() => {
-  // Load draft if exists
-  const draft = localStorage.getItem('articleDraft')
-  if (draft && !isEditing.value) {
-    const parsedDraft = JSON.parse(draft)
-    Object.assign(form.value, parsedDraft)
-  }
-  
-  // If editing, load article data
   if (isEditing.value) {
-    // Load article data from API
-    console.log('Loading article for editing:', route.params.id)
+    articleService.getArticleDetail(route.params.id).then(response => {
+      // Preenche o formulário com os dados da API
+      Object.assign(form.value, response.data);
+      form.value.image = response.data.cover_image; // URL da imagem existente
+    });
   }
-  
-  // Set initial content in editor
-  nextTick(() => {
-    if (editor.value) {
-      editor.value.innerHTML = form.value.content
-    }
-  })
-})
+});
 </script>
 
 <style scoped>

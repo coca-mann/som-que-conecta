@@ -17,13 +17,19 @@ const router = createRouter({
     },
     {
       path: '/articles',
-      name: 'articles',
+      name: 'ArticleList',
       component: () => import('../views/ArticlesView.vue')
     },
     {
-      path: '/article/:id',
-      name: 'article-detail',
+      path: '/articles/:id',
+      name: 'ArticleDetail',
       component: () => import('../views/ArticleDetail.vue')
+    },
+    {
+      path: '/articles/create',
+      name: 'ArticleCreate',
+      // E este caminho?
+      component: () => import('../views/ArticleCreateView.vue'),
     },
     {
       path: '/courses',
@@ -62,13 +68,13 @@ const router = createRouter({
     {
       path: '/articles/create',
       name: 'create-article',
-      component: () => import('../views/CreateArticle.vue'),
+      component: () => import('../views/ArticleCreateView.vue'),
       meta: { requiresAuth: true, requiresTeacher: true }
     },
     {
       path: '/articles/edit/:id',
       name: 'edit-article',
-      component: () => import('../views/CreateArticle.vue'),
+      component: () => import('../views/ArticleCreateView.vue'),
       meta: { requiresAuth: true, requiresTeacher: true }
     },
     {

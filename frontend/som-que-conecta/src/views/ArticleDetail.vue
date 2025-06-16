@@ -203,7 +203,8 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import articleService from '@/services/articleService';
 import { 
   ArrowLeft, 
   Clock, 
@@ -215,6 +216,9 @@ import {
 } from 'lucide-vue-next'
 
 const route = useRoute()
+const router = useRouter();
+
+const isLoading = ref(true);
 const article = ref(null)
 const isLoggedIn = ref(false) // Should come from auth store
 const isLiked = ref(false)
@@ -228,134 +232,39 @@ const goBack = () => {
 }
 
 // Mock articles data - in real app, fetch from API
-const articlesData = {
-  1: {
-    id: 1,
-    title: 'Como Escolher Seu Primeiro Instrumento Musical',
-    excerpt: 'Descubra os fatores essenciais para escolher o instrumento ideal para começar sua jornada musical. Considerações sobre orçamento, estilo musical preferido e facilidade de aprendizado.',
-    content: `
-      <h2>Introdução</h2>
-      <p>Escolher seu primeiro instrumento musical é uma decisão importante que pode definir toda sua jornada musical. Este guia completo vai te ajudar a tomar a melhor decisão baseada em seus objetivos, orçamento e preferências pessoais.</p>
-      
-      <h2>Fatores a Considerar</h2>
-      <h3>1. Orçamento Disponível</h3>
-      <p>O orçamento é um dos fatores mais importantes na escolha do seu primeiro instrumento. Instrumentos de qualidade podem variar drasticamente de preço:</p>
-      <ul>
-        <li><strong>Violão:</strong> R$ 200 - R$ 2.000+</li>
-        <li><strong>Teclado:</strong> R$ 300 - R$ 3.000+</li>
-        <li><strong>Flauta:</strong> R$ 150 - R$ 1.500+</li>
-        <li><strong>Bateria:</strong> R$ 800 - R$ 5.000+</li>
-      </ul>
-      
-      <h3>2. Estilo Musical Preferido</h3>
-      <p>Seu gosto musical deve influenciar diretamente sua escolha:</p>
-      <ul>
-        <li><strong>Rock/Pop:</strong> Guitarra elétrica, baixo, bateria</li>
-        <li><strong>Clássico:</strong> Piano, violino, flauta</li>
-        <li><strong>Folk/Country:</strong> Violão, harmônica, banjo</li>
-        <li><strong>Jazz:</strong> Saxofone, piano, contrabaixo</li>
-      </ul>
-      
-      <h2>Instrumentos Recomendados para Iniciantes</h2>
-      <h3>Violão</h3>
-      <p>O violão é uma excelente escolha para iniciantes devido à sua versatilidade e facilidade de transporte. Com apenas alguns acordes básicos, você já pode tocar centenas de músicas.</p>
-      
-      <h3>Piano/Teclado</h3>
-      <p>O piano oferece uma base sólida em teoria musical e é fundamental para entender harmonia. Teclados modernos oferecem muitas funcionalidades a um preço acessível.</p>
-      
-      <h3>Ukulele</h3>
-      <p>Menor e mais simples que o violão, o ukulele é perfeito para crianças ou adultos que querem resultados rápidos. Com apenas 4 cordas, é mais fácil de dominar.</p>
-      
-      <h2>Dicas Finais</h2>
-      <p>Lembre-se: o melhor instrumento é aquele que você vai praticar regularmente. Escolha algo que te inspire e motive a continuar aprendendo. Considere também a possibilidade de alugar um instrumento antes de comprar, especialmente para instrumentos mais caros.</p>
-    `,
-    category: 'Iniciantes',
-    author: 'Ana Carolina',
-    authorRole: 'Professora de Música',
-    authorAvatar: '/placeholder.svg?height=50&width=50',
-    rating: 4.9,
-    readTime: 8,
-    views: 1247,
-    likes: 89,
-    createdAt: new Date('2024-01-20'),
-    image: '/placeholder.svg?height=400&width=800'
-  },
-  2: {
-    id: 2,
-    title: 'Teoria Musical Básica: Notas, Escalas e Acordes',
-    excerpt: 'Entenda os fundamentos da teoria musical de forma simples e prática. Aprenda sobre notas, escalas, acordes e como aplicar esse conhecimento na prática.',
-    content: `
-      <h2>O que é Teoria Musical?</h2>
-      <p>A teoria musical é a linguagem que usamos para descrever e entender a música. É como a gramática para um idioma - nos ajuda a comunicar ideias musicais de forma clara e precisa.</p>
-      
-      <h2>As Notas Musicais</h2>
-      <p>Existem 12 notas diferentes na música ocidental, que se repetem em diferentes oitavas:</p>
-      <p><strong>Dó - Dó# - Ré - Ré# - Mi - Fá - Fá# - Sol - Sol# - Lá - Lá# - Si</strong></p>
-      
-      <h2>Escalas Musicais</h2>
-      <p>Uma escala é uma sequência de notas organizadas em ordem ascendente ou descendente. A escala mais comum é a escala maior, que segue o padrão:</p>
-      <p><strong>Tom - Tom - Semitom - Tom - Tom - Tom - Semitom</strong></p>
-      
-      <h2>Acordes Básicos</h2>
-      <p>Um acorde é formado por três ou mais notas tocadas simultaneamente. Os acordes básicos incluem:</p>
-      <ul>
-        <li><strong>Acorde Maior:</strong> 1ª - 3ª maior - 5ª justa</li>
-        <li><strong>Acorde Menor:</strong> 1ª - 3ª menor - 5ª justa</li>
-        <li><strong>Acorde Diminuto:</strong> 1ª - 3ª menor - 5ª diminuta</li>
-      </ul>
-    `,
-    category: 'Teoria',
-    author: 'João Santos',
-    authorRole: 'Professor de Teoria Musical',
-    authorAvatar: '/placeholder.svg?height=50&width=50',
-    rating: 4.7,
-    readTime: 12,
-    views: 892,
-    likes: 67,
-    createdAt: new Date('2024-01-15'),
-    image: '/placeholder.svg?height=400&width=800'
+const fetchArticle = async () => {
+  isLoading.value = true;
+  const articleId = route.params.id;
+  try {
+    const response = await articleService.getArticleDetail(articleId);
+    article.value = response.data;
+    // A API deveria retornar os comentários aninhados ou você faria outra chamada
+    comments.value = article.value.comments || []; 
+  } catch (error) {
+    console.error("Artigo não encontrado:", error);
+    // Redirecionar para uma página 404
+  } finally {
+    isLoading.value = false;
   }
-}
+};
 
-const relatedArticles = ref([
-  {
-    id: 2,
-    title: 'Teoria Musical Básica: Notas, Escalas e Acordes',
-    author: 'João Santos',
-    rating: 4.7,
-    readTime: 12,
-    image: '/placeholder.svg?height=80&width=80'
-  },
-  {
-    id: 3,
-    title: 'Técnicas de Respiração para Instrumentos de Sopro',
-    author: 'Maria Fernanda',
-    rating: 4.8,
-    readTime: 6,
-    image: '/placeholder.svg?height=80&width=80'
-  }
-])
+onMounted(fetchArticle);
 
-const mockComments = [
-  {
-    id: 1,
-    userName: 'Carlos Silva',
-    userAvatar: '/placeholder.svg?height=40&width=40',
-    content: 'Excelente artigo! Me ajudou muito a decidir entre violão e piano. Acabei escolhendo o violão e estou adorando as aulas.',
-    likes: 12,
-    isLiked: false,
-    createdAt: new Date('2024-01-21')
-  },
-  {
-    id: 2,
-    userName: 'Fernanda Costa',
-    userAvatar: '/placeholder.svg?height=40&width=40',
-    content: 'Muito útil! Gostaria de ver mais conteúdo sobre instrumentos de sopro também.',
-    likes: 8,
-    isLiked: true,
-    createdAt: new Date('2024-01-22')
+const addComment = async () => {
+  if (!newComment.value.trim()) return;
+  const payload = {
+    article: article.value.id,
+    comment: newComment.value,
+  };
+  try {
+    const response = await articleService.addComment(payload);
+    comments.value.unshift(response.data); // Adiciona o novo comentário no topo da lista
+    newComment.value = '';
+  } catch (error) {
+    console.error("Erro ao adicionar comentário:", error);
+    alert("Falha ao publicar comentário.");
   }
-]
+};
 
 const formatDate = (date) => {
   return new Intl.DateTimeFormat('pt-BR', { 
@@ -373,23 +282,6 @@ const rateArticle = (rating) => {
   userRating.value = rating
   // Here you would send the rating to your backend
   console.log('Article rated:', rating)
-}
-
-const addComment = () => {
-  if (!newComment.value.trim()) return
-  
-  const comment = {
-    id: Date.now(),
-    userName: 'Usuário Atual', // Should come from auth store
-    userAvatar: '/placeholder.svg?height=40&width=40',
-    content: newComment.value,
-    likes: 0,
-    isLiked: false,
-    createdAt: new Date()
-  }
-  
-  comments.value.unshift(comment)
-  newComment.value = ''
 }
 
 const toggleCommentLike = (comment) => {

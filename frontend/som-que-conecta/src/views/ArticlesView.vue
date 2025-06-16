@@ -128,110 +128,68 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth.store';
+import articleService from '@/services/articleService';
 import { Plus, Search, Star, Eye, MessageCircle, Bookmark, BookOpen } from 'lucide-vue-next'
 
 const router = useRouter()
+const authStore = useAuthStore();
+
 const selectedCategory = ref('')
-const sortBy = ref('recent')
+const sortBy = ref('-created_at')
 const searchQuery = ref('')
 const hasMoreArticles = ref(true)
 
-const canCreateArticle = ref(true) // Should check user role
+// Permissão para criar
+const canCreateArticle = computed(() => {
+    // Exemplo: apenas professores ou admins podem criar
+    const userRole = authStore.user?.role;
+    return ['professor', 'admin', 'ong'].includes(userRole);
+});
 
-const articles = ref([
-  {
-    id: 1,
-    title: 'Como Escolher Seu Primeiro Instrumento Musical',
-    excerpt: 'Descubra os fatores essenciais para escolher o instrumento ideal para começar sua jornada musical. Considerações sobre orçamento, estilo musical preferido e facilidade de aprendizado.',
-    category: 'Iniciantes',
-    author: 'Ana Carolina',
-    authorAvatar: '/placeholder.svg?height=40&width=40',
-    rating: 4.8,
-    views: 1247,
-    commentsCount: 23,
-    readTime: 8,
-    image: '/placeholder.svg?height=200&width=300',
-    createdAt: new Date('2024-01-20'),
-    isBookmarked: false
-  },
-  {
-    id: 2,
-    title: 'Teoria Musical Básica: Notas, Escalas e Acordes',
-    excerpt: 'Entenda os fundamentos da teoria musical de forma simples e prática. Aprenda sobre notas, escalas, acordes e como aplicar esse conhecimento na prática.',
-    category: 'Teoria',
-    author: 'João Santos',
-    authorAvatar: '/placeholder.svg?height=40&width=40',
-    rating: 4.9,
-    views: 2156,
-    commentsCount: 45,
-    readTime: 12,
-    image: '/placeholder.svg?height=200&width=300',
-    createdAt: new Date('2024-01-15'),
-    isBookmarked: true
-  },
-  {
-    id: 3,
-    title: 'Técnicas de Respiração para Instrumentos de Sopro',
-    excerpt: 'Aprenda as técnicas corretas de respiração que são fundamentais para tocar instrumentos de sopro com qualidade e sem fadiga.',
-    category: 'Prática',
-    author: 'Maria Fernanda',
-    authorAvatar: '/placeholder.svg?height=40&width=40',
-    rating: 4.7,
-    views: 892,
-    commentsCount: 18,
-    readTime: 6,
-    image: '/placeholder.svg?height=200&width=300',
-    createdAt: new Date('2024-01-18'),
-    isBookmarked: false
-  },
-  {
-    id: 4,
-    title: 'História do Jazz: Das Origens aos Dias Atuais',
-    excerpt: 'Uma jornada pela rica história do jazz, desde suas origens no sul dos Estados Unidos até as inovações contemporâneas.',
-    category: 'História',
-    author: 'Carlos Mendes',
-    authorAvatar: '/placeholder.svg?height=40&width=40',
-    rating: 4.6,
-    views: 1534,
-    commentsCount: 31,
-    readTime: 15,
-    image: '/placeholder.svg?height=200&width=300',
-    createdAt: new Date('2024-01-12'),
-    isBookmarked: false
-  },
-  {
-    id: 5,
-    title: 'Manutenção e Cuidados com Instrumentos de Corda',
-    excerpt: 'Dicas essenciais para manter seus instrumentos de corda em perfeito estado, prolongando sua vida útil e qualidade sonora.',
-    category: 'Instrumentos',
-    author: 'Roberto Silva',
-    authorAvatar: '/placeholder.svg?height=40&width=40',
-    rating: 4.5,
-    views: 743,
-    commentsCount: 12,
-    readTime: 10,
-    image: '/placeholder.svg?height=200&width=300',
-    createdAt: new Date('2024-01-14'),
-    isBookmarked: true
-  },
-  {
-    id: 6,
-    title: 'Primeiros Passos no Piano: Postura e Técnica',
-    excerpt: 'Fundamentos essenciais para iniciantes no piano, incluindo postura correta, posicionamento das mãos e exercícios básicos.',
-    category: 'Iniciantes',
-    author: 'Lucia Oliveira',
-    authorAvatar: '/placeholder.svg?height=40&width=40',
-    rating: 4.9,
-    views: 1876,
-    commentsCount: 38,
-    readTime: 9,
-    image: '/placeholder.svg?height=200&width=300',
-    createdAt: new Date('2024-01-16'),
-    isBookmarked: false
+const articles = ref([]);
+const categories = ref([]);
+const isLoading = ref(true);
+
+// Função de busca
+const fetchArticles = async () => {
+  isLoading.value = true;
+  const params = {
+    category: selectedCategory.value,
+    search: searchQuery.value,
+    ordering: sortBy.value,
+  };
+  try {
+    const response = await articleService.getArticles(params);
+    articles.value = response.data; // A API deve retornar uma lista paginada
+  } catch (error) {
+    console.error("Erro ao buscar artigos:", error);
+  } finally {
+    isLoading.value = false;
   }
-])
+};
+
+const fetchCategories = async () => {
+    try {
+        const response = await articleService.getCategories();
+        categories.value = response.data;
+    } catch (e) { console.error(e) }
+}
+
+// Observa mudanças nos filtros para buscar novamente
+watch([selectedCategory, sortBy, searchQuery], fetchArticles);
+
+// Busca inicial
+onMounted(() => {
+  fetchArticles();
+  fetchCategories();
+});
+
+const openArticle = (article) => {
+  router.push(`/articles/${article.id}`); // Navega para o detalhe
+};
 
 const filteredArticles = computed(() => {
   let filtered = articles.value
@@ -286,12 +244,6 @@ const formatNumber = (num) => {
     return (num / 1000).toFixed(1) + 'k'
   }
   return num.toString()
-}
-
-const openArticle = (article) => {
-  // Increment view count
-  article.views++
-  router.push(`/article/${article.id}`)
 }
 
 const toggleBookmark = (article) => {
