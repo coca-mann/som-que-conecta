@@ -78,23 +78,25 @@
           </div>
           
           <!-- Task Resources -->
-          <div v-if="task?.resources && task.resources.length > 0" class="mb-8">
+          <div v-if="resources.length > 0" class="mb-8">
             <h3 class="text-lg font-semibold text-gray-900 mb-3">Recursos Adicionais</h3>
             <div class="space-y-2">
               <a 
-                v-for="resource in task.resources" 
+                v-for="resource in resources" 
                 :key="resource.id" 
-                :href="resource.url" 
+                :href="resource.resource_link || resource.resource" 
                 target="_blank" 
                 class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                  <FileText v-if="resource.type === 'pdf'" class="h-5 w-5" />
-                  <Music v-else-if="resource.type === 'audio'" class="h-5 w-5" />
+                  <FileText v-if="resource.type === 'DOCUMENT'" class="h-5 w-5" />
+                  <Music v-else-if="resource.type === 'AUDIO'" class="h-5 w-5" />
+                  <Video v-else-if="resource.type === 'VIDEO'" class="h-5 w-5" />
+                  <Image v-else-if="resource.type === 'IMAGE'" class="h-5 w-5" />
                   <Link v-else class="h-5 w-5" />
                 </div>
                 <div>
-                  <div class="font-medium text-gray-900">{{ resource.title }}</div>
+                  <div class="font-medium text-gray-900">{{ resource.type_display }}</div>
                   <div class="text-sm text-gray-600">{{ resource.description }}</div>
                 </div>
               </a>
@@ -174,6 +176,8 @@ import {
   ChevronRight,
   FileText,
   Music,
+  Video,
+  Image,
   Link
 } from 'lucide-vue-next'
 
@@ -183,6 +187,7 @@ const router = useRouter()
 // --- ESTADO DO COMPONENTE ---
 const course = ref(null);
 const task = ref(null);
+const resources = ref([]);
 const isLoading = ref(true);
 const error = ref(null);
 
@@ -202,7 +207,15 @@ const getYouTubeEmbedUrl = (url) => {
     : null;
 };
 
-// --- LÓGICA DE DADOS ---
+const fetchTaskResources = async (taskId) => {
+  try {
+    const response = await lessonService.getTaskResources(taskId);
+    resources.value = response.data;
+  } catch (err) {
+    console.error("Erro ao buscar recursos da tarefa:", err);
+  }
+};
+
 const findAndSetCurrentTask = () => {
   if (!course.value) return;
   const taskId = parseInt(route.params.taskId);
@@ -210,6 +223,7 @@ const findAndSetCurrentTask = () => {
   
   if (foundTask) {
     task.value = foundTask;
+    fetchTaskResources(taskId); // Busca os recursos quando a tarefa é definida
   } else {
     error.value = "Tarefa não encontrada neste curso.";
     router.push(`/course/${route.params.courseId}`);
@@ -315,12 +329,6 @@ onMounted(fetchCourseData);
 </script>
 
 <style scoped>
-.aspect-w-16,
-.aspect-h-9 {
-  position: static;
-  padding-bottom: 0;
-}
-
 .prose h3 {
   @apply text-xl font-semibold text-gray-900 mt-6 mb-3;
 }

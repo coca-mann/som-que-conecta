@@ -49,6 +49,10 @@ const lessonService = {
   getLessonDetail(lessonId) {
     return api.get(`/lessons/${lessonId}/`);
   },
+
+  getTaskResources: async (taskId) => {
+    return api.get(`/task-resources/?task_id=${taskId}`);
+  },
 };
 
 export default lessonService;

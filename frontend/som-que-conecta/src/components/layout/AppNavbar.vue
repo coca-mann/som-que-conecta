@@ -228,6 +228,9 @@ const isActiveRoute = (path) => {
   if (path === '/') {
     return route.path === '/'
   }
+  if (path === '/courses') {
+    return route.path === '/courses' || route.path.startsWith('/courses/') || route.path.startsWith('/course/')
+  }
   return route.path.startsWith(path)
 }
 
