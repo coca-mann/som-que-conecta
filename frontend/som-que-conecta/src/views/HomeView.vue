@@ -102,7 +102,13 @@
           <div v-else-if="latestArticle" class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
             <div class="md:flex">
               <div class="md:w-1/2">
-                <img :src="latestArticle.cover_image" :alt="latestArticle.title" class="w-full h-64 md:h-full object-cover">
+                <img 
+                  :src="latestArticle.cover_image && !latestArticle.cover_image.includes('default.png') 
+                    ? homeService.getImageUrl(latestArticle.cover_image) 
+                    : latestArticle.cover_link" 
+                  :alt="latestArticle.title" 
+                  class="w-full h-64 md:h-full object-cover"
+                >
               </div>
               <div class="md:w-1/2 p-8">
                 <div class="flex items-center gap-3 mb-4">

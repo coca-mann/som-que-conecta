@@ -546,14 +546,8 @@ const previewArticle = () => {
 }
 
 const handleSubmit = async () => {
-  if (!form.value.title || !form.value.category || !form.value.excerpt || !form.value.content) {
-    alert('Por favor, preencha todos os campos obrigatórios.');
-    return;
-  }
-
   isLoading.value = true;
   error.value = null;
-  aiStatus.value = null;
 
   try {
     if (isEditing.value) {
@@ -579,9 +573,17 @@ const handleSubmit = async () => {
       const response = await articleService.submitForPublication(route.params.id);
       
       if (response.data.feedback) {
-        alert(`Feedback da revisão: ${response.data.feedback}`);
         aiStatus.value = response.data.ai_bool;
         aiFeedback.value = response.data.feedback;
+        
+        // Se aprovado pela IA, publica automaticamente
+        if (response.data.ai_bool === true) {
+          const publishData = new FormData();
+          publishData.append('is_draft', 'false');
+          publishData.append('is_published', 'true');
+          await articleService.updateArticle(route.params.id, publishData);
+          router.push('/articles');
+        }
       }
     } else {
       // Primeiro cria o artigo como rascunho
@@ -602,17 +604,28 @@ const handleSubmit = async () => {
 
       const createResponse = await articleService.createArticle(formData);
       
+      // Verifica se temos o ID do artigo criado
+      if (!createResponse.data || !createResponse.data.id) {
+        throw new Error('Não foi possível obter o ID do artigo criado');
+      }
+      
       // Depois submete para publicação
       const response = await articleService.submitForPublication(createResponse.data.id);
       
       if (response.data.feedback) {
-        alert(`Feedback da revisão: ${response.data.feedback}`);
         aiStatus.value = response.data.ai_bool;
         aiFeedback.value = response.data.feedback;
+        
+        // Se aprovado pela IA, publica automaticamente
+        if (response.data.ai_bool === true) {
+          const publishData = new FormData();
+          publishData.append('is_draft', 'false');
+          publishData.append('is_published', 'true');
+          await articleService.updateArticle(createResponse.data.id, publishData);
+          router.push('/articles');
+        }
       }
     }
-
-    router.push('/articles');
   } catch (err) {
     console.error("Erro ao salvar artigo:", err.response?.data || err);
     if (err.response?.data?.feedback) {

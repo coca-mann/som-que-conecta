@@ -68,7 +68,7 @@
                 <p class="text-gray-600 mt-1">{{ userProfile.email }}</p>
                 <div class="flex items-center justify-center gap-2 mt-2">
                   <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                    {{ userProfile.skill_level }}
+                    {{ userProfile.skill_level_display }}
                   </span>
                   <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
                     {{ userProfile.gender === 'M' ? 'Masculino' : userProfile.gender === 'F' ? 'Feminino' : 'Outro' }}
