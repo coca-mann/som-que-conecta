@@ -23,12 +23,18 @@ def validate_article_with_ai(sender, instance, **kwargs):
 
     # Verifica se o artigo está sendo enviado para publicação
     if instance.is_published and not instance.is_draft:
+        # Se já foi revisado e aprovado pela IA, apenas define a data de publicação
+        if instance.is_reviewed and instance.ai_bool:
+            instance.published_at = timezone.now()
+            return
+
         # Realiza a validação com IA
         validation_result = article_validation_service.validate_article(instance.content)
         
         if validation_result['is_valid']:
             # Atualiza o feedback da IA
             instance.ai_feedback = validation_result['feedback']
+            instance.ai_bool = validation_result['is_approved']
             
             # Define o status de revisão e moderação
             instance.is_reviewed = True

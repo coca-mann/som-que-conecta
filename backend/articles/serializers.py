@@ -185,10 +185,19 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        # Lista de campos que o frontend pode enviar ao criar/editar
         fields = [
-            'title', 'short_description', 'content', 'cover_image', 'cover_link',
-            'reading_time', 'difficulty', 'category', 'is_draft', 'is_published', 'category_name'
+            'id',
+            'title',
+            'category',
+            'category_name',
+            'short_description',
+            'content',
+            'reading_time',
+            'difficulty',
+            'cover_image',
+            'cover_link',
+            'is_draft',
+            'is_published'
         ]
 
     def _get_category(self, category_name):

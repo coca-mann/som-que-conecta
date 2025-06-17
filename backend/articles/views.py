@@ -109,12 +109,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
                 status=403
             )
         
-        # Verifica se o artigo está em rascunho
-        if not article.is_draft:
-            return Response(
-                {'detail': 'Apenas artigos em rascunho podem ser submetidos para publicação.'},
-                status=400
-            )
+        # Força o artigo para estado de rascunho antes de submeter
+        article.is_draft = True
+        article.is_published = False
+        article.is_reviewed = False
+        article.is_moderated = False
+        article.save()
         
         # Valida o artigo usando a IA
         validation_result = article_validation_service.validate_article(article.content)
@@ -148,14 +148,14 @@ class ArticleViewSet(viewsets.ModelViewSet):
         
         # Se aprovado pela IA, atualiza o estado do artigo
         article.is_draft = False
-        article.is_published = False
+        article.is_published = True
         article.is_reviewed = True
-        article.is_moderated = False
-        article.ai_feedback = validation_result['feedback']
+        article.is_moderated = True
+        article.published_at = timezone.now()
         article.save()
         
         return Response({
-            'detail': 'Artigo submetido para publicação com sucesso.',
+            'detail': 'Artigo publicado com sucesso.',
             'feedback': validation_result['feedback'],
             'status': {
                 'is_draft': article.is_draft,
@@ -479,7 +479,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
             is_published=False,
             is_reviewed=True,
             is_moderated=False,
-            ai_feedback=validation_result['feedback']
+            ai_feedback=validation_result['feedback'],
+            ai_bool=validation_result['is_approved']
         )
         
         return Response({
@@ -539,7 +540,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
             is_published=False,
             is_reviewed=True,
             is_moderated=False,
-            ai_feedback=validation_result['feedback']
+            ai_feedback=validation_result['feedback'],
+            ai_bool=validation_result['is_approved']
         )
         
         return Response({

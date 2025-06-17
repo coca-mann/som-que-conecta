@@ -59,7 +59,6 @@ class Article(models.Model):
     )
     cover_image = models.ImageField(
         upload_to='articles_media/cover/',
-        default='articles_media/cover/default.png',
         blank=True,
         verbose_name='Imagem da capa do artigo',
     )
