@@ -95,14 +95,14 @@ class CommentValidationService:
         1. Contiver conteúdo impróprio ou ofensivo
         2. For spam ou propaganda
         3. For uma sequência aleatória de caracteres
-        4. Não tiver relação com o artigo
-        5. For muito curto ou sem sentido
+        4. For muito curto (menos de 3 caracteres) ou sem sentido
 
         Aprove o comentário se:
         1. For respeitoso e construtivo
-        2. Tiver relação com o artigo
-        3. Contribuir para a discussão
+        2. Tiver relação com o artigo (mesmo que seja apenas um elogio simples)
+        3. Contribuir para a discussão ou expressar uma opinião positiva
         4. Estiver de acordo com as diretrizes da plataforma
+        5. For um elogio simples como "ótimo artigo", "muito bom", "gostei", etc.
 
         Retorne APENAS o objeto JSON, sem nenhum texto adicional.
         """
