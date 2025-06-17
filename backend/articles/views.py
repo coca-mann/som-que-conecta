@@ -33,9 +33,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
     """
     ViewSet para gerenciar Artigos com a lógica de filtro e ordenação corrigida.
     """
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [OrderingFilter]
-    ordering_fields = ['created_at', 'rating', 'read_count', 'popularity']
+    ordering_fields = ['created_at', 'read_count', 'rating']
     ordering = ['-created_at']
 
     def get_serializer_class(self):
@@ -44,10 +46,16 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """
         if self.action == 'list':
             return ArticleListSerializer
-        if self.action in ['create', 'update', 'partial_update']:
+        elif self.action in ['create', 'update', 'partial_update']:
             return ArticleCreateUpdateSerializer
-        # O padrão para 'retrieve' (detalhe) e outras ações será o serializer de detalhe.
-        return ArticleDetailSerializer
+        elif self.action == 'retrieve':
+            return ArticleDetailSerializer
+        return ArticleSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
     def get_queryset(self):
         """
@@ -89,6 +97,38 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """ Associa o artigo ao usuário logado ao criar. """
         serializer.save(author=self.request.user)
 
+    @action(detail=True, methods=['get'])
+    def check_favorite(self, request, pk=None):
+        article = self.get_object()
+        is_favorited = ArticleFavorites.objects.filter(
+            user_id=request.user,
+            article_id=article
+        ).exists()
+        return Response({'is_favorited': is_favorited})
+
+    @action(detail=True, methods=['post'])
+    def favorite(self, request, pk=None):
+        article = self.get_object()
+        favorite, created = ArticleFavorites.objects.get_or_create(
+            user_id=request.user,
+            article_id=article
+        )
+        if not created:
+            return Response({'detail': 'Artigo já está nos favoritos'}, status=400)
+        return Response({'detail': 'Artigo adicionado aos favoritos'}, status=201)
+
+    @action(detail=True, methods=['delete'])
+    def unfavorite(self, request, pk=None):
+        article = self.get_object()
+        try:
+            favorite = ArticleFavorites.objects.get(
+                user_id=request.user,
+                article_id=article
+            )
+            favorite.delete()
+            return Response(status=204)
+        except ArticleFavorites.DoesNotExist:
+            return Response({'detail': 'Artigo não está nos favoritos'}, status=404)
 
 
 class ArticleCommentViewSet(viewsets.ModelViewSet):

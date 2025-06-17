@@ -20,7 +20,7 @@ class ArticleAuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         # Garanta que seu modelo de usuário tenha um campo para foto de perfil
-        fields = ['id', 'username', 'first_name', 'last_name', 'profile_picture']
+        fields = ['id', 'username', 'get_full_name','first_name', 'last_name', 'profile_picture']
 
 class ArticleCommentSerializer(serializers.ModelSerializer):
     # Use o serializer de autor aninhado aqui
@@ -108,15 +108,25 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
     author = ArticleAuthorSerializer(read_only=True)
     category = ArticleCategorySerializer(read_only=True)
     comments = ArticleCommentSerializer(many=True, read_only=True)
+    cover_image = serializers.SerializerMethodField()
+    favorite_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
-        # Usando 'fields' explícitos em vez de '__all__'
         fields = [
             'id', 'title', 'short_description', 'content', 'cover_image', 'cover_link',
             'reading_time', 'difficulty', 'author', 'category', 'comments', 'created_at',
-            'read_count', 'like_count', 'rating', 'is_published'
+            'read_count', 'like_count', 'rating', 'is_published', 'favorite_count'
         ]
+
+    def get_cover_image(self, obj):
+        request = self.context.get('request')
+        if obj.cover_image:
+            return request.build_absolute_uri(obj.cover_image.url) if request else obj.cover_image.url
+        return obj.cover_link
+
+    def get_favorite_count(self, obj):
+        return ArticleFavorites.objects.filter(article_id=obj).count()
 
 
 # --- Serializer para CRIAR e ATUALIZAR um Artigo (ações 'create', 'update', 'partial_update') ---
