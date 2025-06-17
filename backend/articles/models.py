@@ -218,3 +218,38 @@ class ArticleFavorites(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.article.title}"
+
+
+class ArticleRead(models.Model):
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        verbose_name='Artigo',
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Usuário',
+    )
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        verbose_name='Endereço IP',
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Criado em',
+    )
+
+    class Meta:
+        verbose_name = 'Leitura de Artigo'
+        verbose_name_plural = 'Leituras de Artigos'
+        indexes = [
+            models.Index(fields=['article', 'ip_address', 'created_at']),
+            models.Index(fields=['article', 'user', 'created_at']),
+        ]
+
+    def __str__(self):
+        return f"Leitura de {self.article.title} em {self.created_at}"

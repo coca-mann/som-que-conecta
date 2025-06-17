@@ -4,7 +4,8 @@ from backend.articles.models import (
     Article,
     ArticleComments,
     ArticleFavorites,
-    ArticleCategory
+    ArticleCategory,
+    ArticleRating
 )
 
 
@@ -22,13 +23,40 @@ class ArticleAuthorSerializer(serializers.ModelSerializer):
         # Garanta que seu modelo de usuário tenha um campo para foto de perfil
         fields = ['id', 'username', 'get_full_name','first_name', 'last_name', 'profile_picture']
 
+
 class ArticleCommentSerializer(serializers.ModelSerializer):
-    # Use o serializer de autor aninhado aqui
     user = ArticleAuthorSerializer(read_only=True)
+    userAvatar = serializers.SerializerMethodField()
+    userName = serializers.SerializerMethodField()
+    likes = serializers.SerializerMethodField()
+    isLiked = serializers.SerializerMethodField()
+    createdAt = serializers.DateTimeField(source='created_at', read_only=True)
+    comment = serializers.CharField(write_only=True)
+    content = serializers.CharField(source='comment', read_only=True)
 
     class Meta:
         model = ArticleComments
-        fields = ['id', 'user', 'comment', 'created_at']
+        fields = ['id', 'user', 'userAvatar', 'userName', 'comment', 'content', 'createdAt', 'likes', 'isLiked']
+
+    def get_userAvatar(self, obj):
+        if obj.user and obj.user.profile_picture:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.user.profile_picture.url)
+            return obj.user.profile_picture.url
+        return None
+
+    def get_userName(self, obj):
+        return obj.user.get_full_name() if obj.user else None
+
+    def get_likes(self, obj):
+        return 0  # Implementar sistema de likes para comentários se necessário
+
+    def get_isLiked(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        return False  # Implementar verificação de like se necessário
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -191,3 +219,10 @@ class ArticleFavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArticleFavorites
         fields = '__all__'
+
+
+class ArticleRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArticleRating
+        fields = ['id', 'rating', 'created_at']
+        read_only_fields = ['created_at']

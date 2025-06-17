@@ -4,12 +4,14 @@ from rest_framework import viewsets
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.filters import OrderingFilter
-from django.db.models import F, Q, Count
+from django.db.models import F, Q, Count, Avg
 from backend.articles.models import (
     ArticleFavorites,
     Article,
     ArticleComments,
-    ArticleCategory
+    ArticleCategory,
+    ArticleRating,
+    ArticleRead
 )
 from backend.articles.serializers import (
     ArticleSerializer,
@@ -21,6 +23,8 @@ from backend.articles.serializers import (
     ArticleCreateUpdateSerializer
 )
 from backend.articles.permissions import IsCommentAuthorOrAdmin
+from django.utils import timezone
+from datetime import timedelta
 
 
 class ArticleCategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -39,6 +43,56 @@ class ArticleViewSet(viewsets.ModelViewSet):
     filter_backends = [OrderingFilter]
     ordering_fields = ['created_at', 'read_count', 'rating']
     ordering = ['-created_at']
+
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
+
+    def register_read(self, article, request):
+        """
+        Registra uma leitura do artigo, usando o tempo de leitura do artigo como intervalo.
+        """
+        now = timezone.now()
+        ip_address = self.get_client_ip(request)
+        
+        # Converte o tempo de leitura (em minutos) para timedelta
+        reading_interval = timedelta(minutes=article.reading_time)
+        
+        # Verifica se já houve uma leitura recente (baseado no tempo de leitura do artigo)
+        recent_read = ArticleRead.objects.filter(
+            article=article,
+            created_at__gte=now - reading_interval
+        )
+        
+        if request.user.is_authenticated:
+            recent_read = recent_read.filter(user=request.user)
+        else:
+            recent_read = recent_read.filter(ip_address=ip_address)
+        
+        if not recent_read.exists():
+            # Registra a nova leitura
+            ArticleRead.objects.create(
+                article=article,
+                user=request.user if request.user.is_authenticated else None,
+                ip_address=ip_address if not request.user.is_authenticated else None
+            )
+            
+            # Atualiza o contador do artigo
+            article.read_count = ArticleRead.objects.filter(article=article).count()
+            article.save()
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Sobrescreve o método retrieve para registrar a leitura.
+        """
+        instance = self.get_object()
+        self.register_read(instance, request)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def get_serializer_class(self):
         """
@@ -88,7 +142,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
         # Isso deve ser feito após os filtros para otimização.
         final_queryset = base_queryset.annotate(
             popularity=F('like_count') + F('read_count'),
-            comments_count=Count('articlecomments')
+            comments_count=Count('articlecomments'),
+            avg_rating=Avg('rating')
         )
             
         return final_queryset
@@ -129,6 +184,104 @@ class ArticleViewSet(viewsets.ModelViewSet):
             return Response(status=204)
         except ArticleFavorites.DoesNotExist:
             return Response({'detail': 'Artigo não está nos favoritos'}, status=404)
+
+    @action(detail=True, methods=['post'])
+    def add_comment(self, request, pk=None):
+        article = self.get_object()
+        serializer = ArticleCommentSerializer(data=request.data, context={'request': request})
+        
+        if serializer.is_valid():
+            serializer.save(
+                article=article,
+                user=request.user,
+                is_published=True  # Você pode ajustar isso baseado na sua lógica de moderação
+            )
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+    @action(detail=True, methods=['get'])
+    def comments(self, request, pk=None):
+        article = self.get_object()
+        comments = ArticleComments.objects.filter(
+            article=article,
+            is_published=True
+        ).order_by('-created_at')
+        
+        serializer = ArticleCommentSerializer(comments, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def rate(self, request, pk=None):
+        article = self.get_object()
+        rating_value = request.data.get('rating')
+        
+        if not rating_value or not isinstance(rating_value, int) or rating_value < 1 or rating_value > 5:
+            return Response({'detail': 'Avaliação inválida. Deve ser um número entre 1 e 5.'}, status=400)
+        
+        # Atualiza ou cria a avaliação
+        rating, created = ArticleRating.objects.update_or_create(
+            user_id=request.user,
+            article_id=article,
+            defaults={'rating': rating_value}
+        )
+        
+        # Calcula a média das avaliações
+        ratings = ArticleRating.objects.filter(article_id=article)
+        avg_rating = ratings.aggregate(Avg('rating'))['rating__avg']
+        
+        # Atualiza a avaliação média no artigo
+        article.rating = round(avg_rating, 1) if avg_rating else None
+        article.save()
+        
+        return Response({
+            'detail': 'Avaliação registrada com sucesso',
+            'rating': article.rating
+        })
+
+    @action(detail=True, methods=['get'])
+    def check_rating(self, request, pk=None):
+        article = self.get_object()
+        try:
+            rating = ArticleRating.objects.get(
+                user_id=request.user,
+                article_id=article
+            )
+            return Response({
+                'has_rated': True,
+                'rating': rating.rating
+            })
+        except ArticleRating.DoesNotExist:
+            return Response({
+                'has_rated': False,
+                'rating': None
+            })
+
+    @action(detail=True, methods=['delete'])
+    def remove_rating(self, request, pk=None):
+        article = self.get_object()
+        try:
+            rating = ArticleRating.objects.get(
+                user_id=request.user,
+                article_id=article
+            )
+            rating.delete()
+            
+            # Recalcula a média das avaliações
+            ratings = ArticleRating.objects.filter(article_id=article)
+            avg_rating = ratings.aggregate(Avg('rating'))['rating__avg']
+            
+            # Atualiza a avaliação média no artigo
+            article.rating = round(avg_rating, 1) if avg_rating else None
+            article.save()
+            
+            return Response({
+                'detail': 'Avaliação removida com sucesso',
+                'rating': article.rating
+            })
+        except ArticleRating.DoesNotExist:
+            return Response({
+                'detail': 'Você ainda não avaliou este artigo'
+            }, status=404)
 
 
 class ArticleCommentViewSet(viewsets.ModelViewSet):
