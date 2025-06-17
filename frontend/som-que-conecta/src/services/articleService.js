@@ -65,6 +65,20 @@ const articleService = {
 
   async removeRating(articleId) {
     return await api.delete(`/articles/${articleId}/remove_rating/`);
+  },
+
+  // Para exclusão de artigos
+  async deleteArticle(articleId) {
+    return await api.delete(`/articles/${articleId}/`);
+  },
+
+  // Para upload de imagens do editor
+  async uploadImage(file) {
+    const formData = new FormData();
+    formData.append('upload', file);
+    return await api.post('/articles/upload-image/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
   }
 };
 

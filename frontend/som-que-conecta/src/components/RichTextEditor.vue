@@ -27,6 +27,8 @@
 
 import { computed, ref, onMounted } from 'vue';
 import { Ckeditor, useCKEditorCloud } from '@ckeditor/ckeditor5-vue';
+import articleService from '@/services/articleService';
+import api from '@/services/api';
 
 const props = defineProps({
 	modelValue: {
@@ -313,7 +315,33 @@ const config = computed(() => {
 				'imageStyle:breakText',
 				'|',
 				'resizeImage'
-			]
+			],
+			upload: {
+				types: ['jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff']
+			},
+			styles: [
+				'alignLeft',
+				'alignCenter',
+				'alignRight'
+			],
+			resizeOptions: [
+				{
+					name: 'imageResize:original',
+					value: null,
+					label: 'Original'
+				},
+				{
+					name: 'imageResize:50',
+					value: '50',
+					label: '50%'
+				},
+				{
+					name: 'imageResize:75',
+					value: '75',
+					label: '75%'
+				}
+			],
+			resizeUnit: '%'
 		},
 		licenseKey: LICENSE_KEY,
 		link: {
@@ -386,6 +414,58 @@ const config = computed(() => {
 		},
 		table: {
 			contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
+		},
+		simpleUpload: {
+			uploadUrl: `${api.defaults.baseURL}articles/upload-image/`,
+			withCredentials: true,
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+			},
+			upload: async (file) => {
+				console.log('Iniciando upload...')
+				console.log('Arquivo recebido:', file)
+				console.log('Tipo do arquivo:', file.type)
+				console.log('Tamanho do arquivo:', file.size)
+
+				const uploadUrl = `${api.defaults.baseURL}articles/upload-image/`
+				console.log('URL de upload:', uploadUrl)
+				console.log('Token de autenticação:', api.defaults.headers.common['Authorization'])
+
+				const formData = new FormData()
+				formData.append('upload', file)
+				console.log('FormData criado:', formData)
+
+				try {
+					const response = await api.post('articles/upload-image/', formData, {
+						headers: {
+							'Content-Type': 'multipart/form-data',
+						},
+						withCredentials: true
+					})
+					console.log('Resposta do servidor:', response.data)
+					
+					// Retorna o formato esperado pelo CKEditor
+					return {
+						url: response.data.url,
+						uploaded: response.data.uploaded,
+						fileName: response.data.fileName,
+						error: response.data.error
+					}
+				} catch (error) {
+					console.error('Erro no upload:', error)
+					console.error('Detalhes do erro:', {
+						response: error.response?.data,
+						status: error.response?.status,
+						headers: error.response?.headers
+					})
+					return {
+						uploaded: false,
+						error: {
+							message: error.response?.data?.error?.message || 'Erro ao fazer upload da imagem'
+						}
+					}
+				}
+			}
 		}
 	};
 });

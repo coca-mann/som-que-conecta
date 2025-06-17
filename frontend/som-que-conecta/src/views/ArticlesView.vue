@@ -50,7 +50,11 @@
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <article v-for="article in filteredArticles" :key="article.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" @click="openArticle(article)">
         <div class="relative">
-          <img :src="article.cover_image" :alt="article.title" class="w-full h-48 object-cover">
+          <img 
+            :src="article.cover_image && article.cover_image.includes('default.png') && article.cover_link ? article.cover_link : article.cover_image" 
+            :alt="article.title" 
+            class="w-full h-48 object-cover"
+          >
           
           <div v-if="!article.is_published" class="absolute inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center text-white p-4">
             <EyeOff class="h-8 w-8 mb-2" />
@@ -60,7 +64,7 @@
           
           <div class="absolute top-3 right-3">
             <span class="px-2 py-1 bg-blue-600 text-white text-xs rounded-full font-medium">
-              {{ article.category?.name || 'Sem categoria' }}
+              {{ article.category || 'Sem categoria' }}
             </span>
           </div>
           <div class="absolute bottom-3 left-3">
@@ -79,7 +83,7 @@
             <div class="flex items-center gap-4 text-sm text-gray-500">
               <div class="flex items-center gap-1">
                 <Eye class="h-4 w-4" />
-                <span>{{ formatNumber(article.views) }}</span>
+                <span>{{ formatNumber(article.read_count) }}</span>
               </div>
               <div class="flex items-center gap-1">
                 <MessageCircle class="h-4 w-4" />
@@ -100,19 +104,12 @@
           <!-- Author Info -->
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <img :src="article.author?.avatar" :alt="article.author?.name" class="w-8 h-8 rounded-full">
+              <img :src="article.author?.profile_picture" :alt="article.author?.get_full_name" class="w-8 h-8 rounded-full">
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ article.author?.name }}</p>
+                <p class="text-sm font-medium text-gray-900">{{ article.author?.get_full_name }}</p>
                 <p class="text-xs text-gray-500">{{ formatDate(article.created_at) }}</p>
               </div>
             </div>
-            
-            <button @click.stop="toggleBookmark(article)" :class="[
-              'p-2 rounded-full transition-colors',
-              article.isBookmarked ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-            ]">
-              <Bookmark :class="article.isBookmarked ? 'fill-current' : ''" class="h-4 w-4" />
-            </button>
           </div>
         </div>
       </article>
@@ -127,13 +124,6 @@
         Limpar Filtros
       </button>
     </div>
-
-    <!-- Load More Button -->
-    <div v-if="hasMoreArticles" class="text-center mt-8">
-      <button @click="loadMoreArticles" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-        Carregar Mais Artigos
-      </button>
-    </div>
   </div>
 </template>
 
@@ -142,7 +132,7 @@ import { ref, watch, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 import articleService from '@/services/articleService';
-import { Plus, Search, Star, Eye, MessageCircle, Bookmark, BookOpen } from 'lucide-vue-next'
+import { Plus, Search, Star, Eye, MessageCircle, BookOpen } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore();
@@ -150,7 +140,6 @@ const authStore = useAuthStore();
 const selectedCategory = ref('')
 const sortBy = ref('-created_at')
 const searchQuery = ref('')
-const hasMoreArticles = ref(true)
 
 // Permissão para criar
 const canCreateArticle = computed(() => {
@@ -218,7 +207,7 @@ const filteredArticles = computed(() => {
   // Filter by category
   if (selectedCategory.value) {
     filtered = filtered.filter(article => 
-      article.category?.name?.toLowerCase().includes(selectedCategory.value.toLowerCase())
+      article.category?.toLowerCase() === selectedCategory.value.toLowerCase()
     )
   }
 
@@ -227,25 +216,25 @@ const filteredArticles = computed(() => {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(article =>
       article.title.toLowerCase().includes(query) ||
-      article.excerpt.toLowerCase().includes(query) ||
-      article.author.name.toLowerCase().includes(query)
+      article.short_description?.toLowerCase().includes(query) ||
+      article.author?.get_full_name?.toLowerCase().includes(query)
     )
   }
 
   // Sort articles
   switch (sortBy.value) {
-    case 'popular':
-      filtered.sort((a, b) => (b.views + b.commentsCount * 10) - (a.views + a.commentsCount * 10))
+    case '-popularity':
+      filtered.sort((a, b) => (b.read_count + b.comments_count * 10) - (a.read_count + a.comments_count * 10))
       break
-    case 'rating':
+    case '-rating':
       filtered.sort((a, b) => b.rating - a.rating)
       break
-    case 'views':
-      filtered.sort((a, b) => b.views - a.views)
+    case '-read_count':
+      filtered.sort((a, b) => b.read_count - a.read_count)
       break
-    case 'recent':
+    case '-created_at':
     default:
-      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       break
   }
 
@@ -283,22 +272,10 @@ const formatNumber = (num) => {
   return num.toString();
 };
 
-const toggleBookmark = (article) => {
-  article.isBookmarked = !article.isBookmarked
-  console.log('Bookmark toggled:', article.id, article.isBookmarked)
-}
-
 const clearFilters = () => {
   selectedCategory.value = ''
   sortBy.value = 'recent'
   searchQuery.value = ''
-}
-
-const loadMoreArticles = () => {
-  // Simulate loading more articles
-  console.log('Loading more articles...')
-  // In a real app, you would fetch more articles from your API
-  hasMoreArticles.value = false
 }
 </script>
 

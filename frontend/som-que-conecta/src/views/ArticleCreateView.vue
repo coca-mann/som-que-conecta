@@ -15,17 +15,6 @@
               <p class="text-gray-600">Compartilhe seu conhecimento musical com a comunidade</p>
             </div>
           </div>
-          
-          <div class="flex items-center gap-3">
-            <button @click="saveDraft" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-              <Save class="h-4 w-4 inline mr-2" />
-              Salvar Rascunho
-            </button>
-            <button @click="previewArticle" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
-              <Eye class="h-4 w-4 inline mr-2" />
-              Visualizar
-            </button>
-          </div>
         </div>
       </div>
 
@@ -250,17 +239,55 @@
 
         <!-- Submit Actions -->
         <div class="bg-white rounded-lg shadow-sm p-6">
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-600">
-              <p>Seu artigo será revisado antes da publicação</p>
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <div class="text-sm text-gray-600">
+                <p>Seu artigo será revisado antes da publicação</p>
+              </div>
+              
+              <div class="flex gap-3">
+                <button type="button" @click="goBack" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                  Cancelar
+                </button>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  {{ isEditing ? 'Atualizar Artigo' : 'Publicar Artigo' }}
+                </button>
+              </div>
             </div>
-            
-            <div class="flex gap-3">
-              <button type="button" @click="goBack" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                Cancelar
-              </button>
-              <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                {{ isEditing ? 'Atualizar Artigo' : 'Publicar Artigo' }}
+
+            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+              <div class="flex gap-3">
+                <div class="relative">
+                  <button 
+                    type="button" 
+                    @click="saveDraft" 
+                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+                    :disabled="!form.category"
+                  >
+                    <Save class="h-4 w-4" />
+                    Salvar Rascunho
+                  </button>
+                  <div 
+                    v-if="!form.category" 
+                    class="absolute bottom-full left-0 mb-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm whitespace-nowrap"
+                  >
+                    Selecione uma categoria para salvar o rascunho
+                  </div>
+                </div>
+                <button type="button" @click="previewArticle" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2">
+                  <Eye class="h-4 w-4" />
+                  Visualizar
+                </button>
+              </div>
+
+              <button 
+                v-if="isEditing"
+                type="button" 
+                @click="confirmDelete" 
+                class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex items-center gap-2"
+              >
+                <Trash2 class="h-4 w-4" />
+                Excluir Artigo
               </button>
             </div>
           </div>
@@ -285,12 +312,38 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+      <div class="bg-white/95 backdrop-blur-sm rounded-lg w-full max-w-md mx-4 p-6 shadow-xl">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirmar Exclusão</h3>
+        <p class="text-gray-600 mb-6">Tem certeza que deseja excluir este artigo? Esta ação não pode ser desfeita.</p>
+        <div class="flex justify-end gap-3">
+          <button 
+            @click="showDeleteConfirm = false" 
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            :disabled="isDeleting"
+          >
+            Cancelar
+          </button>
+          <button 
+            @click="deleteArticle" 
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+            :disabled="isDeleting"
+          >
+            <div v-if="isDeleting" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            {{ isDeleting ? 'Excluindo...' : 'Excluir' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.store'
 import articleService from '@/services/articleService';
 import RichTextEditor from '@/components/RichTextEditor.vue';
 import { 
@@ -300,13 +353,11 @@ import {
   X, 
   Plus,
   Image as ImageIcon,
-  Upload
+  Upload,
+  Trash2
 } from 'lucide-vue-next'
 
-const isEditing = computed(() => route.params.id !== undefined);
-const imageFile = ref(null);
-const categories = ref([]);
-
+const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 const editor = ref(null)
@@ -317,6 +368,12 @@ const uploadProgress = ref(0)
 const imageInfo = ref(null)
 const isLoading = ref(false)
 const error = ref(null)
+const showDeleteConfirm = ref(false)
+const isDeleting = ref(false)
+
+const isEditing = computed(() => route.params.id !== undefined);
+const imageFile = ref(null);
+const categories = ref([]);
 
 const form = ref({
   title: '',
@@ -450,6 +507,34 @@ const handleSubmit = () => {
   handleSave(false);
 };
 
+const checkPermission = () => {
+  const userRole = authStore.user?.role
+  const allowedRoles = ['admin', 'ong', 'teacher']
+  
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    router.push('/articles')
+  }
+}
+
+const confirmDelete = () => {
+  showDeleteConfirm.value = true
+}
+
+const deleteArticle = async () => {
+  isDeleting.value = true
+  try {
+    await articleService.deleteArticle(route.params.id)
+    showDeleteConfirm.value = false
+    router.push('/articles')
+  } catch (err) {
+    console.error('Erro ao excluir artigo:', err)
+    const errorMessage = err.response?.data?.detail || 'Erro ao excluir o artigo. Por favor, tente novamente.'
+    alert(errorMessage)
+  } finally {
+    isDeleting.value = false
+  }
+}
+
 onMounted(async () => {
   // Busca categorias para o dropdown
   try {
@@ -467,19 +552,29 @@ onMounted(async () => {
       
       // Preenche o formulário com os dados da API
       form.value.title = articleData.title;
-      form.value.category = articleData.category?.name || null; // Corrigido para pegar o nome da categoria
-      form.value.excerpt = articleData.short_description || articleData.excerpt; // Tenta ambos os campos possíveis
+      form.value.category = articleData.category?.name || null;
+      form.value.excerpt = articleData.short_description || articleData.excerpt;
       form.value.content = articleData.content;
       form.value.reading_time = articleData.reading_time;
       form.value.difficulty = articleData.difficulty;
-      form.value.cover_image = articleData.cover_image;
-      form.value.cover_link = articleData.cover_link;
+      
+      // Trata a imagem de capa
+      if (articleData.cover_image) {
+        form.value.cover_image = articleData.cover_image;
+        imageUploadMethod.value = 'upload';
+      } else if (articleData.cover_url) {
+        form.value.cover_image = articleData.cover_url;
+        form.value.cover_link = articleData.cover_url;
+        imageUploadMethod.value = 'url';
+      }
       
     } catch (err) {
       console.error('Erro ao carregar artigo para edição:', err);
       // Opcional: redirecionar ou mostrar erro
     }
   }
+
+  checkPermission()
 });
 </script>
 

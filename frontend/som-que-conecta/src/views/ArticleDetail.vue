@@ -1,5 +1,12 @@
 <template>
   <div class="min-h-screen bg-gray-50">
+    <!-- Toast Notification -->
+    <div v-if="showToast" 
+         class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out"
+         :class="showToast ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'">
+      {{ toastMessage }}
+    </div>
+
     <!-- Back Navigation -->
     <div class="mb-6">
       <button @click="goBack" class="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors">
@@ -13,7 +20,11 @@
       <article class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="relative h-64 md:h-80">
           <div class="absolute inset-0">
-            <img :src="article.cover_image" :alt="article.title" class="w-full h-full object-cover">
+            <img 
+              :src="article.cover_image && article.cover_image.includes('default.png') && article.cover_link ? article.cover_link : article.cover_image" 
+              :alt="article.title" 
+              class="w-full h-full object-cover"
+            >
           </div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
             <div class="p-6 text-white">
@@ -81,7 +92,7 @@
                 <span class="text-sm">{{ isLiked ? 'Descurtir' : 'Curtir' }}</span>
               </button>
               
-              <button class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
+              <button @click="shareArticle" class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
                 <Share2 class="h-4 w-4" />
                 Compartilhar
               </button>
@@ -221,11 +232,13 @@ const authStore = useAuthStore();
 const isLoading = ref(true);
 const article = ref(null)
 const error = ref(null)
-const isLoggedIn = computed(() => authStore.isAuthenticated); // Should come from auth store
+const isLoggedIn = computed(() => authStore.isAuthenticated);
 const isLiked = ref(false)
 const userRating = ref(0)
 const newComment = ref('')
 const comments = ref([])
+const showToast = ref(false)
+const toastMessage = ref('')
 
 // Function to go back
 const goBack = () => router.push('/articles');
@@ -249,6 +262,9 @@ const fetchArticleData = async () => {
   isLoading.value = true;
   error.value = null;
   const articleId = route.params.id;
+
+  // Rola a página para o topo
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   try {
     const response = await articleService.getArticleDetail(articleId);
@@ -367,4 +383,38 @@ const removeRating = async () => {
     alert('Erro ao remover sua avaliação. Por favor, tente novamente.');
   }
 };
+
+// Função para mostrar o toast
+const showToastMessage = (message) => {
+  toastMessage.value = message
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+  }, 3000)
+}
+
+// Função para compartilhar o artigo
+const shareArticle = async () => {
+  const shareData = {
+    title: article.value.title,
+    text: article.value.short_description,
+    url: window.location.href
+  }
+
+  try {
+    if (navigator.share) {
+      // Web Share API está disponível
+      await navigator.share(shareData)
+    } else {
+      // Fallback: copiar link para a área de transferência
+      await navigator.clipboard.writeText(window.location.href)
+      showToastMessage('Link copiado para a área de transferência!')
+    }
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('Erro ao compartilhar:', error)
+      showToastMessage('Erro ao compartilhar o artigo')
+    }
+  }
+}
 </script>
