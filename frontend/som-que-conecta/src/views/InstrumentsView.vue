@@ -6,8 +6,20 @@
       <p class="text-gray-600">Instrumentos musicais disponibilizados por ONGs e professores independentes</p>
     </div>
 
+    <!-- Mensagem de Login -->
+    <div v-if="!isAuthenticated" class="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+      <h2 class="text-xl font-semibold text-blue-900 mb-2">Faça login para acessar os instrumentos</h2>
+      <p class="text-blue-700 mb-4">Para solicitar o empréstimo de instrumentos, você precisa estar logado em sua conta.</p>
+      <router-link 
+        to="/auth?redirect=/instruments" 
+        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+      >
+        Fazer Login
+      </router-link>
+    </div>
+
     <!-- Filters -->
-    <div class="mb-8 flex flex-wrap gap-4">
+    <div v-if="isAuthenticated" class="mb-8 flex flex-wrap gap-4">
       <select v-model="selectedType" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         <option value="">Todos os Tipos</option>
         <option v-for="type in instrumentTypes" :key="type.id" :value="type.name">{{ type.name }}</option>
@@ -25,7 +37,7 @@
     </div>
 
     <!-- Instruments Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="isAuthenticated" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div v-for="instrument in filteredInstruments" :key="instrument.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
         <div class="relative">
           <div class="relative w-full h-48 overflow-hidden">
@@ -147,7 +159,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth.store';
 import instrumentService from '@/services/instrumentService';
 import { storeToRefs } from 'pinia';
@@ -175,13 +187,27 @@ const instrumentBrands = ref([])
 // Estado para controlar o índice da imagem atual de cada instrumento
 const currentImageIndex = ref({})
 
+// Watcher para carregar dados quando o usuário fizer login
+watch(isAuthenticated, async (newValue) => {
+  if (newValue) {
+    console.log('Usuário autenticado. Carregando dados dos instrumentos.');
+    await Promise.all([
+      fetchInstruments(),
+      fetchInstrumentTypes(),
+      fetchInstrumentBrands()
+    ]);
+  }
+});
+
 onMounted(async () => {
-  console.log('Componente montado. Forçando a chamada da API para teste.');
-  await Promise.all([
-    fetchInstruments(),
-    fetchInstrumentTypes(),
-    fetchInstrumentBrands()
-  ]);
+  if (isAuthenticated.value) {
+    console.log('Usuário autenticado. Carregando dados dos instrumentos.');
+    await Promise.all([
+      fetchInstruments(),
+      fetchInstrumentTypes(),
+      fetchInstrumentBrands()
+    ]);
+  }
 });
 
 const filteredInstruments = computed(() => {

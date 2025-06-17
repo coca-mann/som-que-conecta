@@ -6,8 +6,20 @@
       <p class="text-gray-600">Aprenda música passo a passo com nossos cursos estruturados gratuitos</p>
     </div>
 
+    <!-- Mensagem de Login -->
+    <div v-if="!isLoggedIn" class="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+      <h2 class="text-xl font-semibold text-blue-900 mb-2">Faça login para acessar os minicursos</h2>
+      <p class="text-blue-700 mb-4">Para iniciar ou continuar seus estudos, você precisa estar logado em sua conta.</p>
+      <router-link 
+        to="/auth?redirect=/courses" 
+        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+      >
+        Fazer Login
+      </router-link>
+    </div>
+
     <!-- Filters -->
-    <div class="mb-8 flex flex-wrap gap-4">
+    <div v-if="isLoggedIn" class="mb-8 flex flex-wrap gap-4">
       <select v-model="selectedLevel" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         <option value="">Todos os Níveis</option>
         <option v-for="level in skillLevels" :key="level.value" :value="level.value">
@@ -24,7 +36,7 @@
     </div>
 
     <!-- Courses Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="isLoggedIn" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div v-for="course in courses" :key="course.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
         <img :src="course.cover" :alt="course.title" class="w-full h-48 object-cover">
         
@@ -136,13 +148,31 @@ const fetchLessons = async () => {
 };
 
 // Observa mudanças nos filtros e busca os dados novamente
-watch([selectedLevel, selectedInstrument], fetchLessons);
+watch([selectedLevel, selectedInstrument], () => {
+  if (isLoggedIn.value) {
+    fetchLessons();
+  }
+});
+
+// Watcher para carregar dados quando o usuário fizer login
+watch(isLoggedIn, async (newValue) => {
+  if (newValue) {
+    console.log('Usuário autenticado. Carregando dados dos minicursos.');
+    await Promise.all([
+      fetchSkillLevels(),
+      fetchInstrumentTypes(),
+      fetchLessons()
+    ]);
+  }
+});
 
 // Busca inicial quando o componente é montado
 onMounted(() => {
-  fetchSkillLevels();
-  fetchInstrumentTypes();
-  fetchLessons();
+  if (isLoggedIn.value) {
+    fetchSkillLevels();
+    fetchInstrumentTypes();
+    fetchLessons();
+  }
 });
 
 // --- MÉTODOS ---

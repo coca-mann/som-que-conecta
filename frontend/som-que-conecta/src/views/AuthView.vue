@@ -512,7 +512,6 @@ const clearForm = () => {
   }
 }
 
-// Substitua a sua função handleSubmit por esta
 const handleSubmit = async () => {
   console.log("A. Função handleSubmit foi ACIONADA.");
   console.log("B. O valor de isLogin.value é:", isLogin.value);
@@ -529,15 +528,15 @@ const handleSubmit = async () => {
   try {
     // Lógica de Login (continua a mesma)
     if (isLogin.value) {
-      // A chamada que suspeitamos não estar acontecendo
       await authStore.login({
         email: form.value.email,
         password: form.value.password,
       });
 
-      router.push('/');
+      // Usa o parâmetro redirect da URL ou redireciona para a home
+      const redirectTo = route.query.redirect || '/';
+      router.push(redirectTo);
     } else {
-      // ... sua lógica de registro ...
       await authStore.register({
         email: form.value.email,
         password: form.value.password,
