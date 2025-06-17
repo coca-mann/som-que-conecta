@@ -2,6 +2,10 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+
+# Carrega as variáveis do arquivo .env
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -293,3 +297,6 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 AUTH_USER_MODEL = 'accounts.User'
+
+# Google Gemini API
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')

@@ -95,10 +95,15 @@ class Article(models.Model):
         default=False,
         verbose_name='Moderado',
     )
-    publishing_refused_reason = models.TextField(
+    ai_bool = models.BooleanField(
         null=True,
         blank=True,
-        verbose_name='Motivo de rejeição de publicação',
+        verbose_name='Feedback bool da IA'
+    )
+    ai_feedback = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name='Feedback da IA',
     )
     rating = models.IntegerField(
         null=True,

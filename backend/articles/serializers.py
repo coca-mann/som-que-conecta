@@ -67,6 +67,13 @@ class ArticleSerializer(serializers.ModelSerializer):
     category = ArticleCategorySerializer(read_only=True)
     author = serializers.StringRelatedField(read_only=True)
     comments = ArticleCommentSerializer(many=True, read_only=True)
+    favorite_count = serializers.SerializerMethodField()
+    read_count = serializers.SerializerMethodField()
+    like_count = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
+    is_published = serializers.SerializerMethodField()
+    ai_bool = serializers.BooleanField(read_only=True)
+    ai_feedback = serializers.CharField(read_only=True)
 
     class Meta:
         model = Article
@@ -76,7 +83,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'reading_time', 'category', 'difficulty', 'read_count',
             'like_count', 'short_description', 'cover_image', 'cover_link',
-            'content', 'author', 'is_published', 'created_at', 'comments'
+            'content', 'author', 'is_published', 'created_at', 'comments', 'favorite_count', 'modified_at', 'ai_bool', 'ai_feedback'
         ]
 
     def _get_category(self, category_name):
@@ -138,13 +145,15 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
     comments = ArticleCommentSerializer(many=True, read_only=True)
     cover_image = serializers.SerializerMethodField()
     favorite_count = serializers.SerializerMethodField()
+    ai_bool = serializers.BooleanField(read_only=True)
+    ai_feedback = serializers.CharField(read_only=True)
 
     class Meta:
         model = Article
         fields = [
             'id', 'title', 'short_description', 'content', 'cover_image', 'cover_link',
             'reading_time', 'difficulty', 'author', 'category', 'comments', 'created_at',
-            'read_count', 'like_count', 'rating', 'is_published', 'favorite_count', 'modified_at'
+            'read_count', 'like_count', 'rating', 'is_published', 'favorite_count', 'modified_at', 'ai_bool', 'ai_feedback'
         ]
 
     def get_cover_image(self, obj):
@@ -193,6 +202,12 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
 
         # Busca o objeto da categoria correspondente
         category_obj = self._get_category(category_name)
+        
+        # Define o estado inicial do artigo
+        validated_data['is_draft'] = True
+        validated_data['is_published'] = False
+        validated_data['is_reviewed'] = False
+        validated_data['is_moderated'] = False
         
         # Cria o artigo, associando o objeto de categoria encontrado
         article = Article.objects.create(category=category_obj, **validated_data)

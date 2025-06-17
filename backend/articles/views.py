@@ -29,6 +29,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import uuid
+from backend.services.article_validation_service import article_validation_service
+from rest_framework import status
 
 
 class ArticleCategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -88,6 +90,78 @@ class ArticleViewSet(viewsets.ModelViewSet):
             # Atualiza o contador do artigo
             article.read_count = ArticleRead.objects.filter(article=article).count()
             article.save()
+
+    @action(detail=True, methods=['post'])
+    def submit_for_publication(self, request, pk=None):
+        """
+        Endpoint para submeter um artigo para publicação.
+        O artigo deve estar em rascunho e ser do autor da requisição.
+        O artigo passa por uma validação da IA antes de ser submetido.
+        """
+        article = self.get_object()
+        
+        # Verifica se o usuário é o autor do artigo
+        if request.user != article.author:
+            return Response(
+                {'detail': 'Apenas o autor pode submeter o artigo para publicação.'},
+                status=403
+            )
+        
+        # Verifica se o artigo está em rascunho
+        if not article.is_draft:
+            return Response(
+                {'detail': 'Apenas artigos em rascunho podem ser submetidos para publicação.'},
+                status=400
+            )
+        
+        # Valida o artigo usando a IA
+        validation_result = article_validation_service.validate_article(article.content)
+        
+        if not validation_result['is_valid']:
+            return Response({
+                'detail': 'Erro na validação do artigo.',
+                'error': validation_result['error']
+            }, status=400)
+            
+        # Atualiza o artigo com o feedback da IA
+        article.ai_feedback = validation_result['feedback']
+        article.ai_bool = validation_result['is_approved']
+        
+        if not validation_result['is_approved']:
+            article.is_draft = True
+            article.is_published = False
+            article.is_reviewed = False
+            article.is_moderated = False
+            article.save()
+            return Response({
+                'detail': 'O artigo não foi aprovado na revisão automática.',
+                'feedback': validation_result['feedback'],
+                'status': {
+                    'is_draft': article.is_draft,
+                    'is_published': article.is_published,
+                    'is_reviewed': article.is_reviewed,
+                    'is_moderated': article.is_moderated
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Se aprovado pela IA, atualiza o estado do artigo
+        article.is_draft = False
+        article.is_published = False
+        article.is_reviewed = True
+        article.is_moderated = False
+        article.ai_feedback = validation_result['feedback']
+        article.save()
+        
+        return Response({
+            'detail': 'Artigo submetido para publicação com sucesso.',
+            'feedback': validation_result['feedback'],
+            'status': {
+                'is_draft': article.is_draft,
+                'is_published': article.is_published,
+                'is_reviewed': article.is_reviewed,
+                'is_moderated': article.is_moderated
+            }
+        })
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -335,6 +409,126 @@ class ArticleViewSet(viewsets.ModelViewSet):
                 {'detail': f'Erro ao excluir o artigo: {str(e)}'},
                 status=500
             )
+
+    def create(self, request, *args, **kwargs):
+        """
+        Cria um novo artigo e submete para validação da IA.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # Valida o artigo usando a IA
+        validation_result = article_validation_service.validate_article(serializer.validated_data['content'])
+        
+        if not validation_result['is_valid']:
+            return Response({
+                'detail': 'Erro na validação do artigo.',
+                'error': validation_result['error']
+            }, status=400)
+            
+        if not validation_result['is_approved']:
+            # Salva o artigo como rascunho com o feedback da IA
+            article = serializer.save(
+                author=request.user,
+                is_draft=True,
+                is_published=False,
+                is_reviewed=False,
+                is_moderated=False,
+                ai_feedback=validation_result['feedback'],
+                ai_bool=validation_result['is_approved']
+            )
+            
+            return Response({
+                'detail': 'O artigo não foi aprovado na revisão automática.',
+                'feedback': validation_result['feedback'],
+                'status': {
+                    'is_draft': article.is_draft,
+                    'is_published': article.is_published,
+                    'is_reviewed': article.is_reviewed,
+                    'is_moderated': article.is_moderated
+                }
+            }, status=400)
+        
+        # Se aprovado pela IA, salva o artigo
+        article = serializer.save(
+            author=request.user,
+            is_draft=False,
+            is_published=False,
+            is_reviewed=True,
+            is_moderated=False,
+            ai_feedback=validation_result['feedback']
+        )
+        
+        return Response({
+            'detail': 'Artigo submetido para publicação com sucesso.',
+            'feedback': validation_result['feedback'],
+            'status': {
+                'is_draft': article.is_draft,
+                'is_published': article.is_published,
+                'is_reviewed': article.is_reviewed,
+                'is_moderated': article.is_moderated
+            }
+        }, status=201)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Atualiza um artigo existente e submete para validação da IA.
+        """
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        
+        # Valida o artigo usando a IA
+        validation_result = article_validation_service.validate_article(serializer.validated_data['content'])
+        
+        if not validation_result['is_valid']:
+            return Response({
+                'detail': 'Erro na validação do artigo.',
+                'error': validation_result['error']
+            }, status=400)
+            
+        if not validation_result['is_approved']:
+            # Atualiza o artigo como rascunho com o feedback da IA
+            article = serializer.save(
+                is_draft=True,
+                is_published=False,
+                is_reviewed=False,
+                is_moderated=False,
+                ai_feedback=validation_result['feedback'],
+                ai_bool=validation_result['is_approved']
+            )
+            
+            return Response({
+                'detail': 'O artigo não foi aprovado na revisão automática.',
+                'feedback': validation_result['feedback'],
+                'status': {
+                    'is_draft': article.is_draft,
+                    'is_published': article.is_published,
+                    'is_reviewed': article.is_reviewed,
+                    'is_moderated': article.is_moderated
+                }
+            }, status=400)
+        
+        # Se aprovado pela IA, atualiza o artigo
+        article = serializer.save(
+            is_draft=False,
+            is_published=False,
+            is_reviewed=True,
+            is_moderated=False,
+            ai_feedback=validation_result['feedback']
+        )
+        
+        return Response({
+            'detail': 'Artigo submetido para publicação com sucesso.',
+            'feedback': validation_result['feedback'],
+            'status': {
+                'is_draft': article.is_draft,
+                'is_published': article.is_published,
+                'is_reviewed': article.is_reviewed,
+                'is_moderated': article.is_moderated
+            }
+        })
 
 
 class ArticleCommentViewSet(viewsets.ModelViewSet):
