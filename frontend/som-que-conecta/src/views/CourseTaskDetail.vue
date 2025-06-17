@@ -1,6 +1,22 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div v-if="isLoading" class="flex items-center justify-center min-h-screen">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p class="mt-4 text-gray-600">Carregando...</p>
+      </div>
+    </div>
+
+    <div v-else-if="error" class="flex items-center justify-center min-h-screen">
+      <div class="text-center text-red-600">
+        <p>{{ error }}</p>
+        <button @click="fetchCourseData" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Tentar novamente
+        </button>
+      </div>
+    </div>
+
+    <div v-else-if="course && task" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Course Navigation Header -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex items-center justify-between">
@@ -35,9 +51,9 @@
         <!-- Video Section -->
         <div class="relative w-full" style="padding-top: 56.25%;">
           <div class="absolute top-0 left-0 w-full h-full bg-black">
-            <div v-if="task?.videoUrl" class="w-full h-full">
+            <div v-if="task?.video_url" class="w-full h-full">
               <iframe 
-                :src="task.videoUrl" 
+                :src="getYouTubeEmbedUrl(task.video_url)" 
                 class="w-full h-full" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -88,7 +104,7 @@
           <!-- Task Completion -->
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
             <div class="flex items-center gap-2">
-              <div v-if="task?.completed" class="flex items-center gap-2 text-green-600">
+              <div v-if="task?.is_completed" class="flex items-center gap-2 text-green-600">
                 <CheckCircle class="h-5 w-5" />
                 <span class="font-medium">Tarefa concluída</span>
               </div>
@@ -98,15 +114,15 @@
             </div>
             
             <button 
-              @click="toggleTaskCompletion" 
+              @click="markTaskAsComplete" 
               :class="[
                 'px-6 py-2 rounded-lg font-medium transition-colors',
-                task?.completed 
+                task?.is_completed 
                   ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' 
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               ]"
             >
-              {{ task?.completed ? 'Marcar como não concluída' : 'Marcar como concluída' }}
+              {{ task?.is_completed ? 'Marcar como não concluída' : 'Marcar como concluída' }}
             </button>
           </div>
         </div>
@@ -149,6 +165,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import lessonService from '@/services/lessonService';
 import { 
   ArrowLeft, 
   Play, 
@@ -162,278 +179,139 @@ import {
 
 const route = useRoute()
 const router = useRouter()
-const course = ref(null)
-const task = ref(null)
-const currentTaskIndex = ref(0)
 
-// Mock courses data - in real app, fetch from API
-const coursesData = {
-  1: {
-    id: 1,
-    title: 'Violão para Iniciantes',
-    description: 'Aprenda os fundamentos do violão desde o básico até tocar suas primeiras músicas.',
-    duration: '4 semanas',
-    lessons: 12,
-    instructor: 'Maria Silva',
-    tasks: [
-      { 
-        id: 1, 
-        title: 'Postura e posicionamento', 
-        description: 'Aprenda a postura correta para tocar violão e como posicionar as mãos no instrumento.',
-        content: `
-          <h3>Postura Correta</h3>
-          <p>Uma postura adequada é fundamental para tocar violão confortavelmente e evitar lesões. Siga estas orientações:</p>
-          <ul>
-            <li>Sente-se na borda da cadeira com as costas retas</li>
-            <li>Apoie o violão na perna direita (para destros) ou esquerda (para canhotos)</li>
-            <li>Mantenha o braço do violão ligeiramente inclinado para cima</li>
-            <li>Relaxe os ombros e mantenha os cotovelos afastados do corpo</li>
-          </ul>
-          
-          <h3>Posicionamento das Mãos</h3>
-          <p>O posicionamento correto das mãos é essencial para tocar com precisão:</p>
-          <ul>
-            <li>Mão do braço: Mantenha o polegar na parte de trás do braço, aproximadamente no meio</li>
-            <li>Dedos curvados e pressionando as cordas com as pontas</li>
-            <li>Mão de palhetada: Mantenha o pulso relaxado e levemente arqueado</li>
-          </ul>
-        `,
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        completed: true,
-        resources: [
-          {
-            id: 1,
-            title: 'Guia de Postura para Violão',
-            description: 'PDF com ilustrações detalhadas',
-            type: 'pdf',
-            url: '#'
-          },
-          {
-            id: 2,
-            title: 'Exercícios de Aquecimento',
-            description: 'Áudio com exercícios para aquecer as mãos',
-            type: 'audio',
-            url: '#'
-          }
-        ]
-      },
-      { 
-        id: 2, 
-        title: 'Primeiros acordes', 
-        description: 'Aprenda os acordes básicos que serão a base para tocar diversas músicas.',
-        content: `
-          <h3>Acordes Básicos</h3>
-          <p>Vamos aprender os acordes mais importantes para iniciantes:</p>
-          <ul>
-            <li><strong>Acorde de Dó (C):</strong> Posicione o dedo 3 na terceira casa da quinta corda, o dedo 2 na segunda casa da quarta corda e o dedo 1 na primeira casa da segunda corda.</li>
-            <li><strong>Acorde de Sol (G):</strong> Posicione o dedo 2 na terceira casa da sexta corda, o dedo 1 na segunda casa da quinta corda e o dedo 3 na terceira casa da primeira corda.</li>
-            <li><strong>Acorde de Ré (D):</strong> Posicione os dedos 1, 2 e 3 na segunda casa das três primeiras cordas.</li>
-          </ul>
-          
-          <p>Pratique a transição entre esses acordes lentamente, garantindo que todas as notas soem claramente.</p>
-        `,
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        completed: true,
-        resources: [
-          {
-            id: 3,
-            title: 'Diagrama de Acordes',
-            description: 'PDF com todos os acordes básicos',
-            type: 'pdf',
-            url: '#'
-          }
-        ]
-      },
-      { 
-        id: 3, 
-        title: 'Mudança entre acordes', 
-        description: 'Aprenda a fazer transições suaves entre diferentes acordes.',
-        content: `
-          <h3>Técnicas de Transição</h3>
-          <p>A mudança fluida entre acordes é um dos maiores desafios para iniciantes. Aqui estão algumas dicas:</p>
-          <ul>
-            <li>Pratique lentamente, aumentando a velocidade gradualmente</li>
-            <li>Identifique "dedos âncora" que permanecem na mesma posição entre acordes</li>
-            <li>Mova todos os dedos simultaneamente, não um de cada vez</li>
-            <li>Pratique a sequência C - G - D - C repetidamente</li>
-          </ul>
-          
-          <p>Dedique pelo menos 10 minutos por dia apenas para praticar transições entre acordes.</p>
-        `,
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        completed: true,
-        resources: []
-      },
-      { 
-        id: 4, 
-        title: 'Ritmo básico', 
-        description: 'Aprenda padrões rítmicos fundamentais para acompanhamento.',
-        content: `
-          <h3>Padrões Rítmicos</h3>
-          <p>O ritmo é o que dá vida às progressões de acordes. Vamos aprender o padrão básico de batida:</p>
-          <ul>
-            <li>Batida para baixo: ↓</li>
-            <li>Batida para cima: ↑</li>
-            <li>Padrão básico: ↓ ↓↑ ↓ ↑</li>
-          </ul>
-          
-          <p>Pratique este padrão lentamente com um metrônomo, começando em 60 BPM e aumentando gradualmente.</p>
-          
-          <h3>Exercício Prático</h3>
-          <p>Toque o acorde de Dó (C) usando o padrão rítmico acima por 4 compassos, depois mude para Sol (G) por mais 4 compassos.</p>
-        `,
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        completed: false,
-        resources: [
-          {
-            id: 4,
-            title: 'Exercícios de Ritmo',
-            description: 'Áudio com diferentes padrões rítmicos',
-            type: 'audio',
-            url: '#'
-          },
-          {
-            id: 5,
-            title: 'Guia de Notação Rítmica',
-            description: 'Aprenda a ler padrões rítmicos',
-            type: 'pdf',
-            url: '#'
-          }
-        ]
-      },
-      { 
-        id: 5, 
-        title: 'Primeira música completa', 
-        description: 'Aprenda a tocar sua primeira música do início ao fim.',
-        content: `
-          <h3>Sua Primeira Música</h3>
-          <p>Agora vamos aplicar tudo o que aprendemos para tocar "Parabéns pra Você", uma música simples com apenas 3 acordes:</p>
-          
-          <p><strong>Versos:</strong></p>
-          <p>C - G - C (Parabéns pra você)</p>
-          <p>C - G - C (Nesta data querida)</p>
-          <p>C - C7 - F - C (Muitas felicidades)</p>
-          <p>G - C (Muitos anos de vida)</p>
-          
-          <p>Siga o vídeo para aprender o ritmo exato e como cantar junto com o acompanhamento.</p>
-        `,
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        completed: false,
-        resources: [
-          {
-            id: 6,
-            title: 'Cifra Completa',
-            description: 'PDF com a cifra da música',
-            type: 'pdf',
-            url: '#'
-          },
-          {
-            id: 7,
-            title: 'Playback para Prática',
-            description: 'Áudio sem violão para você praticar',
-            type: 'audio',
-            url: '#'
-          }
-        ]
-      }
-    ]
-  },
-  2: {
-    id: 2,
-    title: 'Piano Clássico Básico',
-    description: 'Introdução ao piano clássico com técnicas fundamentais e peças simples.',
-    duration: '6 semanas',
-    lessons: 18,
-    instructor: 'João Santos',
-    tasks: [
-      { 
-        id: 1, 
-        title: 'Posição das mãos', 
-        description: 'Aprenda a posicionar corretamente as mãos no teclado.',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        completed: false,
-        resources: []
-      },
-      { 
-        id: 2, 
-        title: 'Escalas básicas', 
-        description: 'Pratique as escalas fundamentais para desenvolver técnica.',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-        completed: false,
-        resources: []
-      }
-    ]
+// --- ESTADO DO COMPONENTE ---
+const course = ref(null);
+const task = ref(null);
+const isLoading = ref(true);
+const error = ref(null);
+
+// Função para converter URL do YouTube para formato de incorporação
+const getYouTubeEmbedUrl = (url) => {
+  if (!url) return null;
+  
+  // Se já for uma URL de incorporação, retorna como está
+  if (url.includes('youtube.com/embed/')) return url;
+  
+  // Extrai o ID do vídeo da URL
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  
+  return match && match[2].length === 11
+    ? `https://www.youtube.com/embed/${match[2]}`
+    : null;
+};
+
+// --- LÓGICA DE DADOS ---
+const findAndSetCurrentTask = () => {
+  if (!course.value) return;
+  const taskId = parseInt(route.params.taskId);
+  const foundTask = course.value.tasks.find(t => t.id === taskId);
+  
+  if (foundTask) {
+    task.value = foundTask;
+  } else {
+    error.value = "Tarefa não encontrada neste curso.";
+    router.push(`/course/${route.params.courseId}`);
   }
-}
+};
+
+const fetchCourseData = async () => {
+  isLoading.value = true;
+  error.value = null;
+  task.value = null;
+  course.value = null;
+  
+  const courseId = route.params.courseId;
+  try {
+    const response = await lessonService.getLessonDetail(courseId);
+    course.value = response.data;
+    findAndSetCurrentTask();
+  } catch (err) {
+    console.error("Erro ao buscar detalhes do curso:", err);
+    error.value = "Não foi possível carregar o minicurso.";
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Observa mudanças no ID da tarefa na URL para navegar entre as tarefas sem recarregar o curso
+watch(() => route.params.taskId, () => {
+  if (course.value) {
+    findAndSetCurrentTask();
+  }
+});
+
+// --- PROPRIEDADES COMPUTADAS ---
+const currentTaskIndex = computed(() => {
+  if (!course.value || !task.value) return -1;
+  return course.value.tasks.findIndex(t => t.id === task.value.id);
+});
 
 const courseProgress = computed(() => {
-  if (!course.value || !course.value.tasks.length) return 0
-  
-  const completedTasks = course.value.tasks.filter(t => t.completed).length
-  return Math.round((completedTasks / course.value.tasks.length) * 100)
-})
+  if (!course.value?.tasks?.length) return 0;
+  const completedCount = course.value.tasks.filter(t => t.is_completed).length;
+  return Math.round((completedCount / course.value.tasks.length) * 100);
+});
 
 const goBackToCourse = () => {
-  router.push(`/course/${route.params.courseId}`)
-}
+  router.push(`/course/${route.params.courseId}`);
+};
 
-const toggleTaskCompletion = () => {
-  if (task.value) {
-    task.value.completed = !task.value.completed
-    
-    // Update the task in the course object
-    const taskIndex = course.value.tasks.findIndex(t => t.id === task.value.id)
-    if (taskIndex !== -1) {
-      course.value.tasks[taskIndex].completed = task.value.completed
+const markTaskAsComplete = async () => {
+  if (!task.value) return;
+
+  try {
+    if (task.value.is_completed) {
+      // Se a tarefa já está concluída, vamos desmarcá-la
+      await lessonService.uncompleteTask(task.value.id);
+      task.value.is_completed = false;
+    } else {
+      // Se a tarefa não está concluída, vamos marcá-la
+      await lessonService.completeTask(task.value.id);
+      task.value.is_completed = true;
+
+      // Se houver uma próxima tarefa, navega para ela automaticamente
+      if (currentTaskIndex.value < course.value.tasks.length - 1) {
+        navigateToNextTask();
+      } else {
+        // Se for a última tarefa, mostra mensagem de conclusão
+        alert("Parabéns! Você concluiu todas as tarefas deste curso!");
+      }
     }
-    
-    // Here you would send an API request to update the task status
-    console.log('Task completion toggled:', task.value.id, task.value.completed)
+
+    // Atualiza o progresso do curso
+    await fetchCourseData();
+  } catch (err) {
+    console.error("Erro ao atualizar status da tarefa:", err);
+    alert("Houve um erro ao salvar seu progresso. Tente novamente.");
   }
-}
+};
+
+const navigateToTaskById = (taskId) => {
+  router.push(`/course/${route.params.courseId}/task/${taskId}`);
+};
 
 const navigateToPreviousTask = () => {
   if (currentTaskIndex.value > 0) {
-    const previousTask = course.value.tasks[currentTaskIndex.value - 1]
-    router.push(`/course/${route.params.courseId}/task/${previousTask.id}`)
+    const previousTask = course.value.tasks[currentTaskIndex.value - 1];
+    navigateToTaskById(previousTask.id);
   }
-}
+};
 
 const navigateToNextTask = () => {
   if (currentTaskIndex.value < course.value.tasks.length - 1) {
-    const nextTask = course.value.tasks[currentTaskIndex.value + 1]
-    router.push(`/course/${route.params.courseId}/task/${nextTask.id}`)
+    const nextTask = course.value.tasks[currentTaskIndex.value + 1];
+    navigateToTaskById(nextTask.id);
   }
-}
+};
 
-const loadTask = () => {
-  const courseId = parseInt(route.params.courseId)
-  const taskId = parseInt(route.params.taskId)
-  
-  course.value = coursesData[courseId]
-  
-  if (course.value) {
-    const taskIndex = course.value.tasks.findIndex(t => t.id === taskId)
-    
-    if (taskIndex !== -1) {
-      task.value = course.value.tasks[taskIndex]
-      currentTaskIndex.value = taskIndex
-    } else {
-      // Se a tarefa não for encontrada, redireciona para a primeira tarefa
-      const firstTask = course.value.tasks[0]
-      router.push(`/course/${courseId}/task/${firstTask.id}`)
-    }
-  } else {
-    console.error('Course not found')
-    router.push('/courses')
-  }
-}
+// Observa mudanças nos parâmetros da rota para recarregar os dados quando necessário
+watch(() => route.params, () => {
+  fetchCourseData();
+}, { immediate: true });
 
-watch(() => route.params, loadTask, { immediate: true })
-
-onMounted(() => {
-  loadTask()
-})
+onMounted(fetchCourseData);
 </script>
 
 <style scoped>

@@ -10,30 +10,28 @@
     <div class="mb-8 flex flex-wrap gap-4">
       <select v-model="selectedLevel" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         <option value="">Todos os Níveis</option>
-        <option value="iniciante">Iniciante</option>
-        <option value="intermediario">Intermediário</option>
-        <option value="avancado">Avançado</option>
+        <option v-for="level in skillLevels" :key="level.value" :value="level.value">
+          {{ level.label }}
+        </option>
       </select>
       
       <select v-model="selectedInstrument" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         <option value="">Todos os Instrumentos</option>
-        <option value="violao">Violão</option>
-        <option value="piano">Piano</option>
-        <option value="bateria">Bateria</option>
-        <option value="flauta">Flauta</option>
+        <option v-for="instrument in instrumentTypes" :key="instrument.value" :value="instrument.value">
+          {{ instrument.label }}
+        </option>
       </select>
     </div>
 
     <!-- Courses Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="course in filteredCourses" :key="course.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-        <img :src="course.image" :alt="course.title" class="w-full h-48 object-cover">
+      <div v-for="course in courses" :key="course.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        <img :src="course.cover" :alt="course.title" class="w-full h-48 object-cover">
         
         <div class="p-6">
           <div class="flex items-center gap-2 mb-2">
-            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">{{ course.level }}</span>
-            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">{{ course.instrument }}</span>
-            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Gratuito</span>
+            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">{{ course.skill_level_display }}</span>
+            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">{{ course.instrument_type_name }}</span>
           </div>
           
           <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ course.title }}</h3>
@@ -43,11 +41,11 @@
             <div class="flex items-center justify-between text-sm text-gray-600">
               <div class="flex items-center gap-2">
                 <Clock class="h-4 w-4" />
-                <span>{{ course.duration }}</span>
+                <span>{{ course.duration_display }}</span>
               </div>
               <div class="flex items-center gap-2">
                 <BookOpen class="h-4 w-4" />
-                <span>{{ course.lessons }} aulas</span>
+                <span>{{ course.tasks_count }} aulas</span>
               </div>
             </div>
             
@@ -80,52 +78,84 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Clock, BookOpen } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.store';
+import lessonService from '@/services/lessonService';
 
 const router = useRouter()
+const authStore = useAuthStore();
+
+// --- ESTADO ---
+const courses = ref([]);
+const isLoading = ref(true);
+const isLoggedIn = computed(() => authStore.isAuthenticated);
+
 const selectedLevel = ref('')
 const selectedInstrument = ref('')
-const isLoggedIn = ref(false) // Should come from auth store
+const skillLevels = ref([])
+const instrumentTypes = ref([])
 
-const courses = ref([
-  {
-    id: 1,
-    title: 'Violão para Iniciantes',
-    description: 'Aprenda os fundamentos do violão desde o básico até tocar suas primeiras músicas.',
-    level: 'Iniciante',
-    instrument: 'Violão',
-    duration: '4 semanas',
-    lessons: 12,
-    progress: 25,
-    image: '/placeholder.svg?height=200&width=300',
-    instructor: 'Maria Silva',
-    tasks: [
-      { id: 1, title: 'Postura e posicionamento', completed: true },
-      { id: 2, title: 'Primeiros acordes', completed: true },
-      { id: 3, title: 'Mudança entre acordes', completed: true },
-      { id: 4, title: 'Ritmo básico', completed: false }
-    ]
-  },
-  {
-    id: 2,
-    title: 'Piano Clássico Básico',
-    description: 'Introdução ao piano clássico com técnicas fundamentais e peças simples.',
-    level: 'Iniciante',
-    instrument: 'Piano',
-    duration: '6 semanas',
-    lessons: 18,
-    progress: 0,
-    image: '/placeholder.svg?height=200&width=300',
-    instructor: 'João Santos',
-    tasks: [
-      { id: 1, title: 'Posição das mãos', completed: false },
-      { id: 2, title: 'Escalas básicas', completed: false },
-      { id: 3, title: 'Leitura de partitura', completed: false }
-    ]
+// --- LÓGICA DE DADOS ---
+const fetchSkillLevels = async () => {
+  try {
+    const response = await lessonService.getSkillLevels();
+    skillLevels.value = response.data;
+  } catch (error) {
+    console.error("Erro ao buscar níveis de habilidade:", error);
   }
-])
+};
+
+const fetchInstrumentTypes = async () => {
+  try {
+    const response = await lessonService.getInstrumentTypes();
+    instrumentTypes.value = response.data;
+  } catch (error) {
+    console.error("Erro ao buscar tipos de instrumentos:", error);
+  }
+};
+
+const fetchLessons = async () => {
+  isLoading.value = true;
+  
+  // Monta os parâmetros de filtro para a API
+  const params = {
+    skill_level: selectedLevel.value,
+    instrument_type: selectedInstrument.value,
+  };
+
+  try {
+    const response = await lessonService.getLessons(params);
+    courses.value = response.data;
+  } catch (error) {
+    console.error("Erro ao buscar os minicursos:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Observa mudanças nos filtros e busca os dados novamente
+watch([selectedLevel, selectedInstrument], fetchLessons);
+
+// Busca inicial quando o componente é montado
+onMounted(() => {
+  fetchSkillLevels();
+  fetchInstrumentTypes();
+  fetchLessons();
+});
+
+// --- MÉTODOS ---
+const accessCourse = (course) => {
+  router.push(`/course/${course.id}`);
+};
+
+const formatDuration = (time, type) => {
+    if (!time || !type) return '';
+    const typeMap = { 'D': 'dias', 'M': 'meses', 'Y': 'anos' };
+    const plural = time > 1 ? typeMap[type] : typeMap[type].slice(0, -1);
+    return `${time} ${plural}`;
+}
 
 const filteredCourses = computed(() => {
   let filtered = courses.value
@@ -144,8 +174,4 @@ const filteredCourses = computed(() => {
 
   return filtered
 })
-
-const accessCourse = (course) => {
-  router.push(`/course/${course.id}`)
-}
 </script>

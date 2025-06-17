@@ -10,22 +10,19 @@
             <div class="flex items-center gap-4 text-sm">
               <span class="flex items-center gap-1">
                 <Clock class="h-4 w-4" />
-                {{ course.duration }}
+                {{ formatDuration(course.time_to_complete, course.type_time_to_complete) }}
               </span>
               <span class="flex items-center gap-1">
                 <BookOpen class="h-4 w-4" />
-                {{ course.lessons }} aulas
+                {{ course.tasks_count }} aulas
               </span>
               <span class="flex items-center gap-1">
                 <User class="h-4 w-4" />
-                {{ course.instructor }}
-              </span>
-              <span class="flex items-center gap-1 bg-green-500 px-2 py-1 rounded-full text-xs font-medium">
-                Gratuito
+                {{ course.author }}
               </span>
             </div>
           </div>
-          <button @click="$router.go(-1)" class="text-white hover:text-blue-200 transition-colors">
+          <button @click="$router.push('/courses')" class="text-white hover:text-blue-200 transition-colors">
             <X class="h-6 w-6" />
           </button>
         </div>
@@ -52,8 +49,8 @@
               <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
                   <div :class="[
-                    'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
-                    task.completed ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                    // Use is_completed
+                    task.is_completed ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
                   ]">
                     {{ index + 1 }}
                   </div>
@@ -61,7 +58,8 @@
                 <div>
                   <h4 :class="[
                     'font-medium',
-                    task.completed ? 'text-green-800' : 'text-gray-900'
+                    // Use is_completed
+                    task.is_completed ? 'text-green-800' : 'text-gray-900'
                   ]">
                     {{ task.title }}
                   </h4>
@@ -71,7 +69,7 @@
               
               <div class="flex items-center gap-2">
                 <button 
-                  v-if="task.completed"
+                  v-if="task.is_completed"
                   class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
                   disabled
                 >
@@ -82,7 +80,7 @@
                   @click="goToTask(task)"
                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
-                  {{ task.completed ? 'Revisar' : 'Iniciar' }}
+                  {{ task.is_completed ? 'Revisar' : 'Iniciar' }}
                 </button>
               </div>
             </div>
@@ -142,106 +140,72 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.store';
+import lessonService from '@/services/lessonService';
 import { Clock, BookOpen, User, X, Check, Award } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
-const course = ref(null)
-const showCompletionModal = ref(false)
+const authStore = useAuthStore();
 
-// Mock course data - in real app, fetch from API
-const courses = {
-  1: {
-    id: 1,
-    title: 'Violão para Iniciantes',
-    description: 'Aprenda os fundamentos do violão desde o básico até tocar suas primeiras músicas.',
-    duration: '4 semanas',
-    lessons: 12,
-    instructor: 'Maria Silva',
-    tasks: [
-      { 
-        id: 1, 
-        title: 'Postura e posicionamento', 
-        description: 'Aprenda a postura correta para tocar violão',
-        completed: true 
-      },
-      { 
-        id: 2, 
-        title: 'Primeiros acordes', 
-        description: 'Domine os acordes básicos: Am, C, D, G',
-        completed: true 
-      },
-      { 
-        id: 3, 
-        title: 'Mudança entre acordes', 
-        description: 'Pratique a transição suave entre acordes',
-        completed: true 
-      },
-      { 
-        id: 4, 
-        title: 'Ritmo básico', 
-        description: 'Aprenda padrões rítmicos fundamentais',
-        completed: false 
-      },
-      { 
-        id: 5, 
-        title: 'Primeira música completa', 
-        description: 'Toque sua primeira música do início ao fim',
-        completed: false 
-      }
-    ]
-  },
-  2: {
-    id: 2,
-    title: 'Piano Clássico Básico',
-    description: 'Introdução ao piano clássico com técnicas fundamentais e peças simples.',
-    duration: '6 semanas',
-    lessons: 18,
-    instructor: 'João Santos',
-    tasks: [
-      { 
-        id: 1, 
-        title: 'Posição das mãos', 
-        description: 'Aprenda a posicionar corretamente as mãos no teclado',
-        completed: false 
-      },
-      { 
-        id: 2, 
-        title: 'Escalas básicas', 
-        description: 'Pratique as escalas fundamentais para desenvolver técnica',
-        completed: false 
-      }
-    ]
+// --- ESTADO DO COMPONENTE ---
+const course = ref(null);
+const isLoading = ref(true);
+const error = ref(null);
+const showCompletionModal = ref(false);
+
+// --- LÓGICA DE DADOS ---
+const fetchCourseDetail = async () => {
+  isLoading.value = true;
+  error.value = null;
+  const courseId = route.params.id;
+
+  try {
+    const response = await lessonService.getLessonDetail(courseId);
+    course.value = response.data;
+  } catch (err) {
+    console.error("Erro ao buscar detalhes do curso:", err);
+    error.value = "Minicurso não encontrado.";
+    // Opcional: redirecionar para uma página 404
+  } finally {
+    isLoading.value = false;
   }
-}
+};
 
+// --- PROPRIEDADES COMPUTADAS ---
 const completedTasks = computed(() => {
-  return course.value?.tasks.filter(task => task.completed).length || 0
-})
+  // A API agora envia 'is_completed' para cada tarefa
+  return course.value?.tasks.filter(task => task.is_completed).length || 0;
+});
 
 const progressPercentage = computed(() => {
-  if (!course.value?.tasks.length) return 0
-  return Math.round((completedTasks.value / course.value.tasks.length) * 100)
-})
+  if (!course.value?.tasks?.length) return 0;
+  return Math.round((completedTasks.value / course.value.tasks.length) * 100);
+});
 
+// --- MÉTODOS ---
 const goToTask = (task) => {
-  router.push(`/course/${course.value.id}/task/${task.id}`)
-}
+  router.push(`/course/${course.value.id}/task/${task.id}`);
+};
 
 const continueFromLastTask = () => {
-  // Find the first incomplete task
-  const nextTask = course.value.tasks.find(task => !task.completed)
+  // Encontra a primeira tarefa não completada
+  const nextTask = course.value?.tasks.find(task => !task.is_completed);
   
   if (nextTask) {
-    goToTask(nextTask)
-  } else {
-    // If all tasks are completed, go to the first task
-    goToTask(course.value.tasks[0])
+    goToTask(nextTask);
+  } else if (course.value?.tasks?.length > 0) {
+    // Se todas estiverem completas, vai para a primeira
+    goToTask(course.value.tasks[0]);
   }
+};
+
+const formatDuration = (time, type) => {
+    if (!time || !type) return '';
+    const typeMap = { 'D': 'dias', 'M': 'meses', 'Y': 'anos' };
+    const plural = time > 1 ? typeMap[type] || type : (typeMap[type] || type).slice(0, -1);
+    return `${time} ${plural}`;
 }
 
-onMounted(() => {
-  const courseId = parseInt(route.params.id)
-  course.value = courses[courseId]
-})
+onMounted(fetchCourseDetail);
 </script>
