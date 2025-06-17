@@ -144,7 +144,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'short_description', 'content', 'cover_image', 'cover_link',
             'reading_time', 'difficulty', 'author', 'category', 'comments', 'created_at',
-            'read_count', 'like_count', 'rating', 'is_published', 'favorite_count'
+            'read_count', 'like_count', 'rating', 'is_published', 'favorite_count', 'modified_at'
         ]
 
     def get_cover_image(self, obj):
