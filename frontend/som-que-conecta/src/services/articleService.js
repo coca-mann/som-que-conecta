@@ -67,6 +67,12 @@ const articleService = {
     return await api.delete(`/articles/${articleId}/remove_rating/`);
   },
 
+  async deleteComment(articleId, commentId) {
+    return await api.delete(`/articles/${articleId}/remove_comment/`, {
+      data: { comment_id: commentId }
+    });
+  },
+
   // Para exclusão de artigos
   async deleteArticle(articleId) {
     return await api.delete(`/articles/${articleId}/`);

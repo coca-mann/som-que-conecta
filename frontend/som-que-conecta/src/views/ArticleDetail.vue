@@ -161,9 +161,19 @@
             <div class="flex items-start gap-4">
               <img :src="comment.userAvatar" :alt="comment.userName" class="w-10 h-10 rounded-full flex-shrink-0">
               <div class="flex-1">
-                <div class="flex items-center gap-3 mb-2">
-                  <h4 class="font-semibold text-gray-900">{{ comment.userName }}</h4>
-                  <span class="text-sm text-gray-500">{{ formatDate(comment.createdAt) }}</span>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-3">
+                    <h4 class="font-semibold text-gray-900">{{ comment.userName }}</h4>
+                    <span class="text-sm text-gray-500">{{ formatDate(comment.createdAt) }}</span>
+                  </div>
+                  <button 
+                    v-if="isCommentAuthor(comment) || isAdmin"
+                    @click="confirmDeleteComment(comment)"
+                    class="p-1 text-gray-400 hover:text-red-600 transition-colors rounded-full hover:bg-red-50"
+                    title="Excluir comentário"
+                  >
+                    <Trash2 class="h-4 w-4" />
+                  </button>
                 </div>
                 <p class="text-gray-700 leading-relaxed">{{ comment.content }}</p>
               </div>
@@ -207,6 +217,39 @@
         <p class="text-gray-600">Carregando artigo...</p>
       </div>
     </div>
+
+    <!-- Delete Comment Confirmation Modal -->
+    <div v-if="showDeleteCommentModal" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle class="h-8 w-8 text-red-600" />
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Confirmar Exclusão</h3>
+          <p class="text-gray-600 mb-6">
+            Tem certeza que deseja excluir este comentário? 
+            Esta ação não pode ser desfeita.
+          </p>
+          <div class="flex gap-3 justify-center">
+            <button 
+              @click="showDeleteCommentModal = false" 
+              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              :disabled="isDeletingComment"
+            >
+              Cancelar
+            </button>
+            <button 
+              @click="deleteComment" 
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+              :disabled="isDeletingComment"
+            >
+              <div v-if="isDeletingComment" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              {{ isDeletingComment ? 'Excluindo...' : 'Excluir' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -222,7 +265,9 @@ import {
   Star, 
   Heart, 
   Share2, 
-  MessageCircle 
+  MessageCircle,
+  Trash2,
+  AlertTriangle
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -239,6 +284,10 @@ const newComment = ref('')
 const comments = ref([])
 const showToast = ref(false)
 const toastMessage = ref('')
+const showDeleteCommentModal = ref(false)
+const commentToDelete = ref(null)
+const isDeletingComment = ref(false)
+const isAdmin = computed(() => authStore.user?.is_staff || false)
 
 // Function to go back
 const goBack = () => router.push('/articles');
@@ -415,6 +464,33 @@ const shareArticle = async () => {
       console.error('Erro ao compartilhar:', error)
       showToastMessage('Erro ao compartilhar o artigo')
     }
+  }
+}
+
+const isCommentAuthor = (comment) => {
+  return comment.user?.id === authStore.user?.id
+}
+
+const confirmDeleteComment = (comment) => {
+  commentToDelete.value = comment
+  showDeleteCommentModal.value = true
+}
+
+const deleteComment = async () => {
+  if (!commentToDelete.value) return
+  
+  isDeletingComment.value = true
+  try {
+    await articleService.deleteComment(route.params.id, commentToDelete.value.id)
+    comments.value = comments.value.filter(c => c.id !== commentToDelete.value.id)
+    showDeleteCommentModal.value = false
+    commentToDelete.value = null
+    showToastMessage('Comentário excluído com sucesso!')
+  } catch (error) {
+    console.error('Erro ao excluir comentário:', error)
+    showToastMessage('Erro ao excluir comentário. Tente novamente.')
+  } finally {
+    isDeletingComment.value = false
   }
 }
 </script>
