@@ -4,7 +4,8 @@ from backend.articles.views import (
     ArticleViewSet,
     ArticleCommentViewSet,
     ArticleFavoriteViewSet,
-    ArticleCategoryViewSet
+    ArticleCategoryViewSet,
+    upload_article_image
 )
 
 
@@ -15,5 +16,6 @@ router.register('articlefavorites', ArticleFavoriteViewSet)
 router.register('article-categories', ArticleCategoryViewSet)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('articles/upload-image/', upload_article_image, name='article-upload-image'),
+    path('', include(router.urls)),
 ]

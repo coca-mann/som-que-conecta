@@ -128,7 +128,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
         model = Article
         fields = [
             'id', 'title', 'short_description', 'cover_image', 'cover_link', 'reading_time',
-            'author', 'category', 'created_at', 'rating', 'read_count', 'is_published', 'comments_count'
+            'author', 'category', 'created_at', 'rating', 'read_count', 'is_published', 'comments_count', 'read_count'
         ]
         
         

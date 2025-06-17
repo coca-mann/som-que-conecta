@@ -1,4 +1,4 @@
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes, parser_classes
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.viewsets import GenericViewSet
@@ -25,6 +25,10 @@ from backend.articles.serializers import (
 from backend.articles.permissions import IsCommentAuthorOrAdmin
 from django.utils import timezone
 from datetime import timedelta
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import uuid
 
 
 class ArticleCategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -252,8 +256,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
             })
         except ArticleRating.DoesNotExist:
             return Response({
-                'has_rated': False,
-                'rating': None
+                'has_rated': False
             })
 
     @action(detail=True, methods=['delete'])
@@ -282,6 +285,30 @@ class ArticleViewSet(viewsets.ModelViewSet):
             return Response({
                 'detail': 'Você ainda não avaliou este artigo'
             }, status=404)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Sobrescreve o método destroy para verificar permissões antes de excluir o artigo.
+        Apenas o autor do artigo ou um administrador pode excluí-lo.
+        """
+        article = self.get_object()
+        
+        # Verifica se o usuário é o autor do artigo ou um administrador
+        if not (request.user == article.author or request.user.is_staff):
+            return Response(
+                {'detail': 'Você não tem permissão para excluir este artigo.'},
+                status=403
+            )
+        
+        try:
+            # Exclui o artigo
+            self.perform_destroy(article)
+            return Response(status=204)
+        except Exception as e:
+            return Response(
+                {'detail': f'Erro ao excluir o artigo: {str(e)}'},
+                status=500
+            )
 
 
 class ArticleCommentViewSet(viewsets.ModelViewSet):
@@ -330,3 +357,52 @@ class ArticleFavoriteViewSet(GenericViewSet):
             return Response({'favorited': favorited})
 
         return Response({'detail': 'Método não permitido'}, status=405)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def upload_article_image(request):
+    """
+    Endpoint para upload de imagens do editor de artigos.
+    Retorna a URL da imagem para ser inserida no conteúdo.
+    """
+    if 'upload' not in request.FILES:
+        return Response({'error': 'Nenhuma imagem enviada'}, status=400)
+    
+    image = request.FILES['upload']
+    
+    # Validação do tipo de arquivo
+    allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/tiff']
+    if image.content_type not in allowed_types:
+        return Response({'error': 'Tipo de arquivo não permitido'}, status=400)
+    
+    # Validação do tamanho (máximo 5MB)
+    if image.size > 5 * 1024 * 1024:
+        return Response({'error': 'Imagem muito grande. Máximo permitido: 5MB'}, status=400)
+    
+    try:
+        # Gera um nome único para o arquivo
+        ext = image.name.split('.')[-1]
+        filename = f'articles_media/data/{uuid.uuid4()}.{ext}'
+        
+        # Salva o arquivo
+        path = default_storage.save(filename, ContentFile(image.read()))
+        
+        # Gera a URL completa
+        url = request.build_absolute_uri(default_storage.url(path))
+        
+        # Formato de resposta esperado pelo CKEditor
+        return Response({
+            'url': url,
+            'uploaded': True,
+            'fileName': filename,
+            'error': None
+        })
+    except Exception as e:
+        return Response({
+            'uploaded': False,
+            'error': {
+                'message': f'Erro ao salvar a imagem: {str(e)}'
+            }
+        }, status=500)
