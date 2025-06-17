@@ -60,7 +60,7 @@
           
           <div class="absolute top-3 right-3">
             <span class="px-2 py-1 bg-blue-600 text-white text-xs rounded-full font-medium">
-              {{ article.category }}
+              {{ article.category?.name || 'Sem categoria' }}
             </span>
           </div>
           <div class="absolute bottom-3 left-3">
@@ -200,7 +200,16 @@ onMounted(() => {
 });
 
 const openArticle = (article) => {
-  router.push(`/articles/${article.id}`); // Navega para o detalhe
+  // Verificamos o status de publicação do artigo
+  if (article.is_published) {
+    // Se estiver publicado, navega para a página de leitura normal
+    console.log(`Navegando para a leitura do artigo publicado: ${article.id}`);
+    router.push(`/articles/${article.id}`);
+  } else {
+    // Se NÃO estiver publicado (é um rascunho), navega para a página de edição
+    console.log(`Navegando para a edição do rascunho: ${article.id}`);
+    router.push(`/articles/edit/${article.id}`);
+  }
 };
 
 const filteredArticles = computed(() => {
@@ -209,7 +218,7 @@ const filteredArticles = computed(() => {
   // Filter by category
   if (selectedCategory.value) {
     filtered = filtered.filter(article => 
-      article.category.toLowerCase().includes(selectedCategory.value.toLowerCase())
+      article.category?.name?.toLowerCase().includes(selectedCategory.value.toLowerCase())
     )
   }
 
@@ -219,7 +228,7 @@ const filteredArticles = computed(() => {
     filtered = filtered.filter(article =>
       article.title.toLowerCase().includes(query) ||
       article.excerpt.toLowerCase().includes(query) ||
-      article.author.toLowerCase().includes(query)
+      article.author.name.toLowerCase().includes(query)
     )
   }
 

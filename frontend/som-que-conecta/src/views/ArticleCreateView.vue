@@ -44,7 +44,7 @@
               placeholder="Digite um título atrativo para seu artigo"
               class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-            <p class="text-xs text-gray-500 mt-1">{{ form.title.length }}/100 caracteres</p>
+            <p class="text-xs text-gray-500 mt-1">{{ form.title?.length || 0 }}/100 caracteres</p>
           </div>
 
           <!-- Category and Reading Time -->
@@ -57,7 +57,7 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option :value="null">Selecione uma categoria</option>
-                <option v-for="category in categories" :key="category.id" :value="category.id">
+                <option v-for="category in categories" :key="category.id" :value="category.name">
                   {{ category.name }}
                 </option>
               </select>
@@ -101,7 +101,7 @@
               maxlength="300"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             ></textarea>
-            <p class="text-xs text-gray-500 mt-1">{{ form.excerpt.length }}/300 caracteres</p>
+            <p class="text-xs text-gray-500 mt-1">{{ form.excerpt?.length || 0 }}/300 caracteres</p>
           </div>
         </div>
 
@@ -244,7 +244,7 @@
             </div>
           </div>
           <div class="mt-2 text-sm text-gray-500">
-            Palavras: {{ wordCount }} | Caracteres: {{ form.content.length }}
+            Palavras: {{ wordCount }} | Caracteres: {{ form.content?.length || 0 }}
           </div>
         </div>
 
@@ -341,7 +341,7 @@ const handleSave = async (asDraft = false) => {
 
   // Mapeia os campos do formulário para os nomes esperados pelo backend
   formData.append('title', form.value.title);
-  formData.append('category', form.value.category);
+  formData.append('category_name', form.value.category);
   formData.append('short_description', form.value.excerpt);
   formData.append('content', form.value.content);
   formData.append('reading_time', form.value.reading_time);
@@ -467,12 +467,12 @@ onMounted(async () => {
       
       // Preenche o formulário com os dados da API
       form.value.title = articleData.title;
-      form.value.category = articleData.category; // Assumindo que a API retorna o ID
-      form.value.excerpt = articleData.excerpt;
+      form.value.category = articleData.category?.name || null; // Corrigido para pegar o nome da categoria
+      form.value.excerpt = articleData.short_description || articleData.excerpt; // Tenta ambos os campos possíveis
       form.value.content = articleData.content;
       form.value.reading_time = articleData.reading_time;
       form.value.difficulty = articleData.difficulty;
-      form.value.cover_image = articleData.cover_image; // URL da imagem existente para preview
+      form.value.cover_image = articleData.cover_image;
       form.value.cover_link = articleData.cover_link;
       
     } catch (err) {
