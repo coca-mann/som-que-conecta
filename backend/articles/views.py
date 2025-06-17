@@ -286,6 +286,32 @@ class ArticleViewSet(viewsets.ModelViewSet):
                 'detail': 'Você ainda não avaliou este artigo'
             }, status=404)
 
+    @action(detail=True, methods=['delete'])
+    def remove_comment(self, request, pk=None):
+        article = self.get_object()
+        comment_id = request.data.get('comment_id')
+        
+        try:
+            comment = ArticleComments.objects.get(
+                id=comment_id,
+                article=article
+            )
+            
+            # Verifica se o usuário é o autor do comentário ou um administrador
+            if not (request.user == comment.user or request.user.is_staff):
+                return Response(
+                    {'detail': 'Você não tem permissão para excluir este comentário.'},
+                    status=403
+                )
+            
+            comment.delete()
+            return Response(status=204)
+        except ArticleComments.DoesNotExist:
+            return Response(
+                {'detail': 'Comentário não encontrado.'},
+                status=404
+            )
+
     def destroy(self, request, *args, **kwargs):
         """
         Sobrescreve o método destroy para verificar permissões antes de excluir o artigo.
