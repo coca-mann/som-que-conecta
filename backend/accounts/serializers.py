@@ -118,8 +118,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return obj.usertask_set.filter(is_completed=True).count()
     
     def get_instruments_counter(self, obj):
-        result = obj.instrument_set.aggregate(total_instrument=Count('user_id__instrument'))
-        return result['total_instrument']
+        return obj.instrument_set.count()
 
     def get_role(self, obj):
         """
