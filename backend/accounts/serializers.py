@@ -74,6 +74,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     # Usamos o campo 'get_gender_display' para retornar o nome legível ("Masculino")
     # em vez da chave ("M"). `source` aponta para o método do modelo.
     gender_display = serializers.CharField(source='get_gender_display', read_only=True)
+    skill_level_display = serializers.CharField(source='get_skill_level_display', read_only=True)
     
     # O campo 'role' que você já tinha é perfeito para o frontend.
     role = serializers.SerializerMethodField()
@@ -94,6 +95,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             'bio', 
             'birthday',
             'skill_level',
+            'skill_level_display',
             # Campos booleanos para lógica de UI
             'is_ong',
             'is_professor',

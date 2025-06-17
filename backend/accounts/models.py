@@ -57,13 +57,37 @@ class User(AbstractUser):
     auth_provider = models.CharField(choices=AUTH_PROVIDER, blank=True, null=True, max_length=10, verbose_name='Provedor de autenticação')
     sso_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='ID de SSO')
     gender = models.CharField(choices=GENDER_CHOICES, blank=True, null=True, max_length=1, verbose_name='Gênero')
-    skill_level = models.CharField(choices=SKILL_LEVEL, blank=True, null=True, max_length=20, verbose_name='Nível de habilidade')
+    skill_level = models.CharField(choices=SKILL_LEVEL, default='BEGINNER', max_length=20, verbose_name='Nível de habilidade')
     is_ong = models.BooleanField(default=False, verbose_name='Usuário ONG')
     is_professor = models.BooleanField(default=False, verbose_name='Professor')
     objects = CustomUserManager()
     
     def __str__(self):
         return self.email
+
+    def update_skill_level(self):
+        """
+        Atualiza o nível de habilidade do usuário baseado no número de cursos concluídos.
+        Um curso é considerado concluído quando todas as suas tarefas foram completadas.
+        """
+        from django.db.models import Count, Q
+        from backend.lessons.models import UserTask, Task
+
+        # Conta quantos cursos únicos o usuário completou
+        completed_courses = UserTask.objects.filter(
+            user_id=self,
+            is_completed=True
+        ).values('task_id__lesson').distinct().count()
+
+        # Atualiza o nível de habilidade baseado no número de cursos
+        if completed_courses >= 6:
+            self.skill_level = 'ADVANCED'
+        elif completed_courses >= 3:
+            self.skill_level = 'INTERMEDIATE'
+        else:
+            self.skill_level = 'BEGINNER'
+        
+        self.save()
 
     class Meta:
         verbose_name = 'Usuário'
