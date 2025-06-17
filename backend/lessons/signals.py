@@ -49,3 +49,6 @@ def create_task_completion_history(sender, instance, created, **kwargs):
                 action='COMPLETE_TASK',
                 instance=instance.task_id # O objeto de interesse é a Tarefa, não o registro UserTask
             )
+        
+        # Atualiza o nível de habilidade do usuário
+        instance.user_id.update_skill_level()
