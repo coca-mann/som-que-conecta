@@ -16,7 +16,9 @@ from backend.articles.serializers import (
     ArticleFavoriteSerializer,
     ArticleCommentSerializer,
     ArticleCategorySerializer,
-    ArticleListSerializer
+    ArticleListSerializer,
+    ArticleDetailSerializer,
+    ArticleCreateUpdateSerializer
 )
 from backend.articles.permissions import IsCommentAuthorOrAdmin
 
@@ -37,9 +39,15 @@ class ArticleViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
 
     def get_serializer_class(self):
+        """
+        Retorna o serializer correto para cada ação.
+        """
         if self.action == 'list':
             return ArticleListSerializer
-        return ArticleSerializer
+        if self.action in ['create', 'update', 'partial_update']:
+            return ArticleCreateUpdateSerializer
+        # O padrão para 'retrieve' (detalhe) e outras ações será o serializer de detalhe.
+        return ArticleDetailSerializer
 
     def get_queryset(self):
         """
