@@ -153,6 +153,7 @@
               </router-link>
               
               <router-link 
+                v-if="authStore.user?.role !== 'student'"
                 to="/articles/create" 
                 class="flex items-center gap-3 p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
               >

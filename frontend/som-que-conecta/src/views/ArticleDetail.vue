@@ -2,9 +2,12 @@
   <div class="min-h-screen bg-gray-50">
     <!-- Toast Notification -->
     <div v-if="showToast" 
-         class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out"
+         class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out z-[9999] flex items-center gap-3"
          :class="showToast ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'">
-      {{ toastMessage }}
+      <span>{{ toastMessage }}</span>
+      <button @click="showToast = false" class="text-gray-300 hover:text-white transition-colors">
+        <X class="h-4 w-4" />
+      </button>
     </div>
 
     <!-- Back Navigation -->
@@ -251,7 +254,8 @@ import {
   Share2, 
   MessageCircle,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  X
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -433,9 +437,6 @@ const removeRating = async () => {
 const showToastMessage = (message) => {
   toastMessage.value = message
   showToast.value = true
-  setTimeout(() => {
-    showToast.value = false
-  }, 3000)
 }
 
 // Função para compartilhar o artigo
