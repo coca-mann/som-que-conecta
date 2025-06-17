@@ -37,7 +37,7 @@ const props = defineProps({
 
 defineEmits(['update:modelValue']);
 
-const LICENSE_KEY = import.meta.env.VITE_CKEDITOR_LICENSE_KEY;
+const LICENSE_KEY = process.env.VUE_APP_CKEDITOR_LICENSE_KEY;
 
 const cloud = useCKEditorCloud({ version: '45.2.0' });
 
