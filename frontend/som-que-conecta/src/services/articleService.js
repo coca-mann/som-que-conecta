@@ -28,9 +28,8 @@ const articleService = {
   },
   
   // Para os comentários
-  addComment(payload) {
-    // payload: { article: articleId, comment: '...' }
-    return api.post('/comments/', payload);
+  addComment(articleId, comment) {
+    return api.post(`/articles/${articleId}/add_comment/`, { comment });
   },
   
   // Para as categorias (usado no filtro)
@@ -50,6 +49,22 @@ const articleService = {
 
   unfavorite(articleId) {
     return api.delete(`/articles/${articleId}/unfavorite/`);
+  },
+
+  async getComments(articleId) {
+    return await api.get(`/articles/${articleId}/comments/`);
+  },
+
+  async rateArticle(articleId, rating) {
+    return await api.post(`/articles/${articleId}/rate/`, { rating });
+  },
+
+  async checkRating(articleId) {
+    return await api.get(`/articles/${articleId}/check_rating/`);
+  },
+
+  async removeRating(articleId) {
+    return await api.delete(`/articles/${articleId}/remove_rating/`);
   }
 };
 

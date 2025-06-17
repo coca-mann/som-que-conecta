@@ -21,7 +21,7 @@
                 <span class="px-3 py-1 bg-blue-600 rounded-full text-sm font-medium">
                   {{ article.category?.name || article.category }}
                 </span>
-                <span class="text-sm opacity-90">{{ formatDate(article.created_at) }}</span>
+                <span class="text-sm opacity-90">{{ formatDate(article.published_at) }}</span>
               </div>
               <h1 class="text-3xl md:text-4xl font-bold leading-tight">{{ article.title }}</h1>
             </div>
@@ -96,6 +96,11 @@
                        class="transition-colors">
                   <Star class="h-5 w-5 fill-current" />
                 </button>
+                <button v-if="userRating" 
+                       @click="removeRating"
+                       class="ml-2 text-sm text-gray-500 hover:text-red-600 transition-colors">
+                  Remover avaliação
+                </button>
               </div>
             </div>
           </div>
@@ -110,6 +115,11 @@
         
         <!-- Add Comment Form -->
         <div v-if="isLoggedIn" class="mb-8 p-4 bg-gray-50 rounded-lg">
+          <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="text-sm text-blue-800">
+              <span class="font-medium">Atenção:</span> Os comentários são moderados e podem ser removidos caso não estejam de acordo com nossas diretrizes de comunidade.
+            </p>
+          </div>
           <h3 class="text-lg font-semibold mb-4">Deixe seu comentário</h3>
           <form @submit.prevent="addComment" class="space-y-4">
             <textarea 
@@ -145,20 +155,6 @@
                   <span class="text-sm text-gray-500">{{ formatDate(comment.createdAt) }}</span>
                 </div>
                 <p class="text-gray-700 leading-relaxed">{{ comment.content }}</p>
-                
-                <div class="flex items-center gap-4 mt-3">
-                  <button @click="toggleCommentLike(comment)" :class="[
-                    'flex items-center gap-1 text-sm transition-colors',
-                    comment.isLiked ? 'text-red-600' : 'text-gray-500 hover:text-red-600'
-                  ]">
-                    <Heart :class="comment.isLiked ? 'fill-current' : ''" class="h-3 w-3" />
-                    {{ comment.likes }}
-                  </button>
-                  
-                  <button class="text-sm text-gray-500 hover:text-blue-600 transition-colors">
-                    Responder
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -234,8 +230,21 @@ const comments = ref([])
 // Function to go back
 const goBack = () => router.push('/articles');
 
+// Função para verificar a avaliação do usuário
+const checkUserRating = async () => {
+  if (!isLoggedIn.value || !article.value) return;
+  
+  try {
+    const response = await articleService.checkRating(article.value.id);
+    if (response.data.has_rated) {
+      userRating.value = response.data.rating;
+    }
+  } catch (error) {
+    console.error('Erro ao verificar avaliação do usuário:', error);
+  }
+};
 
-// Mock articles data - in real app, fetch from API
+// Atualizar o fetchArticleData para incluir a verificação de avaliação
 const fetchArticleData = async () => {
   isLoading.value = true;
   error.value = null;
@@ -244,14 +253,18 @@ const fetchArticleData = async () => {
   try {
     const response = await articleService.getArticleDetail(articleId);
     article.value = response.data;
-    // Os comentários agora vêm aninhados na resposta do artigo
-    comments.value = response.data.comments || [];
+    
+    // Carregar comentários separadamente
+    await loadComments();
 
     // Verifica se o usuário já curtiu o artigo
     if (isLoggedIn.value) {
       try {
         const favoriteResponse = await articleService.checkFavorite(articleId);
         isLiked.value = favoriteResponse.data.is_favorited;
+        
+        // Verificar a avaliação do usuário
+        await checkUserRating();
       } catch (err) {
         console.error("Erro ao verificar favorito:", err);
       }
@@ -266,6 +279,17 @@ const fetchArticleData = async () => {
   }
 };
 
+// Função para carregar comentários
+const loadComments = async () => {
+  if (!article.value) return;
+  
+  try {
+    const response = await articleService.getComments(article.value.id);
+    comments.value = response.data;
+  } catch (err) {
+    console.error("Erro ao carregar comentários:", err);
+  }
+};
 
 onMounted(() => {
   fetchArticleData()
@@ -274,15 +298,9 @@ onMounted(() => {
 const addComment = async () => {
   if (!newComment.value.trim() || !article.value) return;
   
-  const payload = {
-    article: article.value.id,
-    comment: newComment.value,
-  };
-
   try {
-    // Supondo que você tenha um método 'addComment' no seu serviço
-    const response = await articleService.addComment(payload);
-    comments.value.unshift(response.data); // Adiciona o novo comentário no topo
+    const response = await articleService.addComment(article.value.id, newComment.value);
+    comments.value.unshift(response.data);
     newComment.value = '';
   } catch (err) {
     console.error("Erro ao adicionar comentário:", err);
@@ -321,14 +339,32 @@ const toggleLike = async () => {
   }
 }
 
-const rateArticle = (rating) => {
-  userRating.value = rating
-  // Here you would send the rating to your backend
-  console.log('Article rated:', rating)
+const rateArticle = async (rating) => {
+  if (!isLoggedIn.value) {
+    alert('Por favor, faça login para avaliar este artigo.');
+    return;
+  }
+
+  try {
+    const response = await articleService.rateArticle(article.value.id, rating);
+    article.value.rating = response.data.rating;
+    userRating.value = rating;
+  } catch (error) {
+    console.error('Erro ao avaliar artigo:', error);
+    alert('Erro ao registrar sua avaliação. Por favor, tente novamente.');
+  }
 }
 
-const toggleCommentLike = (comment) => {
-  comment.isLiked = !comment.isLiked
-  comment.likes += comment.isLiked ? 1 : -1
-}
+const removeRating = async () => {
+  if (!isLoggedIn.value || !article.value) return;
+  
+  try {
+    const response = await articleService.removeRating(article.value.id);
+    article.value.rating = response.data.rating;
+    userRating.value = 0;
+  } catch (error) {
+    console.error('Erro ao remover avaliação:', error);
+    alert('Erro ao remover sua avaliação. Por favor, tente novamente.');
+  }
+};
 </script>
