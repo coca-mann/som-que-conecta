@@ -72,7 +72,7 @@ class TaskSerializer(serializers.ModelSerializer):
 # Serializer para a LISTA de Cursos (Lessons)
 # Uma versão mais leve para a página principal de cursos.
 class LessonListSerializer(serializers.ModelSerializer):
-    author_name = serializers.CharField(source='author.username', read_only=True)
+    author = serializers.SerializerMethodField()
     instrument_type_name = serializers.CharField(source='instrument_type.name', read_only=True)
     skill_level_display = serializers.CharField(source='get_skill_level_display', read_only=True)
     duration_display = serializers.SerializerMethodField()
@@ -82,9 +82,20 @@ class LessonListSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = [
             'id', 'title', 'description', 'cover', 'instrument_type_name', 'skill_level', 
-            'skill_level_display', 'tasks_count', 'author_name', 'progress', 'duration_display',
+            'skill_level_display', 'tasks_count', 'author', 'progress', 'duration_display',
             'time_to_complete', 'type_time_to_complete'
         ]
+        
+    def get_author(self, obj):
+        """
+        Retorna os dados do autor da lição.
+        """
+        if not obj.author:
+            return None
+        return {
+            'name': obj.author.get_full_name(),
+            'profile_picture': obj.author.profile_picture.url if obj.author.profile_picture else None
+        }
         
     def get_duration_display(self, obj):
         """

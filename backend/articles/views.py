@@ -1,8 +1,8 @@
 from rest_framework.decorators import action, api_view, permission_classes, parser_classes
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.filters import OrderingFilter
 from django.db.models import F, Q, Count, Avg
 from backend.articles.models import (
@@ -406,3 +406,16 @@ def upload_article_image(request):
                 'message': f'Erro ao salvar a imagem: {str(e)}'
             }
         }, status=500)
+
+
+class LatestArticleView(generics.ListAPIView):
+    """
+    Retorna apenas o último artigo publicado.
+    Acesso público.
+    """
+    serializer_class = ArticleListSerializer
+    permission_classes = [AllowAny] # Permite acesso sem autenticação
+
+    def get_queryset(self):
+        # Busca apenas artigos publicados, ordena pelo mais recente e pega só o primeiro
+        return Article.objects.filter(is_published=True).order_by('-published_at')[:1]

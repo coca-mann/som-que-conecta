@@ -1,6 +1,6 @@
 from django.utils import timezone
-from rest_framework import viewsets, status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework import viewsets, status, generics
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -145,3 +145,16 @@ class TaskAditionalResourceViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(task_id=task_id)
             
         return queryset
+
+
+class LatestLessonView(generics.ListAPIView):
+    """
+    Retorna apenas o último minicurso adicionado.
+    Acesso público.
+    """
+    serializer_class = LessonListSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        # Ordena pelo mais recente e pega só o primeiro
+        return Lesson.objects.order_by('-created_at')[:1]
