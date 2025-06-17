@@ -37,6 +37,7 @@ migrations/
 *.ogg
 *.m4a
 *.aac
+*.pdf
 
 # Arquivos de imagem
 *.jpg
