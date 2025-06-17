@@ -85,6 +85,11 @@ const articleService = {
     return await api.post('/articles/upload-image/', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+  },
+
+  // Para submeter artigo para publicação
+  async submitForPublication(articleId) {
+    return await api.post(`/articles/${articleId}/submit_for_publication/`);
   }
 };
 

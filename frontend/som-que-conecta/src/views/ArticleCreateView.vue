@@ -241,13 +241,24 @@
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
           <!-- Status Info -->
           <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2 text-sm text-gray-600">
-                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>Seu artigo será revisado antes da publicação</span>
-              </div>
-              <div class="text-xs text-gray-500">
-                Última modificação: {{ formatDate(form.modified_at) }}
+            <div class="flex flex-col gap-2">
+              <h3 class="text-sm font-medium text-gray-700">Moderação</h3>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  <div class="w-2 h-2 rounded-full" :class="{
+                    'bg-red-500': aiStatus === false,
+                    'bg-green-500': aiStatus === true,
+                    'bg-blue-500': aiStatus === null
+                  }"></div>
+                  <span :class="{
+                    'text-red-600': aiStatus === false,
+                    'text-green-600': aiStatus === true,
+                    'text-gray-600': aiStatus === null
+                  }">{{ aiFeedback || 'Seu artigo será revisado antes da publicação' }}</span>
+                </div>
+                <div class="text-xs text-gray-500">
+                  Última modificação: {{ formatDate(form.modified_at) }}
+                </div>
               </div>
             </div>
           </div>
@@ -402,6 +413,8 @@ const isLoading = ref(false)
 const error = ref(null)
 const showDeleteConfirm = ref(false)
 const isDeleting = ref(false)
+const aiStatus = ref(null)
+const aiFeedback = ref(null)
 
 const isEditing = computed(() => route.params.id !== undefined);
 const imageFile = ref(null);
@@ -437,8 +450,13 @@ const handleSave = async (asDraft = false) => {
   formData.append('difficulty', form.value.difficulty);
   formData.append('cover_link', form.value.cover_link);
   
-  formData.append('is_draft', asDraft);
-  formData.append('is_published', !asDraft);
+  if (asDraft) {
+    formData.append('is_draft', 'true');
+    formData.append('is_published', 'false');
+  } else {
+    formData.append('is_draft', 'false');
+    formData.append('is_published', 'true');
+  }
 
   if (imageFile.value) {
     formData.append('cover_image', imageFile.value);
@@ -450,10 +468,10 @@ const handleSave = async (asDraft = false) => {
     } else {
       await articleService.createArticle(formData);
     }
-    router.push('/articles'); 
+    router.push('/articles');
   } catch (err) {
     console.error("Erro ao salvar artigo:", err.response?.data || err);
-    error.value = "Falha ao salvar o artigo. Verifique os campos e tente novamente.";
+    error.value = err.response?.data?.detail || "Falha ao salvar o artigo. Verifique os campos e tente novamente.";
   } finally {
     isLoading.value = false;
   }
@@ -527,8 +545,86 @@ const previewArticle = () => {
   showPreview.value = true
 }
 
-const handleSubmit = () => {
-  handleSave(false);
+const handleSubmit = async () => {
+  if (!form.value.title || !form.value.category || !form.value.excerpt || !form.value.content) {
+    alert('Por favor, preencha todos os campos obrigatórios.');
+    return;
+  }
+
+  isLoading.value = true;
+  error.value = null;
+  aiStatus.value = null;
+
+  try {
+    if (isEditing.value) {
+      // Primeiro salva o artigo como rascunho
+      const formData = new FormData();
+      formData.append('title', form.value.title);
+      formData.append('category_name', form.value.category);
+      formData.append('short_description', form.value.excerpt);
+      formData.append('content', form.value.content);
+      formData.append('reading_time', form.value.reading_time);
+      formData.append('difficulty', form.value.difficulty);
+      formData.append('cover_link', form.value.cover_link);
+      formData.append('is_draft', 'true');
+      formData.append('is_published', 'false');
+
+      if (imageFile.value) {
+        formData.append('cover_image', imageFile.value);
+      }
+
+      await articleService.updateArticle(route.params.id, formData);
+
+      // Depois submete para publicação
+      const response = await articleService.submitForPublication(route.params.id);
+      
+      if (response.data.feedback) {
+        alert(`Feedback da revisão: ${response.data.feedback}`);
+        aiStatus.value = response.data.ai_bool;
+        aiFeedback.value = response.data.feedback;
+      }
+    } else {
+      // Primeiro cria o artigo como rascunho
+      const formData = new FormData();
+      formData.append('title', form.value.title);
+      formData.append('category_name', form.value.category);
+      formData.append('short_description', form.value.excerpt);
+      formData.append('content', form.value.content);
+      formData.append('reading_time', form.value.reading_time);
+      formData.append('difficulty', form.value.difficulty);
+      formData.append('cover_link', form.value.cover_link);
+      formData.append('is_draft', 'true');
+      formData.append('is_published', 'false');
+
+      if (imageFile.value) {
+        formData.append('cover_image', imageFile.value);
+      }
+
+      const createResponse = await articleService.createArticle(formData);
+      
+      // Depois submete para publicação
+      const response = await articleService.submitForPublication(createResponse.data.id);
+      
+      if (response.data.feedback) {
+        alert(`Feedback da revisão: ${response.data.feedback}`);
+        aiStatus.value = response.data.ai_bool;
+        aiFeedback.value = response.data.feedback;
+      }
+    }
+
+    router.push('/articles');
+  } catch (err) {
+    console.error("Erro ao salvar artigo:", err.response?.data || err);
+    if (err.response?.data?.feedback) {
+      error.value = err.response.data.feedback;
+      aiStatus.value = err.response.data.ai_bool;
+      aiFeedback.value = err.response.data.feedback;
+    } else {
+      error.value = err.response?.data?.detail || "Falha ao salvar o artigo. Verifique os campos e tente novamente.";
+    }
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const checkPermission = () => {
@@ -591,6 +687,8 @@ onMounted(async () => {
       form.value.reading_time = articleData.reading_time;
       form.value.difficulty = articleData.difficulty;
       form.value.modified_at = articleData.modified_at;
+      aiStatus.value = articleData.ai_bool;
+      aiFeedback.value = articleData.ai_feedback;
       
       if (articleData.cover_image) {
         form.value.cover_image = articleData.cover_image;
