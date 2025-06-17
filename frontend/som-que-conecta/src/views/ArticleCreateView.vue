@@ -202,7 +202,7 @@
                       <strong>Nome:</strong> {{ imageInfo.name }}
                     </div>
                     <div v-if="imageInfo.size">
-                      <strong>Tamanho:</strong> {{ formatFileSize(imageInfo.size) }}
+                      <strong>Tamanho:</strong> {{ imageInfo.size }}
                     </div>
                     <div v-if="imageInfo.dimensions">
                       <strong>Dimensões:</strong> {{ imageInfo.dimensions }}
@@ -237,58 +237,90 @@
           </div>
         </div>
 
-        <!-- Submit Actions -->
-        <div class="bg-white rounded-lg shadow-sm p-6">
-          <div class="flex flex-col gap-4">
+        <!-- Submit Actions - REFATORADO -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <!-- Status Info -->
+          <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
             <div class="flex items-center justify-between">
-              <div class="text-sm text-gray-600">
-                <p>Seu artigo será revisado antes da publicação</p>
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span>Seu artigo será revisado antes da publicação</span>
               </div>
-              
-              <div class="flex gap-3">
-                <button type="button" @click="goBack" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                  Cancelar
-                </button>
-                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                  {{ isEditing ? 'Atualizar Artigo' : 'Publicar Artigo' }}
-                </button>
+              <div class="text-xs text-gray-500">
+                Última modificação: {{ formatDate(form.modified_at) }}
               </div>
             </div>
+          </div>
 
-            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-              <div class="flex gap-3">
-                <div class="relative">
+          <!-- Main Actions -->
+          <div class="px-6 py-6">
+            <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+              <!-- Primary Actions -->
+              <div class="flex flex-wrap gap-3 order-2 sm:order-1">
+                <!-- Save Draft Button -->
+                <div class="relative group">
                   <button 
                     type="button" 
                     @click="saveDraft" 
-                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     :disabled="!form.category"
                   >
                     <Save class="h-4 w-4" />
-                    Salvar Rascunho
+                    <span class="hidden sm:inline">Salvar Rascunho</span>
+                    <span class="sm:hidden">Rascunho</span>
                   </button>
+                  
+                  <!-- Tooltip for disabled state -->
                   <div 
                     v-if="!form.category" 
-                    class="absolute bottom-full left-0 mb-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm whitespace-nowrap"
+                    class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10"
                   >
-                    Selecione uma categoria para salvar o rascunho
+                    Selecione uma categoria primeiro
+                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                   </div>
                 </div>
-                <button type="button" @click="previewArticle" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2">
+
+                <!-- Preview Button -->
+                <button 
+                  type="button" 
+                  @click="previewArticle" 
+                  class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all duration-200 font-medium border border-blue-200"
+                >
                   <Eye class="h-4 w-4" />
-                  Visualizar
+                  <span class="hidden sm:inline">Visualizar</span>
+                  <span class="sm:hidden">Preview</span>
+                </button>
+
+                <!-- Delete Button (only when editing) -->
+                <button 
+                  v-if="isEditing"
+                  type="button" 
+                  @click="confirmDelete" 
+                  class="inline-flex items-center justify-center w-10 h-10 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 border border-red-200 group"
+                  title="Excluir artigo"
+                >
+                  <Trash2 class="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
                 </button>
               </div>
 
-              <button 
-                v-if="isEditing"
-                type="button" 
-                @click="confirmDelete" 
-                class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex items-center gap-2"
-              >
-                <Trash2 class="h-4 w-4" />
-                Excluir Artigo
-              </button>
+              <!-- Submit Actions -->
+              <div class="flex gap-3 order-1 sm:order-2">
+                <button 
+                  type="button" 
+                  @click="goBack" 
+                  class="px-6 py-2.5 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium border border-gray-300"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center gap-2"
+                  :disabled="isLoading"
+                >
+                  <div v-if="isLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  {{ isLoading ? 'Salvando...' : (isEditing ? 'Atualizar Artigo' : 'Publicar Artigo') }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -296,8 +328,8 @@
     </div>
 
     <!-- Preview Modal -->
-    <div v-if="showPreview" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+    <div v-if="showPreview" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+      <div class="bg-white/95 backdrop-blur-sm rounded-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-lg font-semibold">Visualização do Artigo</h3>
           <button @click="showPreview = false" class="text-gray-400 hover:text-gray-600">
@@ -377,13 +409,14 @@ const categories = ref([]);
 
 const form = ref({
   title: '',
-  category: null, // Usaremos o ID da categoria
-  excerpt: '', // Campo para o resumo do artigo
-  content: '', // Inicializando com string vazia ao invés de undefined
-  reading_time: 5, // Nome corrigido
-  difficulty: 'BEGINNER', // Valor padrão corrigido
-  cover_image: '', // Usado para preview
+  category: null,
+  excerpt: '',
+  content: '',
+  reading_time: 5,
+  difficulty: 'BEGINNER',
+  cover_image: '',
   cover_link: '',
+  modified_at: null,
 });
 
 const wordCount = computed(() => {
@@ -396,7 +429,6 @@ const handleSave = async (asDraft = false) => {
 
   const formData = new FormData();
 
-  // Mapeia os campos do formulário para os nomes esperados pelo backend
   formData.append('title', form.value.title);
   formData.append('category_name', form.value.category);
   formData.append('short_description', form.value.excerpt);
@@ -405,11 +437,9 @@ const handleSave = async (asDraft = false) => {
   formData.append('difficulty', form.value.difficulty);
   formData.append('cover_link', form.value.cover_link);
   
-  // Define o status do artigo
   formData.append('is_draft', asDraft);
   formData.append('is_published', !asDraft);
 
-  // Anexa o arquivo de imagem de capa, se houver um novo
   if (imageFile.value) {
     formData.append('cover_image', imageFile.value);
   }
@@ -420,12 +450,10 @@ const handleSave = async (asDraft = false) => {
     } else {
       await articleService.createArticle(formData);
     }
-    // Redireciona para a lista de artigos após sucesso
     router.push('/articles'); 
   } catch (err) {
     console.error("Erro ao salvar artigo:", err.response?.data || err);
     error.value = "Falha ao salvar o artigo. Verifique os campos e tente novamente.";
-    // Opcional: formatar o erro vindo da API para ser mais específico
   } finally {
     isLoading.value = false;
   }
@@ -449,12 +477,10 @@ const handleFileUpload = (event) => {
 
 const handleUrlInput = () => {
   if (form.value.cover_link) {
-    // Validate URL format
     try {
       new URL(form.value.cover_link)
       form.value.cover_image = form.value.cover_link
       
-      // Try to get image dimensions
       const img = new Image()
       img.onload = () => {
         imageInfo.value = {
@@ -493,7 +519,6 @@ const formatFileSize = (bytes) => {
 }
 
 const saveDraft = () => {
-  // CORREÇÃO: O botão "Salvar Rascunho" agora chama a API com asDraft = true
   handleSave(true);
 };
 
@@ -503,7 +528,6 @@ const previewArticle = () => {
 }
 
 const handleSubmit = () => {
-  // O botão principal "Publicar" chama o salvamento com asDraft = false
   handleSave(false);
 };
 
@@ -535,8 +559,19 @@ const deleteArticle = async () => {
   }
 }
 
+const formatDate = (dateString) => {
+  if (!dateString) return 'agora';
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+}
+
 onMounted(async () => {
-  // Busca categorias para o dropdown
   try {
     const response = await articleService.getCategories();
     categories.value = response.data;
@@ -544,21 +579,19 @@ onMounted(async () => {
     console.error('Erro ao carregar categorias:', err);
   }
 
-  // Se estiver editando, busca os dados do artigo
   if (isEditing.value) {
     try {
       const response = await articleService.getArticleDetail(route.params.id);
       const articleData = response.data;
       
-      // Preenche o formulário com os dados da API
       form.value.title = articleData.title;
       form.value.category = articleData.category?.name || null;
       form.value.excerpt = articleData.short_description || articleData.excerpt;
       form.value.content = articleData.content;
       form.value.reading_time = articleData.reading_time;
       form.value.difficulty = articleData.difficulty;
+      form.value.modified_at = articleData.modified_at;
       
-      // Trata a imagem de capa
       if (articleData.cover_image) {
         form.value.cover_image = articleData.cover_image;
         imageUploadMethod.value = 'upload';
@@ -570,7 +603,6 @@ onMounted(async () => {
       
     } catch (err) {
       console.error('Erro ao carregar artigo para edição:', err);
-      // Opcional: redirecionar ou mostrar erro
     }
   }
 
@@ -618,5 +650,4 @@ onMounted(async () => {
 .prose em {
   @apply italic;
 }
-
 </style>
