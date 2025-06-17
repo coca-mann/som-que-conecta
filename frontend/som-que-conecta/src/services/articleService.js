@@ -37,6 +37,19 @@ const articleService = {
   getCategories() {
     // Assumindo que você criará um endpoint para categorias
     return api.get('/article-categories/');
+  },
+
+  // Para favoritos
+  checkFavorite(articleId) {
+    return api.get(`/articles/${articleId}/check_favorite/`);
+  },
+
+  addFavorite(articleId) {
+    return api.post(`/articles/${articleId}/favorite/`);
+  },
+
+  unfavorite(articleId) {
+    return api.delete(`/articles/${articleId}/unfavorite/`);
   }
 };
 

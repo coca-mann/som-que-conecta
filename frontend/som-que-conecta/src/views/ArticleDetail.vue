@@ -12,14 +12,16 @@
       <!-- Article Header -->
       <article class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="relative h-64 md:h-80">
-          <img :src="article.image" :alt="article.title" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-black bg-opacity-40 flex items-end">
+          <div class="absolute inset-0">
+            <img :src="article.cover_image" :alt="article.title" class="w-full h-full object-cover">
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
             <div class="p-6 text-white">
               <div class="flex items-center gap-3 mb-3">
                 <span class="px-3 py-1 bg-blue-600 rounded-full text-sm font-medium">
-                  {{ article.category }}
+                  {{ article.category?.name || article.category }}
                 </span>
-                <span class="text-sm opacity-90">{{ formatDate(article.createdAt) }}</span>
+                <span class="text-sm opacity-90">{{ formatDate(article.created_at) }}</span>
               </div>
               <h1 class="text-3xl md:text-4xl font-bold leading-tight">{{ article.title }}</h1>
             </div>
@@ -30,22 +32,21 @@
         <div class="p-6 border-b border-gray-200">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-4">
-              <img :src="article.authorAvatar" :alt="article.author" class="w-12 h-12 rounded-full">
+              <img :src="article.author.profile_picture" :alt="article.author.get_full_name" class="w-12 h-12 rounded-full">
               <div>
-                <h3 class="font-semibold text-gray-900">{{ article.author }}</h3>
-                <p class="text-sm text-gray-600">{{ article.authorRole }}</p>
+                <h3 class="font-semibold text-gray-900">{{ article.author.get_full_name }}</h3>
               </div>
             </div>
             
             <div class="flex items-center gap-6">
               <div class="flex items-center gap-2">
                 <Clock class="h-4 w-4 text-gray-500" />
-                <span class="text-sm text-gray-600">{{ article.readTime }} min de leitura</span>
+                <span class="text-sm text-gray-600">{{ article.reading_time }} min de leitura</span>
               </div>
               
               <div class="flex items-center gap-2">
                 <Eye class="h-4 w-4 text-gray-500" />
-                <span class="text-sm text-gray-600">{{ article.views }} visualizações</span>
+                <span class="text-sm text-gray-600">{{ article.read_count }} visualizações</span>
               </div>
               
               <div class="flex items-center gap-1">
@@ -63,7 +64,7 @@
           <div class="prose prose-lg max-w-none">
             <p class="text-xl text-gray-600 mb-6 font-medium">{{ article.excerpt }}</p>
             
-            <div v-html="article.content" class="space-y-6"></div>
+            <div v-html="article.content" class="space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:text-gray-900 [&>h3]:mt-6 [&>h3]:mb-3 [&>p]:text-gray-700 [&>p]:leading-relaxed [&>p]:mb-4 [&>ul]:list-disc [&>ul]:list-inside [&>ul]:space-y-2 [&>ul]:mb-4 [&>ul]:text-gray-700 [&>li]:ml-4 [&>strong]:font-semibold [&>strong]:text-gray-900"></div>
           </div>
         </div>
 
@@ -76,7 +77,8 @@
                 isLiked ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               ]">
                 <Heart :class="isLiked ? 'fill-current' : ''" class="h-4 w-4" />
-                <span>{{ article.likes + (isLiked ? 1 : 0) }}</span>
+                <span>{{ article.favorite_count }}</span>
+                <span class="text-sm">{{ isLiked ? 'Descurtir' : 'Curtir' }}</span>
               </button>
               
               <button class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
@@ -204,6 +206,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.store';
 import articleService from '@/services/articleService';
 import { 
   ArrowLeft, 
@@ -217,65 +220,105 @@ import {
 
 const route = useRoute()
 const router = useRouter();
+const authStore = useAuthStore();
 
 const isLoading = ref(true);
 const article = ref(null)
-const isLoggedIn = ref(false) // Should come from auth store
+const error = ref(null)
+const isLoggedIn = computed(() => authStore.isAuthenticated); // Should come from auth store
 const isLiked = ref(false)
 const userRating = ref(0)
 const newComment = ref('')
 const comments = ref([])
 
 // Function to go back
-const goBack = () => {
-  window.history.go(-1)
-}
+const goBack = () => router.push('/articles');
+
 
 // Mock articles data - in real app, fetch from API
-const fetchArticle = async () => {
+const fetchArticleData = async () => {
   isLoading.value = true;
+  error.value = null;
   const articleId = route.params.id;
+
   try {
     const response = await articleService.getArticleDetail(articleId);
     article.value = response.data;
-    // A API deveria retornar os comentários aninhados ou você faria outra chamada
-    comments.value = article.value.comments || []; 
-  } catch (error) {
-    console.error("Artigo não encontrado:", error);
-    // Redirecionar para uma página 404
+    // Os comentários agora vêm aninhados na resposta do artigo
+    comments.value = response.data.comments || [];
+
+    // Verifica se o usuário já curtiu o artigo
+    if (isLoggedIn.value) {
+      try {
+        const favoriteResponse = await articleService.checkFavorite(articleId);
+        isLiked.value = favoriteResponse.data.is_favorited;
+      } catch (err) {
+        console.error("Erro ao verificar favorito:", err);
+      }
+    }
+  } catch (err) {
+    console.error("Erro ao buscar o artigo:", err);
+    error.value = "Artigo não encontrado ou indisponível.";
+    // Opcional: redirecionar para uma página 404
+    // router.push('/not-found');
   } finally {
     isLoading.value = false;
   }
 };
 
-onMounted(fetchArticle);
+
+onMounted(() => {
+  fetchArticleData()
+})
 
 const addComment = async () => {
-  if (!newComment.value.trim()) return;
+  if (!newComment.value.trim() || !article.value) return;
+  
   const payload = {
     article: article.value.id,
     comment: newComment.value,
   };
+
   try {
+    // Supondo que você tenha um método 'addComment' no seu serviço
     const response = await articleService.addComment(payload);
-    comments.value.unshift(response.data); // Adiciona o novo comentário no topo da lista
+    comments.value.unshift(response.data); // Adiciona o novo comentário no topo
     newComment.value = '';
-  } catch (error) {
-    console.error("Erro ao adicionar comentário:", error);
+  } catch (err) {
+    console.error("Erro ao adicionar comentário:", err);
     alert("Falha ao publicar comentário.");
   }
 };
 
-const formatDate = (date) => {
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
   return new Intl.DateTimeFormat('pt-BR', { 
     day: 'numeric', 
     month: 'long', 
     year: 'numeric' 
-  }).format(date)
-}
+  }).format(date);
+};
 
-const toggleLike = () => {
-  isLiked.value = !isLiked.value
+const toggleLike = async () => {
+  if (!isLoggedIn.value) {
+    // Opcional: mostrar mensagem para fazer login
+    return;
+  }
+
+  try {
+    if (isLiked.value) {
+      await articleService.unfavorite(article.value.id);
+      article.value.favorite_count = Math.max(0, article.value.favorite_count - 1);
+    } else {
+      await articleService.addFavorite(article.value.id);
+      article.value.favorite_count += 1;
+    }
+    isLiked.value = !isLiked.value;
+  } catch (error) {
+    console.error('Erro ao atualizar favorito:', error);
+    // Opcional: mostrar mensagem de erro para o usuário
+  }
 }
 
 const rateArticle = (rating) => {
@@ -288,48 +331,4 @@ const toggleCommentLike = (comment) => {
   comment.isLiked = !comment.isLiked
   comment.likes += comment.isLiked ? 1 : -1
 }
-
-onMounted(() => {
-  const articleId = parseInt(route.params.id)
-  article.value = articlesData[articleId]
-  comments.value = [...mockComments]
-  
-  if (!article.value) {
-    // Handle article not found
-    console.error('Article not found')
-  }
-})
 </script>
-
-<style scoped>
-.prose h2 {
-  @apply text-2xl font-bold text-gray-900 mt-8 mb-4;
-}
-
-.prose h3 {
-  @apply text-xl font-semibold text-gray-900 mt-6 mb-3;
-}
-
-.prose p {
-  @apply text-gray-700 leading-relaxed mb-4;
-}
-
-.prose ul {
-  @apply list-disc list-inside space-y-2 mb-4 text-gray-700;
-}
-
-.prose li {
-  @apply ml-4;
-}
-
-.prose strong {
-  @apply font-semibold text-gray-900;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>
