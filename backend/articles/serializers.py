@@ -7,6 +7,68 @@ from backend.articles.models import (
 )
 
 
+class ArticleCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ArticleCategory
+        fields = ['id', 'name']
+
+
+class ArticleSerializer(serializers.ModelSerializer):
+    # Campo para RECEBER o nome da categoria do frontend. Ele só existe na escrita.
+    category_name = serializers.CharField(write_only=True, required=False)
+
+    # Campo para MOSTRAR os dados da categoria na leitura. É apenas de leitura.
+    category = ArticleCategorySerializer(read_only=True)
+    author = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Article
+        # Certifique-se de que o campo 'category' (de leitura) está na lista,
+        # mas não o 'category_name' (que é apenas para escrita).
+        # O DRF lida com isso automaticamente se o campo for write_only.
+        fields = '__all__'
+
+    def _get_category(self, category_name):
+        """Método auxiliar para buscar a categoria ou lançar um erro."""
+        try:
+            return ArticleCategory.objects.get(name__iexact=category_name.strip())
+        except ArticleCategory.DoesNotExist:
+            raise serializers.ValidationError({
+                'category': f"A categoria '{category_name}' não foi encontrada."
+            })
+
+    def create(self, validated_data):
+        """
+        Método chamado ao criar um novo artigo (POST).
+        """
+        # Pega o nome da categoria que veio do frontend
+        category_name = validated_data.pop('category_name', None)
+        if not category_name:
+            raise serializers.ValidationError({'category': 'A categoria é obrigatória.'})
+
+        # Busca o objeto da categoria correspondente
+        category_obj = self._get_category(category_name)
+        
+        # Cria o artigo, associando o objeto de categoria encontrado
+        article = Article.objects.create(category=category_obj, **validated_data)
+        return article
+
+    def update(self, instance, validated_data):
+        """
+        Método chamado ao atualizar um artigo (PATCH/PUT).
+        """
+        # Pega o nome da categoria, se ele foi enviado
+        category_name = validated_data.pop('category_name', None)
+        
+        if category_name:
+            # Se um novo nome de categoria foi enviado, busca o objeto e atualiza
+            instance.category = self._get_category(category_name)
+            
+        # O super().update cuida da atualização dos outros campos
+        return super().update(instance, validated_data)
+    
+    
 class ArticleListSerializer(serializers.ModelSerializer):
     """
     Serializer otimizado para a lista de artigos.
@@ -16,7 +78,10 @@ class ArticleListSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     
     # Estes campos estão corretos
-    category = serializers.CharField(source='category.name', read_only=True)
+    category_name = serializers.CharField(write_only=True, required=False)
+
+    # Campo para MOSTRAR os dados da categoria na leitura. É apenas de leitura.
+    category = ArticleCategorySerializer(read_only=True)
     comments_count = serializers.IntegerField(read_only=True)
     
     class Meta:
@@ -24,7 +89,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'short_description', 'cover_image', 'cover_link', 
             'reading_time', 'author', 'category', 'created_at', 'rating', 'read_count', 
-            'is_published', 'comments_count', 
+            'is_published', 'comments_count', 'category_name'
         ]
 
     # 2. Corrigimos a lógica deste método.
@@ -53,17 +118,6 @@ class ArticleListSerializer(serializers.ModelSerializer):
 
 
 
-class ArticleSerializer(serializers.ModelSerializer):
-    # Serializer completo para detalhes, criação e edição
-    author = serializers.StringRelatedField(read_only=True)
-    category = serializers.StringRelatedField(read_only=True)
-    
-    class Meta:
-        model = Article
-        fields = '__all__'
-
-
-
 class ArticleCommentSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(source='user_id', read_only=True)
 
@@ -77,11 +131,4 @@ class ArticleFavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ArticleFavorites
-        fields = '__all__'
-
-
-class ArticleCategorySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ArticleCategory
         fields = '__all__'

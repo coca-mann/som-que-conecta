@@ -10,7 +10,7 @@ DIFICULTY = [
 
 
 class ArticleCategory(models.Model):
-    name = models.CharField(max_length=255, null=False, blank=False, verbose_name='Nome')
+    name = models.CharField(max_length=255, null=False, blank=False, verbose_name='Nome', unique=True)
     
     def __str__(self):
         return self.name
