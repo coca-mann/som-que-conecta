@@ -138,11 +138,17 @@
               rows="4" 
               placeholder="Compartilhe sua opinião sobre este artigo..."
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              :disabled="isSubmittingComment"
               required
             ></textarea>
             <div class="flex justify-end">
-              <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                Publicar Comentário
+              <button 
+                type="submit" 
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                :disabled="isSubmittingComment"
+              >
+                <div v-if="isSubmittingComment" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                {{ isSubmittingComment ? 'Enviando...' : 'Publicar Comentário' }}
               </button>
             </div>
           </form>
@@ -184,28 +190,6 @@
         <div v-if="comments.length === 0" class="text-center py-8">
           <MessageCircle class="h-12 w-12 text-gray-400 mx-auto mb-3" />
           <p class="text-gray-600">Seja o primeiro a comentar este artigo!</p>
-        </div>
-      </div>
-
-      <!-- Related Articles -->
-      <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Artigos Relacionados</h2>
-        <div class="grid md:grid-cols-2 gap-6">
-          <div v-for="relatedArticle in relatedArticles" :key="relatedArticle.id" 
-               class="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
-               @click="$router.push(`/article/${relatedArticle.id}`)">
-            <img :src="relatedArticle.image" :alt="relatedArticle.title" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
-            <div>
-              <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2">{{ relatedArticle.title }}</h3>
-              <p class="text-sm text-gray-600 mb-2">{{ relatedArticle.author }}</p>
-              <div class="flex items-center gap-2 text-xs text-gray-500">
-                <Star class="h-3 w-3 text-yellow-400 fill-current" />
-                <span>{{ relatedArticle.rating }}</span>
-                <span>•</span>
-                <span>{{ relatedArticle.readTime }} min</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -288,6 +272,7 @@ const showDeleteCommentModal = ref(false)
 const commentToDelete = ref(null)
 const isDeletingComment = ref(false)
 const isAdmin = computed(() => authStore.user?.is_staff || false)
+const isSubmittingComment = ref(false)
 
 // Function to go back
 const goBack = () => router.push('/articles');
@@ -363,13 +348,24 @@ onMounted(() => {
 const addComment = async () => {
   if (!newComment.value.trim() || !article.value) return;
   
+  isSubmittingComment.value = true;
   try {
     const response = await articleService.addComment(article.value.id, newComment.value);
+    
+    // Verifica se o comentário foi aprovado pela IA
+    if (!response.data.is_published) {
+      showToastMessage(response.data.ai_feedback || 'Seu comentário não foi aprovado pela moderação.');
+      return;
+    }
+    
     comments.value.unshift(response.data);
     newComment.value = '';
+    showToastMessage('Comentário publicado com sucesso!');
   } catch (err) {
     console.error("Erro ao adicionar comentário:", err);
-    alert("Falha ao publicar comentário.");
+    showToastMessage("Falha ao publicar comentário. Por favor, tente novamente.");
+  } finally {
+    isSubmittingComment.value = false;
   }
 };
 
