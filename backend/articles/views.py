@@ -31,6 +31,8 @@ from django.core.files.base import ContentFile
 import uuid
 from backend.services.article_validation_service import article_validation_service
 from rest_framework import status
+from backend.articles.services import comment_validation_service
+from rest_framework.exceptions import ValidationError
 
 
 class ArticleCategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -266,16 +268,37 @@ class ArticleViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def add_comment(self, request, pk=None):
         article = self.get_object()
+        # Validação IA antes de salvar
+        comment_text = request.data.get('comment')
+        if not comment_text:
+            return Response({'detail': 'O campo comment é obrigatório.'}, status=400)
+        validation_result = comment_validation_service.validate_comment(comment_text)
+        if not validation_result['is_valid']:
+            return Response({
+                'detail': 'Erro na validação do comentário.',
+                'error': validation_result['error']
+            }, status=400)
+            
+        # Se não foi aprovado pela IA, retorna o feedback sem salvar
+        if not validation_result['is_approved']:
+            return Response({
+                'detail': 'Comentário não aprovado pela moderação.',
+                'is_published': False,
+                'ai_feedback': validation_result['feedback']
+            }, status=200)
+            
+        # Só salva se passou pela IA e foi aprovado
         serializer = ArticleCommentSerializer(data=request.data, context={'request': request})
-        
-        if serializer.is_valid():
-            serializer.save(
-                article=article,
-                user=request.user,
-                is_published=True  # Você pode ajustar isso baseado na sua lógica de moderação
-            )
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+        serializer.is_valid(raise_exception=True)
+        comment = serializer.save(
+            article=article,
+            user=request.user,
+            is_published=True,
+            is_moderated=True,
+            ai_bool=True,
+            ai_feedback=validation_result['feedback']
+        )
+        return Response(ArticleCommentSerializer(comment, context={'request': request}).data, status=201)
 
     @action(detail=True, methods=['get'])
     def comments(self, request, pk=None):
@@ -529,17 +552,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
                 'is_moderated': article.is_moderated
             }
         })
-
-
-class ArticleCommentViewSet(viewsets.ModelViewSet):
-    queryset = ArticleComments.objects.all()
-    serializer_class = ArticleCommentSerializer
-    permission_classes = [IsCommentAuthorOrAdmin, IsAuthenticated]
-
-
-    def perform_create(self, serializer):
-        user = self.request.user
-        serializer = serializer.save(user_id=user)
 
 
 class ArticleFavoriteViewSet(GenericViewSet):

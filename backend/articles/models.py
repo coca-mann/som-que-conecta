@@ -158,10 +158,15 @@ class ArticleComments(models.Model):
         default=False,
         verbose_name='Moderado',
     )
-    publishing_refused_reason = models.TextField(
+    ai_bool = models.BooleanField(
         null=True,
         blank=True,
-        verbose_name='Motivo de rejeição de publicação',
+        verbose_name='Feedback bool da IA'
+    )
+    ai_feedback = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name='Feedback da IA',
     )
     created_at = models.DateTimeField(
         auto_now_add=True, verbose_name='Criado em')
@@ -169,7 +174,7 @@ class ArticleComments(models.Model):
         auto_now=True, verbose_name='Modificado em')
 
     def __str__(self):
-        return self.content
+        return self.comment
 
     class Meta:
         verbose_name = 'Comentário de Artigo'

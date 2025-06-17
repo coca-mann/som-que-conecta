@@ -70,4 +70,84 @@ class ArticleValidationService:
             }
 
 # Instância global do serviço
-article_validation_service = ArticleValidationService() 
+article_validation_service = ArticleValidationService()
+
+class CommentValidationService:
+    @staticmethod
+    def validate_comment(comment_content: str) -> Dict[str, Any]:
+        """
+        Valida um comentário usando IA
+        
+        Args:
+            comment_content (str): Conteúdo do comentário a ser validado
+            
+        Returns:
+            Dict[str, Any]: Resultado da validação
+        """
+        prompt = """
+        Analise o comentário e retorne APENAS um objeto JSON com dois campos:
+        {
+            "aprovado": true/false,
+            "motivo": "explicação do motivo da aprovação ou rejeição"
+        }
+
+        Rejeite o comentário se:
+        1. Contiver conteúdo impróprio ou ofensivo
+        2. For spam ou propaganda
+        3. For uma sequência aleatória de caracteres
+        4. Não tiver relação com o artigo
+        5. For muito curto ou sem sentido
+
+        Aprove o comentário se:
+        1. For respeitoso e construtivo
+        2. Tiver relação com o artigo
+        3. Contribuir para a discussão
+        4. Estiver de acordo com as diretrizes da plataforma
+
+        Retorne APENAS o objeto JSON, sem nenhum texto adicional.
+        """
+        
+        result = ai_service.analyze_text(comment_content, prompt)
+        
+        if result['success']:
+            try:
+                import json
+                response_text = result['response'].strip()
+                start = response_text.find('{')
+                end = response_text.rfind('}') + 1
+                
+                if start >= 0 and end > start:
+                    json_str = response_text[start:end]
+                    feedback_dict = json.loads(json_str)
+                    
+                    return {
+                        'is_valid': True,
+                        'is_approved': feedback_dict.get('aprovado', False),
+                        'feedback': feedback_dict.get('motivo', ''),
+                        'error': None
+                    }
+                else:
+                    return {
+                        'is_valid': False,
+                        'is_approved': False,
+                        'feedback': 'Resposta da IA não contém JSON válido',
+                        'error': 'Formato de resposta inválido'
+                    }
+            except json.JSONDecodeError as e:
+                return {
+                    'is_valid': False,
+                    'is_approved': False,
+                    'feedback': 'Erro ao processar resposta da IA',
+                    'error': f'Erro ao decodificar JSON: {str(e)}'
+                }
+        else:
+            return {
+                'is_valid': False,
+                'is_approved': False,
+                'feedback': None,
+                'error': result['error']
+            }
+
+# Instâncias globais dos serviços
+article_validation_service = ArticleValidationService()
+comment_validation_service = CommentValidationService() 

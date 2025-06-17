@@ -33,10 +33,19 @@ class ArticleCommentSerializer(serializers.ModelSerializer):
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
     comment = serializers.CharField(write_only=True)
     content = serializers.CharField(source='comment', read_only=True)
+    is_published = serializers.BooleanField(read_only=True)
+    is_moderated = serializers.BooleanField(read_only=True)
+    publishing_refused_reason = serializers.CharField(read_only=True)
+    ai_bool = serializers.BooleanField(read_only=True)
+    ai_feedback = serializers.CharField(read_only=True)
 
     class Meta:
         model = ArticleComments
-        fields = ['id', 'user', 'userAvatar', 'userName', 'comment', 'content', 'createdAt', 'likes', 'isLiked']
+        fields = [
+            'id', 'user', 'userAvatar', 'userName', 'comment', 'content', 
+            'createdAt', 'likes', 'isLiked', 'is_published', 'is_moderated',
+            'publishing_refused_reason', 'ai_bool', 'ai_feedback'
+        ]
 
     def get_userAvatar(self, obj):
         if obj.user and obj.user.profile_picture:

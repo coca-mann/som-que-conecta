@@ -2,7 +2,6 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from backend.articles.views import (
     ArticleViewSet,
-    ArticleCommentViewSet,
     ArticleFavoriteViewSet,
     ArticleCategoryViewSet,
     upload_article_image,
@@ -12,7 +11,6 @@ from backend.articles.views import (
 
 router = DefaultRouter()
 router.register('articles', ArticleViewSet, basename='articles')
-router.register('articlecomments', ArticleCommentViewSet)
 router.register('articlefavorites', ArticleFavoriteViewSet)
 router.register('article-categories', ArticleCategoryViewSet)
 
