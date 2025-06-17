@@ -16,6 +16,7 @@ RESOURCE_TYPE = [
     ('AUDIO', 'Audio'),
     ('VIDEO', 'Video'),
     ('IMAGE', 'Imagem'),
+    ('LINK', 'Link externo'),
 ]
 
 
@@ -163,15 +164,46 @@ class TaskAditionalResource(models.Model):
     )
     resource = models.FileField(
         upload_to='resource/files/',
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
         verbose_name='Arquivo'
     )
+    resource_link = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Link'
+    )
+    
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        
+        # Validação para garantir que pelo menos um dos campos (resource ou resource_link) está preenchido
+        if not self.resource and not self.resource_link:
+            raise ValidationError('É necessário fornecer um arquivo ou um link.')
+        
+        # Validação para garantir que não está tentando usar ambos os campos
+        if self.resource and self.resource_link:
+            raise ValidationError('Não é possível fornecer tanto um arquivo quanto um link. Escolha apenas um.')
+        
+        # Validação para garantir que o tipo corresponde ao recurso fornecido
+        if self.type == 'LINK' and not self.resource_link:
+            raise ValidationError('Para recursos do tipo Link, é necessário fornecer um link.')
+        elif self.type != 'LINK' and not self.resource:
+            raise ValidationError('Para recursos do tipo arquivo, é necessário fornecer um arquivo.')
+    
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
     
     def __str__(self):
-        return f"{self.task_id_title} - {self.type} - {self.description}"
+        return f"{self.task_id.title} - {self.get_type_display()} - {self.description}"
     
+    class Meta:
+        verbose_name = 'Recurso Adicional'
+        verbose_name_plural = 'Recursos Adicionais'
+        ordering = ['task_id', 'id']
     
+
 class UserTask(models.Model):
     user_id = models.ForeignKey(
         settings.AUTH_USER_MODEL,

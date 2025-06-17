@@ -5,7 +5,8 @@ from backend.lessons.views import (
     TaskActionViewSet, 
     UserTaskViewSet,
     SkillLevelsView,
-    InstrumentTypesView
+    InstrumentTypesView,
+    TaskAditionalResourceViewSet
 )
 
 
@@ -13,6 +14,7 @@ router = DefaultRouter()
 router.register(r'lessons', LessonsViewSet, basename='lesson')
 router.register(r'tasks', TaskActionViewSet, basename='task-action')
 router.register(r'user-tasks', UserTaskViewSet, basename='user-task')
+router.register(r'task-resources', TaskAditionalResourceViewSet, basename='task-resources')
 
 urlpatterns = [
     path('', include(router.urls)),

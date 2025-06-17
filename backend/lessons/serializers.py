@@ -30,9 +30,22 @@ class UserTaskSerializer(serializers.ModelSerializer):
 
 # Serializer para os recursos adicionais de uma tarefa
 class TaskAditionalResourceSerializer(serializers.ModelSerializer):
+    type_display = serializers.CharField(source='get_type_display', read_only=True)
+    task_title = serializers.CharField(source='task_id.title', read_only=True)
+
     class Meta:
         model = TaskAditionalResource
-        fields = ['type', 'description', 'resource']
+        fields = [
+            'id',
+            'task_id',
+            'task_title',
+            'type',
+            'type_display',
+            'description',
+            'resource',
+            'resource_link'
+        ]
+        read_only_fields = fields  # Todos os campos são somente leitura
 
 # Serializer para uma Tarefa (Task)
 # Este é o serializer mais importante, pois ele verifica o status para o usuário logado

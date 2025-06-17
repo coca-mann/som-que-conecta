@@ -1,13 +1,13 @@
 from django.utils import timezone
 from rest_framework import viewsets, status
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
-from backend.lessons.models import Lesson, Task, UserTask
-from backend.lessons.serializers import LessonListSerializer, LessonDetailSerializer, UserTaskSerializer
+from backend.lessons.models import Lesson, Task, UserTask, TaskAditionalResource
+from backend.lessons.serializers import LessonListSerializer, LessonDetailSerializer, UserTaskSerializer, TaskAditionalResourceSerializer
 from backend.accounts.models import SKILL_LEVEL
 from backend.instruments.models import InstrumentTypes
 
@@ -124,3 +124,24 @@ class UserTaskViewSet(viewsets.ReadOnlyModelViewSet):
         """
         # self.request.user é o objeto do usuário autenticado
         return UserTask.objects.filter(user_id=self.request.user).select_related('task_id__lesson')
+
+
+class TaskAditionalResourceViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet para visualizar recursos adicionais de tarefas.
+    Apenas leitura, pois os recursos são gerenciados pelo admin.
+    """
+    serializer_class = TaskAditionalResourceSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        """
+        Filtra os recursos adicionais por tarefa se um task_id for fornecido.
+        """
+        queryset = TaskAditionalResource.objects.all()
+        task_id = self.request.query_params.get('task_id', None)
+        
+        if task_id is not None:
+            queryset = queryset.filter(task_id=task_id)
+            
+        return queryset
