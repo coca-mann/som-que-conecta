@@ -243,8 +243,10 @@ const userName = computed(() => {
 
 // Propriedade computada para a URL da imagem de perfil
 const profilePictureUrl = computed(() => {
+  // Usa a variável de ambiente definida em .env na raiz do frontend
+  const baseUrl = process.env.VUE_APP_BASE_URL || '';
   if (authStore.user?.profile_picture) {
-    return `http://127.0.0.1:8000${authStore.user.profile_picture}`;
+    return `${baseUrl}${authStore.user.profile_picture}`;
   }
   return '/placeholder.svg?height=32&width=32';
 })
