@@ -2,6 +2,8 @@ console.log("Executando router/index.js");
 
 import { createRouter, createWebHistory } from 'vue-router'
 
+import AccountActivationView from '../views/AccountActivationView.vue'
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -14,6 +16,11 @@ const router = createRouter({
       path: '/auth',
       name: 'auth',
       component: () => import('../views/AuthView.vue')
+    },
+    {
+      path: '/activate-account/:token', // O ':token' cria um parâmetro dinâmico na URL
+      name: 'AccountActivation',
+      component: AccountActivationView
     },
     // --- Bloco de Artigos (Corrigido e Unificado) ---
     {
