@@ -116,7 +116,7 @@
                 class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
                 @click="$refs.fileInput.click()"
               >
-                <PaperClip class="h-4 w-4" />
+                <Paperclip class="h-4 w-4" />
                 Anexar arquivo
               </button>
               <span
@@ -226,7 +226,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { PaperClip, X, Send, Loader2, ChevronDown, CheckCircle } from 'lucide-vue-next'
+import { Paperclip, X, Send, Loader2, ChevronDown, CheckCircle } from 'lucide-vue-next'
 
 const form = ref({
   name: '',
