@@ -48,7 +48,6 @@ migrations/
 *.tiff
 *.tif
 *.svg
-*.ico
 *.webp
 *.raw
 *.psd
