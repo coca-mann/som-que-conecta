@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'backend.articles.apps.ArticlesConfig',
     'backend.lessons.apps.LessonsConfig',
     'backend.notifications.apps.NotificationsConfig',
+    'backend.core.apps.CoreConfig',
     'django_ckeditor_5',
     'corsheaders',
     'django.contrib.sites',
