@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from backend.core.utils import rename_and_upload_path
 
 
 DIFICULTY = [
@@ -58,7 +59,7 @@ class Article(models.Model):
         verbose_name='Descrição curta',
     )
     cover_image = models.ImageField(
-        upload_to='articles_media/cover/',
+        upload_to=rename_and_upload_path('articles_media/cover/'),
         blank=True,
         verbose_name='Imagem da capa do artigo',
     )

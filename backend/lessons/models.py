@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from backend.accounts.models import SKILL_LEVEL
 from backend.instruments.models import InstrumentTypes
+from backend.core.utils import rename_and_upload_path
 
 
 TYPE_TIMES = [
@@ -33,7 +34,7 @@ class Lesson(models.Model):
         verbose_name='Descrição'
     )
     cover = models.ImageField(
-        upload_to='lessons/cover/',
+        upload_to=rename_and_upload_path('lessons/cover/'),
         verbose_name='Capa'
     )
     instrument_type = models.ForeignKey(
@@ -163,7 +164,7 @@ class TaskAditionalResource(models.Model):
         verbose_name='Descrição'
     )
     resource = models.FileField(
-        upload_to='resource/files/',
+        upload_to=rename_and_upload_path('resource/files/'),
         blank=True,
         null=True,
         verbose_name='Arquivo'

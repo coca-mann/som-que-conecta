@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from backend.instruments.validators import validate_booking_conflict
+from backend.core.utils import rename_and_upload_path
 
 
 STATUS_CHOICES = [
@@ -220,4 +221,4 @@ class InstrumentBookings(models.Model):
 
 class InstrumentPictures(models.Model):
     instrument_id = models.ForeignKey(Instrument, on_delete=models.CASCADE, null=True, verbose_name='Instrumento')
-    picture = models.ImageField(upload_to='instruments_media/pictures/', verbose_name='Foto')
+    picture = models.ImageField(upload_to=rename_and_upload_path('instruments_media/pictures/'), verbose_name='Foto')
