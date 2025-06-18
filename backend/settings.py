@@ -311,3 +311,18 @@ AUTH_USER_MODEL = 'accounts.User'
 # Google Gemini API
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
 
+# --- CONFIGURAÇÃO DE E-MAIL ---
+# Use o backend SMTP do Django
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Informações do seu provedor (exemplo com Brevo)
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+
+# Suas credenciais (lidas das variáveis de ambiente)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+# E-mail padrão que aparecerá como remetente
+DEFAULT_FROM_EMAIL = 'Som que Conecta <nao-responda@somqueconecta.fun>'
