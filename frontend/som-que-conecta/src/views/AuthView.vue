@@ -3,7 +3,10 @@
     <div class="max-w-md w-full space-y-8">
       <!-- Header -->
       <div class="text-center">
-        <router-link to="/" class="inline-flex items-center space-x-2 group">
+        <router-link
+          to="/"
+          class="inline-flex items-center space-x-2 group"
+        >
           <Music class="h-10 w-10 text-blue-600 transition-transform duration-300 group-hover:scale-110" />
           <span class="text-2xl font-bold text-gray-900">MusicLearn</span>
         </router-link>
@@ -20,24 +23,24 @@
         <!-- Toggle Buttons -->
         <div class="flex bg-gray-100 rounded-lg p-1 mb-8">
           <button
-            @click="setMode('login')"
             :class="[
               'flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-300',
               isLogin 
                 ? 'bg-white text-blue-600 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
             ]"
+            @click="setMode('login')"
           >
             Entrar
           </button>
           <button
-            @click="setMode('register')"
             :class="[
               'flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-300',
               !isLogin 
                 ? 'bg-white text-blue-600 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
             ]"
+            @click="setMode('register')"
           >
             Registrar
           </button>
@@ -45,16 +48,31 @@
 
         <!-- Google Sign In -->
         <button
-          @click="signInWithGoogle"
           :disabled="isLoading"
           class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="signInWithGoogle"
         >
           <div class="flex items-center space-x-3">
-            <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            <svg
+              class="w-5 h-5 transition-transform duration-300 group-hover:scale-110"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              />
             </svg>
             <span>{{ isLogin ? 'Entrar' : 'Registrar' }} com Google</span>
           </div>
@@ -63,7 +81,7 @@
         <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300"></div>
+            <div class="w-full border-t border-gray-300" />
           </div>
           <div class="relative flex justify-center text-sm">
             <span class="px-2 bg-white text-gray-500">ou</span>
@@ -71,7 +89,10 @@
         </div>
 
         <!-- Form -->
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <form
+          class="space-y-6"
+          @submit.prevent="handleSubmit"
+        >
           <!-- Name Fields (Register only) -->
           <Transition
             enter-active-class="transition ease-out duration-300"
@@ -81,9 +102,15 @@
             leave-from-class="transform opacity-100 translate-y-0"
             leave-to-class="transform opacity-0 -translate-y-2"
           >
-            <div v-if="!isLogin" class="grid grid-cols-2 gap-4">
+            <div
+              v-if="!isLogin"
+              class="grid grid-cols-2 gap-4"
+            >
               <div>
-                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  for="firstName"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Nome
                 </label>
                 <input
@@ -93,10 +120,13 @@
                   required
                   placeholder="João"
                   class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                />
+                >
               </div>
               <div>
-                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  for="lastName"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Sobrenome
                 </label>
                 <input
@@ -106,14 +136,17 @@
                   required
                   placeholder="Silva"
                   class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                />
+                >
               </div>
             </div>
           </Transition>
 
           <!-- Email -->
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
               Email
             </label>
             <div class="relative">
@@ -124,14 +157,17 @@
                 required
                 placeholder="seu.email@exemplo.com"
                 class="w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-              />
+              >
               <Mail class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
           </div>
 
           <!-- Password -->
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
               Senha
             </label>
             <div class="relative">
@@ -142,14 +178,17 @@
                 required
                 :placeholder="isLogin ? 'Sua senha' : 'Mínimo 8 caracteres'"
                 class="w-full px-3 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-              />
+              >
               <Lock class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <button
                 type="button"
-                @click="showPassword = !showPassword"
                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                @click="showPassword = !showPassword"
               >
-                <component :is="showPassword ? EyeOff : Eye" class="h-5 w-5" />
+                <component
+                  :is="showPassword ? EyeOff : Eye"
+                  class="h-5 w-5"
+                />
               </button>
             </div>
             
@@ -162,7 +201,10 @@
               leave-from-class="transform opacity-100 translate-y-0"
               leave-to-class="transform opacity-0 -translate-y-2"
             >
-              <div v-if="!isLogin && form.password" class="mt-2">
+              <div
+                v-if="!isLogin && form.password"
+                class="mt-2"
+              >
                 <div class="flex space-x-1">
                   <div
                     v-for="i in 4"
@@ -173,7 +215,7 @@
                         ? passwordStrength.color
                         : 'bg-gray-200'
                     ]"
-                  ></div>
+                  />
                 </div>
                 <p :class="['text-xs mt-1', passwordStrength.textColor]">
                   {{ passwordStrength.text }}
@@ -192,7 +234,10 @@
             leave-to-class="transform opacity-0 -translate-y-2"
           >
             <div v-if="!isLogin">
-              <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                for="confirmPassword"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Confirmar Senha
               </label>
               <div class="relative">
@@ -204,17 +249,23 @@
                   placeholder="Confirme sua senha"
                   class="w-full px-3 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                   :class="{ 'border-red-300': form.confirmPassword && !passwordsMatch }"
-                />
+                >
                 <Lock class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <button
                   type="button"
-                  @click="showConfirmPassword = !showConfirmPassword"
                   class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  @click="showConfirmPassword = !showConfirmPassword"
                 >
-                  <component :is="showConfirmPassword ? EyeOff : Eye" class="h-5 w-5" />
+                  <component
+                    :is="showConfirmPassword ? EyeOff : Eye"
+                    class="h-5 w-5"
+                  />
                 </button>
               </div>
-              <p v-if="form.confirmPassword && !passwordsMatch" class="text-xs text-red-600 mt-1">
+              <p
+                v-if="form.confirmPassword && !passwordsMatch"
+                class="text-xs text-red-600 mt-1"
+              >
                 As senhas não coincidem
               </p>
             </div>
@@ -229,21 +280,33 @@
             leave-from-class="transform opacity-100 translate-y-0"
             leave-to-class="transform opacity-0 -translate-y-2"
           >
-            <div v-if="!isLogin" class="flex items-start space-x-2">
+            <div
+              v-if="!isLogin"
+              class="flex items-start space-x-2"
+            >
               <input
                 id="terms"
                 v-model="form.acceptTerms"
                 type="checkbox"
                 required
                 class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
-              />
-              <label for="terms" class="text-sm text-gray-600">
+              >
+              <label
+                for="terms"
+                class="text-sm text-gray-600"
+              >
                 Eu concordo com os 
-                <router-link to="/terms" class="text-blue-600 hover:text-blue-700 underline">
+                <router-link
+                  to="/terms"
+                  class="text-blue-600 hover:text-blue-700 underline"
+                >
                   Termos de Uso
                 </router-link>
                 e a
-                <router-link to="/privacy" class="text-blue-600 hover:text-blue-700 underline">
+                <router-link
+                  to="/privacy"
+                  class="text-blue-600 hover:text-blue-700 underline"
+                >
                   Política de Privacidade
                 </router-link>
               </label>
@@ -260,27 +323,36 @@
             leave-to-class="transform opacity-0 -translate-y-2"
           >
             <div>
-              <div v-if="isLogin" class="flex items-center justify-between">
+              <div
+                v-if="isLogin"
+                class="flex items-center justify-between"
+              >
                 <div class="flex items-center">
                   <input
                     id="remember"
                     v-model="form.rememberMe"
                     type="checkbox"
                     class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
-                  />
-                  <label for="remember" class="ml-2 text-sm text-gray-600">
+                  >
+                  <label
+                    for="remember"
+                    class="ml-2 text-sm text-gray-600"
+                  >
                     Lembrar de mim
                   </label>
                 </div>
                 <button
                   type="button"
-                  @click="showForgotPassword = true"
                   class="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                  @click="showForgotPassword = true"
                 >
                   Esqueceu a senha?
                 </button>
               </div>
-              <p v-if="errorMessage" class="text-center text-sm font-medium text-red-600 bg-red-50 p-3 rounded-lg">
+              <p
+                v-if="errorMessage"
+                class="text-center text-sm font-medium text-red-600 bg-red-50 p-3 rounded-lg"
+              >
                 {{ errorMessage }}
               </p>
             </div>
@@ -292,11 +364,17 @@
             :disabled="isLoading || (!isLogin && !isFormValid)"
             class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 group"
           >
-            <span v-if="!isLoading" class="flex items-center space-x-2">
+            <span
+              v-if="!isLoading"
+              class="flex items-center space-x-2"
+            >
               <span>{{ isLogin ? 'Entrar' : 'Criar Conta' }}</span>
               <ArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </span>
-            <div v-else class="flex items-center space-x-2">
+            <div
+              v-else
+              class="flex items-center space-x-2"
+            >
               <Loader2 class="h-4 w-4 animate-spin" />
               <span>{{ isLogin ? 'Entrando...' : 'Criando conta...' }}</span>
             </div>
@@ -308,8 +386,8 @@
           <p class="text-sm text-gray-600">
             {{ isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?' }}
             <button
-              @click="toggleMode"
               class="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200"
+              @click="toggleMode"
             >
               {{ isLogin ? 'Registre-se aqui' : 'Entre aqui' }}
             </button>
@@ -323,19 +401,25 @@
           <div class="inline-flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg mb-2">
             <BookOpen class="h-5 w-5 text-blue-600" />
           </div>
-          <p class="text-xs text-gray-600">Cursos Online</p>
+          <p class="text-xs text-gray-600">
+            Cursos Online
+          </p>
         </div>
         <div class="text-center">
           <div class="inline-flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg mb-2">
             <Users class="h-5 w-5 text-green-600" />
           </div>
-          <p class="text-xs text-gray-600">Comunidade</p>
+          <p class="text-xs text-gray-600">
+            Comunidade
+          </p>
         </div>
         <div class="text-center">
           <div class="inline-flex items-center justify-center w-10 h-10 bg-purple-100 rounded-lg mb-2">
             <Award class="h-5 w-5 text-purple-600" />
           </div>
-          <p class="text-xs text-gray-600">Certificados</p>
+          <p class="text-xs text-gray-600">
+            Certificados
+          </p>
         </div>
       </div>
     </div>
@@ -349,13 +433,18 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="showForgotPassword" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div
+        v-if="showForgotPassword"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      >
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900">Recuperar Senha</h3>
+            <h3 class="text-lg font-semibold text-gray-900">
+              Recuperar Senha
+            </h3>
             <button
-              @click="showForgotPassword = false"
               class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              @click="showForgotPassword = false"
             >
               <X class="h-6 w-6" />
             </button>
@@ -365,9 +454,15 @@
             Digite seu email e enviaremos um link para redefinir sua senha.
           </p>
           
-          <form @submit.prevent="handleForgotPassword" class="space-y-4">
+          <form
+            class="space-y-4"
+            @submit.prevent="handleForgotPassword"
+          >
             <div>
-              <label for="resetEmail" class="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                for="resetEmail"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Email
               </label>
               <input
@@ -377,14 +472,14 @@
                 required
                 placeholder="seu.email@exemplo.com"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              >
             </div>
             
             <div class="flex space-x-3">
               <button
                 type="button"
-                @click="showForgotPassword = false"
                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                @click="showForgotPassword = false"
               >
                 Cancelar
               </button>

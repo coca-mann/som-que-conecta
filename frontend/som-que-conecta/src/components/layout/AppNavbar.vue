@@ -3,10 +3,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex items-center">
-          <router-link to="/" class="flex items-center space-x-2 group">
+          <router-link
+            to="/"
+            class="flex items-center space-x-2 group"
+          >
             <div class="relative">
               <Music class="h-8 w-8 text-blue-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
-              <div class="absolute inset-0 bg-blue-600/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300"></div>
+              <div class="absolute inset-0 bg-blue-600/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300" />
             </div>
             <span class="text-xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-blue-600">
               MusicLearn
@@ -22,20 +25,26 @@
             class="relative px-4 py-2 text-gray-700 hover:text-blue-600 rounded-lg transition-all duration-300 group overflow-hidden"
             :class="{ 'text-blue-600 bg-blue-50 font-medium': isActiveRoute(link.path) }"
           >
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-blue-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-lg"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-blue-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-lg" />
             <span class="relative z-10 flex items-center space-x-2">
-              <component :is="link.icon" class="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+              <component
+                :is="link.icon"
+                class="h-4 w-4 transition-transform duration-300 group-hover:scale-110"
+              />
               <span>{{ link.name }}</span>
             </span>
             <div 
               v-if="isActiveRoute(link.path)"
               class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full"
-            ></div>
+            />
           </router-link>
         </div>
 
         <div class="flex items-center space-x-4">
-          <div v-if="authStore.isAuthenticated" class="relative user-menu">
+          <div
+            v-if="authStore.isAuthenticated"
+            class="relative user-menu"
+          >
             <button 
               class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 p-2 rounded-lg transition-all duration-300 group"
               @click="toggleUserMenu"
@@ -45,8 +54,8 @@
                   :src="profilePictureUrl" 
                   :alt="userName"
                   class="h-8 w-8 rounded-full border-2 border-transparent group-hover:border-blue-200 transition-all duration-300"
-                />
-                <div class="absolute inset-0 rounded-full bg-blue-600/10 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+                >
+                <div class="absolute inset-0 rounded-full bg-blue-600/10 scale-0 group-hover:scale-100 transition-transform duration-300" />
               </div>
               <span class="hidden sm:block font-medium">{{ userName }}</span>
               <ChevronDown 
@@ -63,17 +72,24 @@
               leave-from-class="transform opacity-100 scale-100 translate-y-0"
               leave-to-class="transform opacity-0 scale-95 translate-y-2"
             >
-              <div v-if="showUserMenu" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden user-menu">
+              <div
+                v-if="showUserMenu"
+                class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden user-menu"
+              >
                 <div class="px-4 py-3 border-b border-gray-100">
                   <div class="flex items-center space-x-3">
                     <img 
                       :src="profilePictureUrl" 
                       :alt="userName"
                       class="h-10 w-10 rounded-full"
-                    />
+                    >
                     <div>
-                      <p class="text-sm font-medium text-gray-900">{{ userName }}</p>
-                      <p class="text-xs text-gray-500">{{ authStore.user?.email }}</p>
+                      <p class="text-sm font-medium text-gray-900">
+                        {{ userName }}
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        {{ authStore.user?.email }}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -83,18 +99,21 @@
                     v-for="item in userMenuItems" 
                     :key="item.path" 
                     :to="item.path" 
-                    @click="closeUserMenu"
                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 group"
+                    @click="closeUserMenu"
                   >
-                    <component :is="item.icon" class="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                    <component
+                      :is="item.icon"
+                      class="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110"
+                    />
                     {{ item.name }}
                   </router-link>
                   
-                  <div class="border-t border-gray-100 my-1"></div>
+                  <div class="border-t border-gray-100 my-1" />
                   
                   <button 
-                    @click="() => { handleLogout(); closeUserMenu(); }" 
-                    class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-200 group"
+                    class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-200 group" 
+                    @click="() => { handleLogout(); closeUserMenu(); }"
                   >
                     <LogOut class="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                     Sair
@@ -104,20 +123,41 @@
             </Transition>
           </div>
 
-          <div v-if="!authStore.isAuthenticated" class="flex items-center space-x-2">
-            <router-link to="/auth?mode=login" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <div
+            v-if="!authStore.isAuthenticated"
+            class="flex items-center space-x-2"
+          >
+            <router-link
+              to="/auth?mode=login"
+              class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
+            >
               Entrar
             </router-link>
-            <router-link to="/auth?mode=register" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200">
+            <router-link
+              to="/auth?mode=register"
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200"
+            >
               Cadastrar
             </router-link>
           </div>
           
-          <button class="md:hidden p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300" @click="toggleMobileMenu">
+          <button
+            class="md:hidden p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300"
+            @click="toggleMobileMenu"
+          >
             <div class="relative w-6 h-6">
-              <span class="absolute block h-0.5 w-6 bg-current transform transition-all duration-300" :class="showMobileMenu ? 'rotate-45 translate-y-2.5' : 'translate-y-1'"></span>
-              <span class="absolute block h-0.5 w-6 bg-current transform transition-all duration-300" :class="showMobileMenu ? 'opacity-0' : 'translate-y-2.5'"></span>
-              <span class="absolute block h-0.5 w-6 bg-current transform transition-all duration-300" :class="showMobileMenu ? '-rotate-45 translate-y-2.5' : 'translate-y-4'"></span>
+              <span
+                class="absolute block h-0.5 w-6 bg-current transform transition-all duration-300"
+                :class="showMobileMenu ? 'rotate-45 translate-y-2.5' : 'translate-y-1'"
+              />
+              <span
+                class="absolute block h-0.5 w-6 bg-current transform transition-all duration-300"
+                :class="showMobileMenu ? 'opacity-0' : 'translate-y-2.5'"
+              />
+              <span
+                class="absolute block h-0.5 w-6 bg-current transform transition-all duration-300"
+                :class="showMobileMenu ? '-rotate-45 translate-y-2.5' : 'translate-y-4'"
+              />
             </div>
           </button>
         </div>
@@ -131,8 +171,10 @@
         leave-from-class="transform opacity-100 translate-y-0"
         leave-to-class="transform opacity-0 -translate-y-2"
       >
-        <div v-if="showSearch" class="border-t border-gray-100 py-4">
-          </div>
+        <div
+          v-if="showSearch"
+          class="border-t border-gray-100 py-4"
+        />
       </Transition>
       
       <Transition
@@ -143,8 +185,10 @@
         leave-from-class="transform opacity-100 translate-y-0"
         leave-to-class="transform opacity-0 -translate-y-2"
       >
-        <div v-if="showMobileMenu" class="md:hidden border-t border-gray-100">
-           </div>
+        <div
+          v-if="showMobileMenu"
+          class="md:hidden border-t border-gray-100"
+        />
       </Transition>
     </div>
   </nav>

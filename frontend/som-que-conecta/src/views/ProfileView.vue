@@ -5,20 +5,27 @@
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Meu Perfil</h1>
-            <p class="text-gray-600">Gerencie suas informações pessoais e acompanhe seu progresso</p>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+              Meu Perfil
+            </h1>
+            <p class="text-gray-600">
+              Gerencie suas informações pessoais e acompanhe seu progresso
+            </p>
           </div>
           
           <button 
-            @click="toggleEditMode" 
-            :disabled="isSaving"
+            :disabled="isSaving" 
             :class="[
               'px-6 py-2 rounded-lg transition-colors flex items-center gap-2',
               isSaving ? 'bg-gray-400 cursor-not-allowed' : 
               (isEditing ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-blue-600 text-white hover:bg-blue-700')
             ]"
+            @click="toggleEditMode"
           >
-            <component :is="isEditing ? Save : Edit" class="h-5 w-5" />
+            <component
+              :is="isEditing ? Save : Edit"
+              class="h-5 w-5"
+            />
             {{ isSaving ? 'Salvando...' : (isEditing ? 'Salvar Alterações' : 'Editar Perfil') }}
           </button>
         </div>
@@ -39,15 +46,18 @@
                     :alt="userProfile.name"
                     class="w-full h-full object-cover"
                   >
-                  <div v-else class="w-full h-full flex items-center justify-center">
+                  <div
+                    v-else
+                    class="w-full h-full flex items-center justify-center"
+                  >
                     <User class="h-16 w-16 text-gray-400" />
                   </div>
                   
                   <!-- Edit Photo Button -->
                   <button 
                     v-if="isEditing"
-                    @click="$refs.avatarInput.click()"
                     class="absolute bottom-0 left-1/2 -translate-x-1/2 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg"
+                    @click="$refs.avatarInput.click()"
                   >
                     <Camera class="h-4 w-4" />
                   </button>
@@ -57,15 +67,19 @@
                   ref="avatarInput"
                   type="file" 
                   accept="image/*"
-                  @change="handleAvatarUpload"
                   class="hidden"
+                  @change="handleAvatarUpload"
                 >
               </div>
 
               <!-- Name -->
               <div v-if="!isEditing">
-                <h2 class="text-2xl font-bold text-gray-900">{{ userProfile.first_name }} {{ userProfile.last_name }}</h2>
-                <p class="text-gray-600 mt-1">{{ userProfile.email }}</p>
+                <h2 class="text-2xl font-bold text-gray-900">
+                  {{ userProfile.first_name }} {{ userProfile.last_name }}
+                </h2>
+                <p class="text-gray-600 mt-1">
+                  {{ userProfile.email }}
+                </p>
                 <div class="flex items-center justify-center gap-2 mt-2">
                   <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
                     {{ userProfile.skill_level_display }}
@@ -77,7 +91,10 @@
               </div>
 
               <!-- Edit Form -->
-              <div v-else class="space-y-4">
+              <div
+                v-else
+                class="space-y-4"
+              >
                 <div class="grid grid-cols-2 gap-3">
                   <input 
                     v-model="editForm.first_name" 
@@ -97,11 +114,21 @@
                   v-model="editForm.gender" 
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 >
-                  <option value="">Selecione o sexo</option>
-                  <option value="M">Masculino</option>
-                  <option value="F">Feminino</option>
-                  <option value="O">Outro</option>
-                  <option value="N">Prefiro não informar</option>
+                  <option value="">
+                    Selecione o sexo
+                  </option>
+                  <option value="M">
+                    Masculino
+                  </option>
+                  <option value="F">
+                    Feminino
+                  </option>
+                  <option value="O">
+                    Outro
+                  </option>
+                  <option value="N">
+                    Prefiro não informar
+                  </option>
                 </select>
 
                 <input 
@@ -116,23 +143,37 @@
             <!-- Stats -->
             <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
               <div class="text-center">
-                <div class="text-2xl font-bold text-blue-600">{{ userProfile.lessons_counter }}</div>
-                <div class="text-sm text-gray-600">Cursos</div>
+                <div class="text-2xl font-bold text-blue-600">
+                  {{ userProfile.lessons_counter }}
+                </div>
+                <div class="text-sm text-gray-600">
+                  Cursos
+                </div>
               </div>
               <div class="text-center">
-                <div class="text-2xl font-bold text-green-600">{{ userProfile.completed_tasks_counter }}</div>
-                <div class="text-sm text-gray-600">Tarefas concluídas</div>
+                <div class="text-2xl font-bold text-green-600">
+                  {{ userProfile.completed_tasks_counter }}
+                </div>
+                <div class="text-sm text-gray-600">
+                  Tarefas concluídas
+                </div>
               </div>
               <div class="text-center">
-                <div class="text-2xl font-bold text-purple-600">{{ userProfile.instruments_counter }}</div>
-                <div class="text-sm text-gray-600">Instrumentos</div>
+                <div class="text-2xl font-bold text-purple-600">
+                  {{ userProfile.instruments_counter }}
+                </div>
+                <div class="text-sm text-gray-600">
+                  Instrumentos
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Quick Actions -->
           <div class="bg-white rounded-lg shadow-sm p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              Ações Rápidas
+            </h3>
             <div class="space-y-3">
               <router-link 
                 to="/manage-instruments" 
@@ -169,28 +210,54 @@
         <div class="lg:col-span-2 space-y-6">
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-semibold text-gray-900">Cursos em Andamento</h3>
-              <router-link to="/courses" class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+              <h3 class="text-xl font-semibold text-gray-900">
+                Cursos em Andamento
+              </h3>
+              <router-link
+                to="/courses"
+                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+              >
                 Ver todos
                 <ChevronRight class="h-4 w-4" />
               </router-link>
             </div>
 
-            <div v-if="areCoursesLoading" class="text-center py-8 text-gray-600">
+            <div
+              v-if="areCoursesLoading"
+              class="text-center py-8 text-gray-600"
+            >
               Carregando seus cursos...
             </div>
 
-            <div v-else-if="coursesError" class="text-center py-8 text-red-600">
+            <div
+              v-else-if="coursesError"
+              class="text-center py-8 text-red-600"
+            >
               {{ coursesError }}
             </div>
 
-            <div v-else-if="inProgressCourses.length > 0" class="grid md:grid-cols-2 gap-4">
-              <div v-for="course in inProgressCourses" :key="course.id" class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div
+              v-else-if="inProgressCourses.length > 0"
+              class="grid md:grid-cols-2 gap-4"
+            >
+              <div
+                v-for="course in inProgressCourses"
+                :key="course.id"
+                class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
                 <div class="flex items-start gap-4">
-                  <img :src="course.cover" :alt="course.title" class="w-16 h-16 rounded-lg object-cover">
+                  <img
+                    :src="course.cover"
+                    :alt="course.title"
+                    class="w-16 h-16 rounded-lg object-cover"
+                  >
                   <div class="flex-1 min-w-0">
-                    <h4 class="font-semibold text-gray-900 truncate">{{ course.title }}</h4>
-                    <p class="text-sm text-gray-600 mb-2">{{ course.instructor_name }}</p>
+                    <h4 class="font-semibold text-gray-900 truncate">
+                      {{ course.title }}
+                    </h4>
+                    <p class="text-sm text-gray-600 mb-2">
+                      {{ course.instructor_name }}
+                    </p>
                     
                     <div class="space-y-1">
                       <div class="flex justify-between text-sm">
@@ -201,14 +268,14 @@
                         <div 
                           class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
                           :style="{ width: course.progress + '%' }"
-                        ></div>
+                        />
                       </div>
                     </div>
                     
                     <div class="flex items-center justify-end mt-3">
                       <button 
-                        @click="continueCourse(course)"
                         class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+                        @click="continueCourse(course)"
                       >
                         Continuar
                       </button>
@@ -218,11 +285,21 @@
               </div>
             </div>
 
-            <div v-else class="text-center py-8">
+            <div
+              v-else
+              class="text-center py-8"
+            >
               <BookOpen class="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h4 class="text-lg font-medium text-gray-900 mb-2">Nenhum curso em andamento</h4>
-              <p class="text-gray-600 mb-4">Comece sua jornada musical hoje mesmo!</p>
-              <router-link to="/courses" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <h4 class="text-lg font-medium text-gray-900 mb-2">
+                Nenhum curso em andamento
+              </h4>
+              <p class="text-gray-600 mb-4">
+                Comece sua jornada musical hoje mesmo!
+              </p>
+              <router-link
+                to="/courses"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 Explorar Cursos
               </router-link>
             </div>
@@ -231,40 +308,76 @@
           <!-- My Instruments -->
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-semibold text-gray-900">Meus Instrumentos</h3>
-              <router-link to="/manage-instruments" class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+              <h3 class="text-xl font-semibold text-gray-900">
+                Meus Instrumentos
+              </h3>
+              <router-link
+                to="/manage-instruments"
+                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+              >
                 Gerenciar
                 <ChevronRight class="h-4 w-4" />
               </router-link>
             </div>
 
-            <div v-if="areInstrumentsLoading" class="text-center py-8 text-gray-600">
+            <div
+              v-if="areInstrumentsLoading"
+              class="text-center py-8 text-gray-600"
+            >
               Carregando seus instrumentos...
             </div>
 
-            <div v-else-if="instrumentsError" class="text-center py-8 text-red-600">
+            <div
+              v-else-if="instrumentsError"
+              class="text-center py-8 text-red-600"
+            >
               {{ instrumentsError }}
             </div>
 
-            <div v-else-if="myInstruments.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div v-for="instrument in myInstruments" :key="instrument.id" class="border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow relative">
+            <div
+              v-else-if="myInstruments.length > 0"
+              class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"
+            >
+              <div
+                v-for="instrument in myInstruments"
+                :key="instrument.id"
+                class="border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow relative"
+              >
                 <div 
                   v-if="instrument.color"
                   class="absolute top-2 left-2 w-4 h-4 rounded-full border border-gray-200"
                   :style="{ backgroundColor: instrument.color }"
                   :title="instrument.color"
-                ></div>
-                <img :src="instrument.main_image" :alt="instrument.name" class="w-20 h-20 rounded-lg object-cover mx-auto mb-3">
-                <h4 class="font-semibold text-gray-900 mb-1">{{ instrument.name }}</h4>
-                <p class="text-sm text-gray-600">{{ instrument.brand_name }} | {{ instrument.type_name }}</p>
+                />
+                <img
+                  :src="instrument.main_image"
+                  :alt="instrument.name"
+                  class="w-20 h-20 rounded-lg object-cover mx-auto mb-3"
+                >
+                <h4 class="font-semibold text-gray-900 mb-1">
+                  {{ instrument.name }}
+                </h4>
+                <p class="text-sm text-gray-600">
+                  {{ instrument.brand_name }} | {{ instrument.type_name }}
+                </p>
               </div>
             </div>
 
-            <div v-else class="text-center py-8">
+            <div
+              v-else
+              class="text-center py-8"
+            >
               <Music class="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h4 class="text-lg font-medium text-gray-900 mb-2">Nenhum instrumento cadastrado</h4>
-              <p class="text-gray-600 mb-4">Adicione seus instrumentos para melhor organização</p>
-              <router-link to="/manage-instruments" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <h4 class="text-lg font-medium text-gray-900 mb-2">
+                Nenhum instrumento cadastrado
+              </h4>
+              <p class="text-gray-600 mb-4">
+                Adicione seus instrumentos para melhor organização
+              </p>
+              <router-link
+                to="/manage-instruments"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 Adicionar Instrumento
               </router-link>
             </div>
@@ -272,58 +385,117 @@
 
           <!-- Recent Activity -->
           <div class="bg-white rounded-lg shadow-sm p-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-6">Atividade Recente</h3>
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">
+              Atividade Recente
+            </h3>
             
-            <div v-if="isActivityLoading" class="text-center text-gray-500">Carregando...</div>
+            <div
+              v-if="isActivityLoading"
+              class="text-center text-gray-500"
+            >
+              Carregando...
+            </div>
 
-            <div v-else-if="activityError" class="text-center text-red-500">{{ activityError }}</div>
+            <div
+              v-else-if="activityError"
+              class="text-center text-red-500"
+            >
+              {{ activityError }}
+            </div>
 
-            <div v-else-if="recentActivity.length > 0" class="space-y-4">
-              <div v-for="activity in recentActivity" :key="activity.id" class="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
-                <div :class="[
+            <div
+              v-else-if="recentActivity.length > 0"
+              class="space-y-4"
+            >
+              <div
+                v-for="activity in recentActivity"
+                :key="activity.id"
+                class="flex items-start gap-4 p-3 bg-gray-50 rounded-lg"
+              >
+                <div
+                  :class="[
                     'p-2 rounded-full',
                     // A lógica de cor pode ser baseada na ação
                     activity.action.includes('INSTRUMENT') ? 'bg-green-100 text-green-600' :
                     activity.action.includes('ARTICLE') ? 'bg-purple-100 text-purple-600' :
                     'bg-blue-100 text-blue-600'
-                  ]">
-                  <component :is="getActivityIcon(activity.action)" class="h-4 w-4" />
+                  ]"
+                >
+                  <component
+                    :is="getActivityIcon(activity.action)"
+                    class="h-4 w-4"
+                  />
                 </div>
                 
                 <div class="flex-1">
-                  <p class="text-sm text-gray-900">{{ activity.description }}</p>
-                  <p class="text-xs text-gray-500 mt-1">{{ formatRelativeTime(new Date(activity.created_at)) }}</p>
+                  <p class="text-sm text-gray-900">
+                    {{ activity.description }}
+                  </p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    {{ formatRelativeTime(new Date(activity.created_at)) }}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div v-else class="text-center text-gray-500 py-4">Nenhuma atividade recente.</div>
+            <div
+              v-else
+              class="text-center text-gray-500 py-4"
+            >
+              Nenhuma atividade recente.
+            </div>
           </div>
 
           <!-- Learning Goals -->
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xl font-semibold text-gray-900">Metas de Aprendizado</h3>
-              <button @click="showGoalsModal = true" class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+              <h3 class="text-xl font-semibold text-gray-900">
+                Metas de Aprendizado
+              </h3>
+              <button
+                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                @click="showGoalsModal = true"
+              >
                 <Plus class="h-4 w-4" />
                 Nova Meta
               </button>
             </div>
 
-            <div v-if="areGoalsLoading" class="text-center text-gray-500">Carregando metas...</div>
-            <div v-else-if="goalsError" class="text-center text-red-500">{{ goalsError }}</div>
+            <div
+              v-if="areGoalsLoading"
+              class="text-center text-gray-500"
+            >
+              Carregando metas...
+            </div>
+            <div
+              v-else-if="goalsError"
+              class="text-center text-red-500"
+            >
+              {{ goalsError }}
+            </div>
             
-            <div v-else-if="learningGoals.length > 0" class="space-y-4">
-              <div v-for="goal in learningGoals" :key="goal.id" class="border border-gray-200 rounded-lg p-4">
+            <div
+              v-else-if="learningGoals.length > 0"
+              class="space-y-4"
+            >
+              <div
+                v-for="goal in learningGoals"
+                :key="goal.id"
+                class="border border-gray-200 rounded-lg p-4"
+              >
                 <div class="flex items-start justify-between mb-3">
                   <div>
-                    <h4 class="font-semibold text-gray-900">{{ goal.title }}</h4>
-                    <p class="text-sm text-gray-600">{{ goal.description }}</p>
+                    <h4 class="font-semibold text-gray-900">
+                      {{ goal.title }}
+                    </h4>
+                    <p class="text-sm text-gray-600">
+                      {{ goal.description }}
+                    </p>
                   </div>
                   <button 
-                    @click="confirmDeleteGoal(goal)"
                     class="p-2 text-gray-400 hover:text-red-600 transition-colors border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200"
                     title="Excluir meta"
+                    @click="confirmDeleteGoal(goal)"
                   >
                     <X class="h-5 w-5" />
                   </button>
@@ -339,7 +511,7 @@
                       class="h-2 rounded-full transition-all duration-300" 
                       :class="goal.progress === 100 ? 'bg-green-600' : 'bg-blue-600'"
                       :style="{ width: goal.progress + '%' }"
-                    ></div>
+                    />
                   </div>
                 </div>
                 
@@ -350,18 +522,33 @@
               </div>
             </div>
             
-            <div v-else class="text-center text-gray-500 py-4">Nenhuma meta definida. Crie uma para começar!</div>
+            <div
+              v-else
+              class="text-center text-gray-500 py-4"
+            >
+              Nenhuma meta definida. Crie uma para começar!
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Goals Modal -->
-    <div v-if="showGoalsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div
+      v-if="showGoalsModal"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-lg w-full max-w-md mx-4 shadow-xl">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-lg font-semibold">Nova Meta de Aprendizado</h3>
-          <button @click="showGoalsModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+          <h3 class="text-lg font-semibold">
+            Nova Meta de Aprendizado
+          </h3>
+          <button
+            class="text-gray-400 hover:text-gray-600"
+            @click="showGoalsModal = false"
+          >
+            &times;
+          </button>
         </div>
         
         <div class="p-6">
@@ -377,7 +564,12 @@
                   goalErrors.title ? 'border-red-500' : 'border-gray-300'
                 ]"
               >
-              <p v-if="goalErrors.title" class="mt-1 text-sm text-red-600">{{ goalErrors.title }}</p>
+              <p
+                v-if="goalErrors.title"
+                class="mt-1 text-sm text-red-600"
+              >
+                {{ goalErrors.title }}
+              </p>
             </div>
             
             <div>
@@ -390,8 +582,13 @@
                   'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none',
                   goalErrors.description ? 'border-red-500' : 'border-gray-300'
                 ]"
-              ></textarea>
-              <p v-if="goalErrors.description" class="mt-1 text-sm text-red-600">{{ goalErrors.description }}</p>
+              />
+              <p
+                v-if="goalErrors.description"
+                class="mt-1 text-sm text-red-600"
+              >
+                {{ goalErrors.description }}
+              </p>
             </div>
             
             <div>
@@ -404,21 +601,26 @@
                   goalErrors.deadline ? 'border-red-500' : 'border-gray-300'
                 ]"
               >
-              <p v-if="goalErrors.deadline" class="mt-1 text-sm text-red-600">{{ goalErrors.deadline }}</p>
+              <p
+                v-if="goalErrors.deadline"
+                class="mt-1 text-sm text-red-600"
+              >
+                {{ goalErrors.deadline }}
+              </p>
             </div>
           </div>
           
           <div class="flex gap-3 mt-6">
             <button 
-              @click="showGoalsModal = false"
               class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              @click="showGoalsModal = false"
             >
               Cancelar
             </button>
             <button 
-              @click="addGoal"
               :disabled="isCreatingGoal"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+              @click="addGoal"
             >
               {{ isCreatingGoal ? 'Criando...' : 'Criar Meta' }}
             </button>
@@ -428,23 +630,30 @@
     </div>
 
     <!-- Delete Goal Confirmation Modal -->
-    <div v-if="showDeleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div
+      v-if="showDeleteModal"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-lg w-full max-w-sm mx-4 shadow-xl">
         <div class="p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Confirmar Exclusão</h3>
-          <p class="text-gray-600 mb-6">Tem certeza que deseja excluir a meta "{{ goalToDelete?.title }}"? Esta ação não pode ser desfeita.</p>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Confirmar Exclusão
+          </h3>
+          <p class="text-gray-600 mb-6">
+            Tem certeza que deseja excluir a meta "{{ goalToDelete?.title }}"? Esta ação não pode ser desfeita.
+          </p>
           
           <div class="flex gap-3">
             <button 
-              @click="showDeleteModal = false"
               class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              @click="showDeleteModal = false"
             >
               Cancelar
             </button>
             <button 
-              @click="deleteGoal"
               :disabled="isDeletingGoal"
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-red-400 disabled:cursor-not-allowed"
+              @click="deleteGoal"
             >
               {{ isDeletingGoal ? 'Excluindo...' : 'Excluir Meta' }}
             </button>

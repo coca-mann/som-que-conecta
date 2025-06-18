@@ -5,48 +5,78 @@
         <h2 class="text-2xl font-bold text-gray-900">
           {{ instrument ? 'Editar Instrumento' : 'Adicionar Instrumento' }}
         </h2>
-        <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600">
+        <button
+          class="text-gray-400 hover:text-gray-600"
+          @click="$emit('close')"
+        >
           <X class="h-6 w-6" />
         </button>
       </div>
       
-      <form @submit.prevent="handleSubmit" class="space-y-6">
+      <form
+        class="space-y-6"
+        @submit.prevent="handleSubmit"
+      >
         <!-- Seção de Imagens -->
         <div class="pt-4 border-t">
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Fotos (máximo 5 imagens)
           </label>
           
-          <p v-if="existingImages.length === 0 && newImagePreviews.length === 0" 
-             class="text-sm text-gray-500 mb-4">
+          <p
+            v-if="existingImages.length === 0 && newImagePreviews.length === 0" 
+            class="text-sm text-gray-500 mb-4"
+          >
             Nenhuma foto adicionada.
           </p>
           
           <!-- Imagens existentes -->
-          <div v-if="existingImages.length > 0" class="grid grid-cols-3 sm:grid-cols-5 gap-4 mb-4">
-            <div v-for="image in existingImages" :key="image.id" class="relative group">
-              <img :src="image.picture" :alt="'Foto do instrumento ' + image.id" 
-                   class="w-full h-24 object-cover rounded-md border">
+          <div
+            v-if="existingImages.length > 0"
+            class="grid grid-cols-3 sm:grid-cols-5 gap-4 mb-4"
+          >
+            <div
+              v-for="image in existingImages"
+              :key="image.id"
+              class="relative group"
+            >
+              <img
+                :src="image.picture"
+                :alt="'Foto do instrumento ' + image.id" 
+                class="w-full h-24 object-cover rounded-md border"
+              >
               <button 
-                @click="markImageForDeletion(image.id)" 
-                type="button"
+                type="button" 
                 class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-50 group-hover:opacity-100 transition-opacity"
-                title="Marcar para excluir">
+                title="Marcar para excluir"
+                @click="markImageForDeletion(image.id)"
+              >
                 <Trash2 class="h-3 w-3" />
               </button>
             </div>
           </div>
           
           <!-- Novas imagens -->
-          <div v-if="newImagePreviews.length > 0" class="grid grid-cols-3 sm:grid-cols-5 gap-4 mb-4">
-            <div v-for="(preview, index) in newImagePreviews" :key="index" class="relative group">
-              <img :src="preview" alt="Preview da nova foto" 
-                   class="w-full h-24 object-cover rounded-md border-2 border-dashed border-green-400">
-               <button 
-                @click="removeNewFile(index)" 
-                type="button"
+          <div
+            v-if="newImagePreviews.length > 0"
+            class="grid grid-cols-3 sm:grid-cols-5 gap-4 mb-4"
+          >
+            <div
+              v-for="(preview, index) in newImagePreviews"
+              :key="index"
+              class="relative group"
+            >
+              <img
+                :src="preview"
+                alt="Preview da nova foto" 
+                class="w-full h-24 object-cover rounded-md border-2 border-dashed border-green-400"
+              >
+              <button 
+                type="button" 
                 class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-50 group-hover:opacity-100 transition-opacity"
-                title="Remover anexo">
+                title="Remover anexo"
+                @click="removeNewFile(index)"
+              >
                 <X class="h-3 w-3" />
               </button>
             </div>
@@ -54,16 +84,28 @@
 
           <!-- Upload de imagens -->
           <div v-if="totalImages < 5">
-            <label for="file-upload" 
-                   class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 border-2 border-gray-300 border-dashed px-4 py-6 flex flex-col items-center justify-center text-center">
+            <label
+              for="file-upload" 
+              class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 border-2 border-gray-300 border-dashed px-4 py-6 flex flex-col items-center justify-center text-center"
+            >
               <UploadCloud class="h-8 w-8 text-gray-400 mb-2" />
               <span>Adicionar fotos ({{ totalImages }}/5)</span>
-              <input id="file-upload" name="file-upload" type="file" class="sr-only" 
-                     multiple @change="handleFileChange" accept="image/*">
+              <input
+                id="file-upload"
+                name="file-upload"
+                type="file"
+                class="sr-only" 
+                multiple
+                accept="image/*"
+                @change="handleFileChange"
+              >
             </label>
           </div>
           
-          <p v-else class="text-sm text-amber-600 bg-amber-50 p-2 rounded-md">
+          <p
+            v-else
+            class="text-sm text-amber-600 bg-amber-50 p-2 rounded-md"
+          >
             Limite máximo de 5 imagens atingido.
           </p>
         </div>
@@ -71,9 +113,13 @@
         <!-- Nome -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Instrumento *</label>
-          <input v-model="form.name" type="text" required 
-                 placeholder="Ex: Violão Clássico Yamaha C40" 
-                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <input
+            v-model="form.name"
+            type="text"
+            required 
+            placeholder="Ex: Violão Clássico Yamaha C40" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
         </div>
 
         <!-- Marca e Tipo -->
@@ -85,8 +131,17 @@
               required 
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option disabled value="">Selecione a marca</option>
-              <option v-for="brand in instrumentBrands" :key="brand.id" :value="brand.name">
+              <option
+                disabled
+                value=""
+              >
+                Selecione a marca
+              </option>
+              <option
+                v-for="brand in instrumentBrands"
+                :key="brand.id"
+                :value="brand.name"
+              >
                 {{ brand.name }}
               </option>
             </select>
@@ -99,8 +154,17 @@
               required 
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option disabled value="">Selecione o tipo</option>
-              <option v-for="type in instrumentTypes" :key="type.id" :value="type.name">
+              <option
+                disabled
+                value=""
+              >
+                Selecione o tipo
+              </option>
+              <option
+                v-for="type in instrumentTypes"
+                :key="type.id"
+                :value="type.name"
+              >
                 {{ type.name }}
               </option>
             </select>
@@ -115,7 +179,7 @@
             rows="4" 
             placeholder="Descreva as características, condições e especificações do instrumento..."
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          ></textarea>
+          />
         </div>
 
         <!-- Status -->
@@ -126,8 +190,12 @@
             required 
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option :value="true">ATIVO</option>
-            <option :value="false">INATIVO</option>
+            <option :value="true">
+              ATIVO
+            </option>
+            <option :value="false">
+              INATIVO
+            </option>
           </select>
         </div>
 
@@ -135,23 +203,31 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Cor do Instrumento</label>
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            <div v-for="colorOption in predefinedColors" :key="colorOption.name"
-                 @click="selectColor(colorOption)"
-                 :class="[
-                   'flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all',
-                   form.color_name === colorOption.name 
-                     ? 'border-blue-500 bg-blue-50' 
-                     : 'border-gray-200 hover:border-gray-300'
-                 ]">
-              <div :style="{ backgroundColor: colorOption.hex }" 
-                   class="w-6 h-6 rounded-full border border-gray-300 shadow-sm"></div>
+            <div
+              v-for="colorOption in predefinedColors"
+              :key="colorOption.name"
+              :class="[
+                'flex items-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all',
+                form.color_name === colorOption.name 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              ]"
+              @click="selectColor(colorOption)"
+            >
+              <div
+                :style="{ backgroundColor: colorOption.hex }" 
+                class="w-6 h-6 rounded-full border border-gray-300 shadow-sm"
+              />
               <span class="text-sm font-medium">{{ colorOption.name }}</span>
             </div>
           </div>
         </div>
 
         <!-- Localização e Disponibilidade -->
-        <div v-if="props.showDetailedFields" class="grid md:grid-cols-2 gap-4">
+        <div
+          v-if="props.showDetailedFields"
+          class="grid md:grid-cols-2 gap-4"
+        >
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Localização</label>
             <input 
@@ -175,12 +251,17 @@
 
         <!-- Botões -->
         <div class="flex justify-end gap-3 pt-4 border-t">
-          <button type="button" @click="$emit('close')" 
-                  class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+          <button
+            type="button"
+            class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors" 
+            @click="$emit('close')"
+          >
             Cancelar
           </button>
-          <button type="submit" 
-                  class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button
+            type="submit" 
+            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             {{ instrument ? 'Atualizar' : 'Adicionar' }} Instrumento
           </button>
         </div>

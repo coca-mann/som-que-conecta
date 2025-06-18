@@ -3,7 +3,9 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <!-- Header -->
       <div class="text-center mb-10">
-        <h1 class="text-3xl font-bold text-gray-900 mb-3">Política de Privacidade</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">
+          Política de Privacidade
+        </h1>
         <p class="text-gray-600">
           Última atualização: 5 de junho de 2024
         </p>
@@ -11,9 +13,14 @@
 
       <!-- Table of Contents -->
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Índice</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Índice
+        </h2>
         <ul class="space-y-2">
-          <li v-for="(section, index) in sections" :key="index">
+          <li
+            v-for="(section, index) in sections"
+            :key="index"
+          >
             <a 
               :href="`#section-${index + 1}`" 
               class="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
@@ -32,12 +39,21 @@
             A Music Learning está comprometida em proteger sua privacidade. Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos suas informações pessoais quando você utiliza nossa plataforma e serviços.
           </p>
 
-          <div v-for="(section, index) in sections" :key="index" :id="`section-${index + 1}`" class="mb-8">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ index + 1 }}. {{ section.title }}</h2>
-            <div v-html="section.content"></div>
+          <div
+            v-for="(section, index) in sections"
+            :id="`section-${index + 1}`"
+            :key="index"
+            class="mb-8"
+          >
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+              {{ index + 1 }}. {{ section.title }}
+            </h2>
+            <div v-html="section.content" />
           </div>
 
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">12. Contato</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            12. Contato
+          </h2>
           <p>
             Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade ou sobre nossas práticas de privacidade, entre em contato conosco pelo email: <a href="mailto:privacidade@musiclearning.com">privacidade@musiclearning.com</a>
           </p>
@@ -46,8 +62,8 @@
         <!-- Print Button -->
         <div class="mt-8 text-center">
           <button 
-            @click="printPolicy" 
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto" 
+            @click="printPolicy"
           >
             <Printer class="h-5 w-5" />
             Imprimir Política
@@ -57,7 +73,9 @@
 
       <!-- Cookie Preferences -->
       <div class="mt-8 bg-blue-50 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Preferências de Cookies</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Preferências de Cookies
+        </h3>
         <p class="text-gray-700 mb-4">
           Você pode gerenciar suas preferências de cookies a qualquer momento. Suas escolhas serão salvas para este navegador e dispositivo.
         </p>
@@ -65,57 +83,102 @@
         <div class="space-y-4 mt-6">
           <div class="flex items-center justify-between">
             <div>
-              <h4 class="font-medium text-gray-900">Cookies Essenciais</h4>
-              <p class="text-sm text-gray-600">Necessários para o funcionamento básico do site</p>
+              <h4 class="font-medium text-gray-900">
+                Cookies Essenciais
+              </h4>
+              <p class="text-sm text-gray-600">
+                Necessários para o funcionamento básico do site
+              </p>
             </div>
             <div class="relative">
-              <input type="checkbox" checked disabled class="sr-only peer" />
-              <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600"></div>
-              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
+              <input
+                type="checkbox"
+                checked
+                disabled
+                class="sr-only peer"
+              >
+              <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600" />
+              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
             </div>
           </div>
           
           <div class="flex items-center justify-between">
             <div>
-              <h4 class="font-medium text-gray-900">Cookies de Desempenho</h4>
-              <p class="text-sm text-gray-600">Ajudam a melhorar a performance e experiência do site</p>
+              <h4 class="font-medium text-gray-900">
+                Cookies de Desempenho
+              </h4>
+              <p class="text-sm text-gray-600">
+                Ajudam a melhorar a performance e experiência do site
+              </p>
             </div>
             <div class="relative">
-              <input type="checkbox" id="performance" v-model="cookiePreferences.performance" class="sr-only peer" />
-              <label for="performance" class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"></label>
-              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
+              <input
+                id="performance"
+                v-model="cookiePreferences.performance"
+                type="checkbox"
+                class="sr-only peer"
+              >
+              <label
+                for="performance"
+                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"
+              />
+              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
             </div>
           </div>
           
           <div class="flex items-center justify-between">
             <div>
-              <h4 class="font-medium text-gray-900">Cookies de Marketing</h4>
-              <p class="text-sm text-gray-600">Usados para publicidade personalizada</p>
+              <h4 class="font-medium text-gray-900">
+                Cookies de Marketing
+              </h4>
+              <p class="text-sm text-gray-600">
+                Usados para publicidade personalizada
+              </p>
             </div>
             <div class="relative">
-              <input type="checkbox" id="marketing" v-model="cookiePreferences.marketing" class="sr-only peer" />
-              <label for="marketing" class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"></label>
-              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
+              <input
+                id="marketing"
+                v-model="cookiePreferences.marketing"
+                type="checkbox"
+                class="sr-only peer"
+              >
+              <label
+                for="marketing"
+                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"
+              />
+              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
             </div>
           </div>
           
           <div class="flex items-center justify-between">
             <div>
-              <h4 class="font-medium text-gray-900">Cookies de Análise</h4>
-              <p class="text-sm text-gray-600">Ajudam a entender como os visitantes interagem com o site</p>
+              <h4 class="font-medium text-gray-900">
+                Cookies de Análise
+              </h4>
+              <p class="text-sm text-gray-600">
+                Ajudam a entender como os visitantes interagem com o site
+              </p>
             </div>
             <div class="relative">
-              <input type="checkbox" id="analytics" v-model="cookiePreferences.analytics" class="sr-only peer" />
-              <label for="analytics" class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"></label>
-              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
+              <input
+                id="analytics"
+                v-model="cookiePreferences.analytics"
+                type="checkbox"
+                class="sr-only peer"
+              >
+              <label
+                for="analytics"
+                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"
+              />
+              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
             </div>
           </div>
         </div>
         
         <div class="mt-6 flex justify-center">
           <button 
-            @click="saveCookiePreferences" 
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" 
+            @click="saveCookiePreferences"
           >
             Salvar Preferências
           </button>

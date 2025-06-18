@@ -1,22 +1,22 @@
 <template>
-	<div class="main-container">
-		<div
-			class="editor-container editor-container_classic-editor editor-container_include-style editor-container_include-fullscreen"
-			ref="editorContainerElement"
-		>
-			<div class="editor-container__editor">
-				<div ref="editorElement">
-					<ckeditor 
-						v-if="editor && config" 
-						:modelValue="modelValue" 
-						@update:modelValue="$emit('update:modelValue', $event)"
-						:editor="editor" 
-						:config="config" 
-					/>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div class="main-container">
+    <div
+      ref="editorContainerElement"
+      class="editor-container editor-container_classic-editor editor-container_include-style editor-container_include-fullscreen"
+    >
+      <div class="editor-container__editor">
+        <div ref="editorElement">
+          <ckeditor 
+            v-if="editor && config" 
+            :model-value="model-value" 
+            :editor="editor"
+            :config="config" 
+            @update:modelValue="$emit('update:model-value', $event)" 
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -37,7 +37,7 @@ const props = defineProps({
 	}
 });
 
-defineEmits(['update:modelValue']);
+defineEmits(['update:model-value']);
 
 const LICENSE_KEY = process.env.VUE_APP_CKEDITOR_LICENSE_KEY;
 

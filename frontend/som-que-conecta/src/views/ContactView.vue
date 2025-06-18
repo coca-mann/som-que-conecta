@@ -3,7 +3,9 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <!-- Header -->
       <div class="text-center mb-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-3">Entre em Contato</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">
+          Entre em Contato
+        </h1>
         <p class="text-lg text-gray-600 max-w-2xl mx-auto">
           Estamos sempre disponíveis para ajudar e ouvir suas sugestões. Escolha o canal que preferir.
         </p>
@@ -16,7 +18,9 @@
           <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-6">
             <Mail class="h-8 w-8 text-blue-600" />
           </div>
-          <h2 class="text-xl font-semibold text-gray-900 mb-3">Email</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">
+            Email
+          </h2>
           <p class="text-gray-600 mb-6">
             Para dúvidas, sugestões ou parcerias, envie-nos um email.
           </p>
@@ -33,7 +37,9 @@
           <div class="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
             <HelpCircle class="h-8 w-8 text-green-600" />
           </div>
-          <h2 class="text-xl font-semibold text-gray-900 mb-3">Suporte</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">
+            Suporte
+          </h2>
           <p class="text-gray-600 mb-6">
             Precisa de ajuda? Nossa equipe de suporte está pronta para atendê-lo.
           </p>
@@ -48,7 +54,9 @@
 
       <!-- Social Media -->
       <div class="bg-white rounded-lg shadow-sm p-8 mb-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Redes Sociais</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+          Redes Sociais
+        </h2>
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <!-- Instagram -->
@@ -111,7 +119,9 @@
 
       <!-- Business Hours -->
       <div class="bg-white rounded-lg shadow-sm p-8 mb-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Horário de Atendimento</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+          Horário de Atendimento
+        </h2>
         
         <div class="max-w-md mx-auto">
           <div class="space-y-3">
@@ -131,7 +141,9 @@
           
           <div class="mt-6 text-center text-gray-600">
             <p>Responderemos todas as mensagens dentro do nosso horário de atendimento.</p>
-            <p class="mt-2">Tempo médio de resposta: 24 horas úteis.</p>
+            <p class="mt-2">
+              Tempo médio de resposta: 24 horas úteis.
+            </p>
           </div>
         </div>
       </div>
@@ -139,19 +151,24 @@
       <!-- Newsletter -->
       <div class="bg-blue-50 rounded-lg shadow-sm p-8">
         <div class="max-w-2xl mx-auto text-center">
-          <h2 class="text-2xl font-bold text-gray-900 mb-3">Fique por dentro das novidades</h2>
+          <h2 class="text-2xl font-bold text-gray-900 mb-3">
+            Fique por dentro das novidades
+          </h2>
           <p class="text-gray-600 mb-6">
             Assine nossa newsletter e receba dicas, novidades e conteúdos exclusivos sobre música.
           </p>
           
-          <form @submit.prevent="subscribeNewsletter" class="flex flex-col sm:flex-row gap-3">
+          <form
+            class="flex flex-col sm:flex-row gap-3"
+            @submit.prevent="subscribeNewsletter"
+          >
             <input 
               v-model="newsletterEmail"
               type="email" 
               required
               placeholder="Seu melhor email"
               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            >
             <button 
               type="submit"
               class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap"

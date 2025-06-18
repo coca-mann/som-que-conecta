@@ -1,24 +1,35 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Toast Notification -->
-    <div v-if="showToast" 
-         class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out z-[9999] flex items-center gap-3"
-         :class="showToast ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'">
+    <div
+      v-if="showToast" 
+      class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out z-[9999] flex items-center gap-3"
+      :class="showToast ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'"
+    >
       <span>{{ toastMessage }}</span>
-      <button @click="showToast = false" class="text-gray-300 hover:text-white transition-colors">
+      <button
+        class="text-gray-300 hover:text-white transition-colors"
+        @click="showToast = false"
+      >
         <X class="h-4 w-4" />
       </button>
     </div>
 
     <!-- Back Navigation -->
     <div class="mb-6">
-      <button @click="goBack" class="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors">
+      <button
+        class="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+        @click="goBack"
+      >
         <ArrowLeft class="h-4 w-4" />
         Voltar aos Artigos
       </button>
     </div>
 
-    <div v-if="article" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div
+      v-if="article"
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
       <!-- Article Header -->
       <article class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="relative h-64 md:h-80">
@@ -37,7 +48,9 @@
                 </span>
                 <span class="text-sm opacity-90">{{ formatDate(article.published_at) }}</span>
               </div>
-              <h1 class="text-3xl md:text-4xl font-bold leading-tight">{{ article.title }}</h1>
+              <h1 class="text-3xl md:text-4xl font-bold leading-tight">
+                {{ article.title }}
+              </h1>
             </div>
           </div>
         </div>
@@ -46,9 +59,15 @@
         <div class="p-6 border-b border-gray-200">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-4">
-              <img :src="article.author.profile_picture" :alt="article.author.get_full_name" class="w-12 h-12 rounded-full">
+              <img
+                :src="article.author.profile_picture"
+                :alt="article.author.get_full_name"
+                class="w-12 h-12 rounded-full"
+              >
               <div>
-                <h3 class="font-semibold text-gray-900">{{ article.author.get_full_name }}</h3>
+                <h3 class="font-semibold text-gray-900">
+                  {{ article.author.get_full_name }}
+                </h3>
               </div>
             </div>
             
@@ -64,9 +83,12 @@
               </div>
               
               <div class="flex items-center gap-1">
-                <Star v-for="star in 5" :key="star" 
-                     :class="star <= Math.floor(article.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'"
-                     class="h-4 w-4" />
+                <Star
+                  v-for="star in 5"
+                  :key="star" 
+                  :class="star <= Math.floor(article.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'"
+                  class="h-4 w-4"
+                />
                 <span class="text-sm text-gray-600 ml-1">({{ article.rating }})</span>
               </div>
             </div>
@@ -76,9 +98,14 @@
         <!-- Article Content -->
         <div class="p-6 md:p-8">
           <div class="prose prose-lg max-w-none">
-            <p class="text-xl text-gray-600 mb-6 font-medium">{{ article.excerpt }}</p>
+            <p class="text-xl text-gray-600 mb-6 font-medium">
+              {{ article.excerpt }}
+            </p>
             
-            <div v-html="article.content" class="space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:text-gray-900 [&>h3]:mt-6 [&>h3]:mb-3 [&>p]:text-gray-700 [&>p]:leading-relaxed [&>p]:mb-4 [&>ul]:list-disc [&>ul]:list-inside [&>ul]:space-y-2 [&>ul]:mb-4 [&>ul]:text-gray-700 [&>li]:ml-4 [&>strong]:font-semibold [&>strong]:text-gray-900"></div>
+            <div
+              class="space-y-6 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-gray-900 [&>h2]:mt-8 [&>h2]:mb-4 [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:text-gray-900 [&>h3]:mt-6 [&>h3]:mb-3 [&>p]:text-gray-700 [&>p]:leading-relaxed [&>p]:mb-4 [&>ul]:list-disc [&>ul]:list-inside [&>ul]:space-y-2 [&>ul]:mb-4 [&>ul]:text-gray-700 [&>li]:ml-4 [&>strong]:font-semibold [&>strong]:text-gray-900"
+              v-html="article.content"
+            />
           </div>
         </div>
 
@@ -86,16 +113,25 @@
         <div class="p-6 bg-gray-50 border-t border-gray-200">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
-              <button @click="toggleLike" :class="[
-                'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
-                isLiked ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              ]">
-                <Heart :class="isLiked ? 'fill-current' : ''" class="h-4 w-4" />
+              <button
+                :class="[
+                  'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
+                  isLiked ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ]"
+                @click="toggleLike"
+              >
+                <Heart
+                  :class="isLiked ? 'fill-current' : ''"
+                  class="h-4 w-4"
+                />
                 <span>{{ article.favorite_count }}</span>
                 <span class="text-sm">{{ isLiked ? 'Descurtir' : 'Curtir' }}</span>
               </button>
               
-              <button @click="shareArticle" class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
+              <button
+                class="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                @click="shareArticle"
+              >
                 <Share2 class="h-4 w-4" />
                 Compartilhar
               </button>
@@ -104,15 +140,20 @@
             <div class="flex items-center gap-2">
               <span class="text-sm text-gray-600">Avalie este artigo:</span>
               <div class="flex items-center gap-1">
-                <button v-for="star in 5" :key="star" 
-                       @click="rateArticle(star)"
-                       :class="star <= userRating ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'"
-                       class="transition-colors">
+                <button
+                  v-for="star in 5"
+                  :key="star" 
+                  :class="star <= userRating ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'"
+                  class="transition-colors"
+                  @click="rateArticle(star)"
+                >
                   <Star class="h-5 w-5 fill-current" />
                 </button>
-                <button v-if="userRating" 
-                       @click="removeRating"
-                       class="ml-2 text-sm text-gray-500 hover:text-red-600 transition-colors">
+                <button
+                  v-if="userRating" 
+                  class="ml-2 text-sm text-gray-500 hover:text-red-600 transition-colors"
+                  @click="removeRating"
+                >
                   Remover avaliação
                 </button>
               </div>
@@ -128,14 +169,22 @@
         </h2>
         
         <!-- Add Comment Form -->
-        <div v-if="isLoggedIn" class="mb-8 p-4 bg-gray-50 rounded-lg">
+        <div
+          v-if="isLoggedIn"
+          class="mb-8 p-4 bg-gray-50 rounded-lg"
+        >
           <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p class="text-sm text-blue-800">
               <span class="font-medium">Atenção:</span> Os comentários são moderados e podem ser removidos caso não estejam de acordo com nossas diretrizes de comunidade.
             </p>
           </div>
-          <h3 class="text-lg font-semibold mb-4">Deixe seu comentário</h3>
-          <form @submit.prevent="addComment" class="space-y-4">
+          <h3 class="text-lg font-semibold mb-4">
+            Deixe seu comentário
+          </h3>
+          <form
+            class="space-y-4"
+            @submit.prevent="addComment"
+          >
             <textarea 
               v-model="newComment" 
               rows="4" 
@@ -143,22 +192,30 @@
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               :disabled="isSubmittingComment"
               required
-            ></textarea>
+            />
             <div class="flex justify-end">
               <button 
                 type="submit" 
                 class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                 :disabled="isSubmittingComment"
               >
-                <div v-if="isSubmittingComment" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div
+                  v-if="isSubmittingComment"
+                  class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
+                />
                 {{ isSubmittingComment ? 'Enviando...' : 'Publicar Comentário' }}
               </button>
             </div>
           </form>
         </div>
         
-        <div v-else class="mb-8 p-4 bg-blue-50 rounded-lg text-center">
-          <p class="text-blue-800 mb-3">Faça login para comentar neste artigo</p>
+        <div
+          v-else
+          class="mb-8 p-4 bg-blue-50 rounded-lg text-center"
+        >
+          <p class="text-blue-800 mb-3">
+            Faça login para comentar neste artigo
+          </p>
           <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             Fazer Login
           </button>
@@ -166,71 +223,101 @@
 
         <!-- Comments List -->
         <div class="space-y-6">
-          <div v-for="comment in comments" :key="comment.id" class="border-b border-gray-200 pb-6 last:border-b-0">
+          <div
+            v-for="comment in comments"
+            :key="comment.id"
+            class="border-b border-gray-200 pb-6 last:border-b-0"
+          >
             <div class="flex items-start gap-4">
-              <img :src="comment.userAvatar" :alt="comment.userName" class="w-10 h-10 rounded-full flex-shrink-0">
+              <img
+                :src="comment.userAvatar"
+                :alt="comment.userName"
+                class="w-10 h-10 rounded-full flex-shrink-0"
+              >
               <div class="flex-1">
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center gap-3">
-                    <h4 class="font-semibold text-gray-900">{{ comment.userName }}</h4>
+                    <h4 class="font-semibold text-gray-900">
+                      {{ comment.userName }}
+                    </h4>
                     <span class="text-sm text-gray-500">{{ formatDate(comment.createdAt) }}</span>
                   </div>
                   <button 
                     v-if="isCommentAuthor(comment) || isAdmin"
-                    @click="confirmDeleteComment(comment)"
                     class="p-1 text-gray-400 hover:text-red-600 transition-colors rounded-full hover:bg-red-50"
                     title="Excluir comentário"
+                    @click="confirmDeleteComment(comment)"
                   >
                     <Trash2 class="h-4 w-4" />
                   </button>
                 </div>
-                <p class="text-gray-700 leading-relaxed">{{ comment.content }}</p>
+                <p class="text-gray-700 leading-relaxed">
+                  {{ comment.content }}
+                </p>
               </div>
             </div>
           </div>
         </div>
         
-        <div v-if="comments.length === 0" class="text-center py-8">
+        <div
+          v-if="comments.length === 0"
+          class="text-center py-8"
+        >
           <MessageCircle class="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <p class="text-gray-600">Seja o primeiro a comentar este artigo!</p>
+          <p class="text-gray-600">
+            Seja o primeiro a comentar este artigo!
+          </p>
         </div>
       </div>
     </div>
     
     <!-- Loading State -->
-    <div v-else class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div
+      v-else
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
       <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p class="text-gray-600">Carregando artigo...</p>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
+        <p class="text-gray-600">
+          Carregando artigo...
+        </p>
       </div>
     </div>
 
     <!-- Delete Comment Confirmation Modal -->
-    <div v-if="showDeleteCommentModal" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+    <div
+      v-if="showDeleteCommentModal"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div class="text-center">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle class="h-8 w-8 text-red-600" />
           </div>
-          <h3 class="text-lg font-semibold mb-2">Confirmar Exclusão</h3>
+          <h3 class="text-lg font-semibold mb-2">
+            Confirmar Exclusão
+          </h3>
           <p class="text-gray-600 mb-6">
             Tem certeza que deseja excluir este comentário? 
             Esta ação não pode ser desfeita.
           </p>
           <div class="flex gap-3 justify-center">
             <button 
-              @click="showDeleteCommentModal = false" 
-              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors" 
               :disabled="isDeletingComment"
+              @click="showDeleteCommentModal = false"
             >
               Cancelar
             </button>
             <button 
-              @click="deleteComment" 
-              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2" 
               :disabled="isDeletingComment"
+              @click="deleteComment"
             >
-              <div v-if="isDeletingComment" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div
+                v-if="isDeletingComment"
+                class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
+              />
               {{ isDeletingComment ? 'Excluindo...' : 'Excluir' }}
             </button>
           </div>

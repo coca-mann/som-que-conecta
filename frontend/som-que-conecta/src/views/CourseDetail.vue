@@ -1,12 +1,19 @@
 <template>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div v-if="course" class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div
+      v-if="course"
+      class="bg-white rounded-lg shadow-lg overflow-hidden"
+    >
       <!-- Course Header -->
       <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8">
         <div class="flex items-start justify-between">
           <div>
-            <h1 class="text-3xl font-bold mb-2">{{ course.title }}</h1>
-            <p class="text-blue-100 mb-4">{{ course.description }}</p>
+            <h1 class="text-3xl font-bold mb-2">
+              {{ course.title }}
+            </h1>
+            <p class="text-blue-100 mb-4">
+              {{ course.description }}
+            </p>
             <div class="flex items-center gap-4 text-sm">
               <span class="flex items-center gap-1">
                 <Clock class="h-4 w-4" />
@@ -22,7 +29,10 @@
               </span>
             </div>
           </div>
-          <button @click="$router.push('/courses')" class="text-white hover:text-blue-200 transition-colors">
+          <button
+            class="text-white hover:text-blue-200 transition-colors"
+            @click="$router.push('/courses')"
+          >
             <X class="h-6 w-6" />
           </button>
         </div>
@@ -31,39 +41,61 @@
       <!-- Progress Bar -->
       <div class="p-6 border-b">
         <div class="flex justify-between items-center mb-2">
-          <h3 class="text-lg font-semibold">Seu Progresso</h3>
+          <h3 class="text-lg font-semibold">
+            Seu Progresso
+          </h3>
           <span class="text-2xl font-bold text-blue-600">{{ progressPercentage }}%</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-3">
-          <div class="bg-blue-600 h-3 rounded-full transition-all duration-500" :style="{ width: progressPercentage + '%' }"></div>
+          <div
+            class="bg-blue-600 h-3 rounded-full transition-all duration-500"
+            :style="{ width: progressPercentage + '%' }"
+          />
         </div>
-        <p class="text-sm text-gray-600 mt-2">{{ completedTasks }} de {{ course.tasks.length }} tarefas concluídas</p>
+        <p class="text-sm text-gray-600 mt-2">
+          {{ completedTasks }} de {{ course.tasks.length }} tarefas concluídas
+        </p>
       </div>
 
       <!-- Tasks List -->
       <div class="p-6">
-        <h3 class="text-xl font-semibold mb-6">Tarefas do Curso</h3>
+        <h3 class="text-xl font-semibold mb-6">
+          Tarefas do Curso
+        </h3>
         <div class="space-y-4">
-          <div v-for="(task, index) in course.tasks" :key="task.id" class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+          <div
+            v-for="(task, index) in course.tasks"
+            :key="task.id"
+            class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+          >
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
-                  <div :class="[
-                    // Use is_completed
-                    task.is_completed ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                  ]">
+                  <div
+                    :class="[
+                      // Use is_completed
+                      task.is_completed ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                    ]"
+                  >
                     {{ index + 1 }}
                   </div>
                 </div>
                 <div>
-                  <h4 :class="[
-                    'font-medium',
-                    // Use is_completed
-                    task.is_completed ? 'text-green-800' : 'text-gray-900'
-                  ]">
+                  <h4
+                    :class="[
+                      'font-medium',
+                      // Use is_completed
+                      task.is_completed ? 'text-green-800' : 'text-gray-900'
+                    ]"
+                  >
                     {{ task.title }}
                   </h4>
-                  <p v-if="task.description" class="text-sm text-gray-600 mt-1">{{ task.description }}</p>
+                  <p
+                    v-if="task.description"
+                    class="text-sm text-gray-600 mt-1"
+                  >
+                    {{ task.description }}
+                  </p>
                 </div>
               </div>
               
@@ -77,8 +109,8 @@
                   Concluída
                 </button>
                 <button 
-                  @click="goToTask(task)"
                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  @click="goToTask(task)"
                 >
                   {{ task.is_completed ? 'Revisar' : 'Iniciar' }}
                 </button>
@@ -106,8 +138,8 @@
             </button>
             <button 
               v-else
-              @click="continueFromLastTask"
               class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              @click="continueFromLastTask"
             >
               Continuar Estudando
             </button>
@@ -117,17 +149,24 @@
     </div>
 
     <!-- Task Completion Modal -->
-    <div v-if="showCompletionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div
+      v-if="showCompletionModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div class="text-center">
           <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check class="h-8 w-8 text-green-600" />
           </div>
-          <h3 class="text-lg font-semibold mb-2">Tarefa Concluída!</h3>
-          <p class="text-gray-600 mb-4">Parabéns! Você completou mais uma etapa do seu aprendizado.</p>
+          <h3 class="text-lg font-semibold mb-2">
+            Tarefa Concluída!
+          </h3>
+          <p class="text-gray-600 mb-4">
+            Parabéns! Você completou mais uma etapa do seu aprendizado.
+          </p>
           <button 
-            @click="showCompletionModal = false"
             class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            @click="showCompletionModal = false"
           >
             Continuar
           </button>

@@ -6,7 +6,7 @@
         src="@/assets/homebackground.jpg"
         alt="Background Pattern"
         class="w-full h-full object-cover opacity-20"
-      />
+      >
     </div>
 
     <!-- Hero Section -->
@@ -57,7 +57,9 @@
         <div class="grid md:grid-cols-3 gap-8">
           <div class="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
             <BookOpen class="h-12 w-12 text-blue-600 mx-auto mb-4" />
-            <h3 class="text-xl font-semibold mb-2">Artigos Especializados</h3>
+            <h3 class="text-xl font-semibold mb-2">
+              Artigos Especializados
+            </h3>
             <p class="text-gray-600">
               Conteúdo criado por professores experientes para guiar seu aprendizado
             </p>
@@ -65,7 +67,9 @@
           
           <div class="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
             <Guitar class="h-12 w-12 text-blue-600 mx-auto mb-4" />
-            <h3 class="text-xl font-semibold mb-2">Instrumentos Disponíveis</h3>
+            <h3 class="text-xl font-semibold mb-2">
+              Instrumentos Disponíveis
+            </h3>
             <p class="text-gray-600">
               Acesse instrumentos musicais disponibilizados por ONGs e professores
             </p>
@@ -73,7 +77,9 @@
           
           <div class="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
             <GraduationCap class="h-12 w-12 text-blue-600 mx-auto mb-4" />
-            <h3 class="text-xl font-semibold mb-2">Minicursos Práticos</h3>
+            <h3 class="text-xl font-semibold mb-2">
+              Minicursos Práticos
+            </h3>
             <p class="text-gray-600">
               Aprenda passo a passo com cursos estruturados e acompanhe seu progresso
             </p>
@@ -95,11 +101,17 @@
         </div>
         
         <div class="max-w-4xl mx-auto">
-          <div v-if="isLoading" class="flex justify-center items-center h-64">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div
+            v-if="isLoading"
+            class="flex justify-center items-center h-64"
+          >
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
           </div>
           
-          <div v-else-if="latestArticle" class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+          <div
+            v-else-if="latestArticle"
+            class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+          >
             <div class="md:flex">
               <div class="md:w-1/2">
                 <img 
@@ -122,15 +134,27 @@
                   <span class="text-sm text-gray-500">{{ formatDate(latestArticle.created_at) }}</span>
                 </div>
                 
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ latestArticle.title }}</h3>
-                <p class="text-gray-600 mb-6 leading-relaxed">{{ latestArticle.short_description }}</p>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                  {{ latestArticle.title }}
+                </h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                  {{ latestArticle.short_description }}
+                </p>
                 
                 <div class="flex items-center justify-between mb-6">
                   <div class="flex items-center gap-3">
-                    <img :src="homeService.getImageUrl(latestArticle.author.profile_picture)" :alt="latestArticle.author.get_full_name" class="w-10 h-10 rounded-full">
+                    <img
+                      :src="homeService.getImageUrl(latestArticle.author.profile_picture)"
+                      :alt="latestArticle.author.get_full_name"
+                      class="w-10 h-10 rounded-full"
+                    >
                     <div>
-                      <p class="font-medium text-gray-900">{{ latestArticle.author.get_full_name }}</p>
-                      <p class="text-sm text-gray-500">Autor</p>
+                      <p class="font-medium text-gray-900">
+                        {{ latestArticle.author.get_full_name }}
+                      </p>
+                      <p class="text-sm text-gray-500">
+                        Autor
+                      </p>
                     </div>
                   </div>
                   <div class="flex items-center gap-2 text-sm text-gray-500">
@@ -139,7 +163,10 @@
                   </div>
                 </div>
                 
-                <router-link :to="`/articles/${latestArticle.id}`" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                <router-link
+                  :to="`/articles/${latestArticle.id}`"
+                  class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
                   Ler Artigo Completo
                   <ArrowRight class="h-4 w-4" />
                 </router-link>
@@ -147,8 +174,13 @@
             </div>
           </div>
           
-          <div v-else class="text-center py-12">
-            <p class="text-gray-600">Nenhum artigo disponível no momento.</p>
+          <div
+            v-else
+            class="text-center py-12"
+          >
+            <p class="text-gray-600">
+              Nenhum artigo disponível no momento.
+            </p>
           </div>
         </div>
       </div>
@@ -167,14 +199,24 @@
         </div>
         
         <div class="max-w-4xl mx-auto">
-          <div v-if="isLoading" class="flex justify-center items-center h-64">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          <div
+            v-if="isLoading"
+            class="flex justify-center items-center h-64"
+          >
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
           </div>
           
-          <div v-else-if="latestCourse" class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+          <div
+            v-else-if="latestCourse"
+            class="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+          >
             <div class="md:flex md:flex-row-reverse">
               <div class="md:w-1/2">
-                <img :src="latestCourse.cover" :alt="latestCourse.title" class="w-full h-64 md:h-full object-cover">
+                <img
+                  :src="latestCourse.cover"
+                  :alt="latestCourse.title"
+                  class="w-full h-64 md:h-full object-cover"
+                >
               </div>
               <div class="md:w-1/2 p-8">
                 <div class="flex items-center gap-3 mb-4">
@@ -187,8 +229,12 @@
                   <span class="text-sm text-gray-500">Novo!</span>
                 </div>
                 
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ latestCourse.title }}</h3>
-                <p class="text-gray-600 mb-6 leading-relaxed">{{ latestCourse.description }}</p>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                  {{ latestCourse.title }}
+                </h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                  {{ latestCourse.description }}
+                </p>
                 
                 <div class="grid grid-cols-2 gap-4 mb-6">
                   <div class="flex items-center gap-2 text-sm text-gray-600">
@@ -201,16 +247,30 @@
                   </div>
                 </div>
                 
-                <div class="flex items-center gap-3 mb-6" v-if="latestCourse.author">
-                  <img :src="homeService.getImageUrl(latestCourse.author.profile_picture)" :alt="latestCourse.author.name" class="w-10 h-10 rounded-full">
+                <div
+                  v-if="latestCourse.author"
+                  class="flex items-center gap-3 mb-6"
+                >
+                  <img
+                    :src="homeService.getImageUrl(latestCourse.author.profile_picture)"
+                    :alt="latestCourse.author.name"
+                    class="w-10 h-10 rounded-full"
+                  >
                   <div>
-                    <p class="font-medium text-gray-900">{{ latestCourse.author.name }}</p>
-                    <p class="text-sm text-gray-500">Instrutor</p>
+                    <p class="font-medium text-gray-900">
+                      {{ latestCourse.author.name }}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                      Instrutor
+                    </p>
                   </div>
                 </div>
                 
                 <div class="flex gap-3">
-                  <router-link :to="`/course/${latestCourse.id}`" class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                  <router-link
+                    :to="`/course/${latestCourse.id}`"
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                  >
                     {{ isLoggedIn ? 'Iniciar Curso' : 'Ver Detalhes' }}
                     <Play class="h-4 w-4" />
                   </router-link>
@@ -219,8 +279,13 @@
             </div>
           </div>
           
-          <div v-else class="text-center py-12">
-            <p class="text-gray-600">Nenhum curso disponível no momento.</p>
+          <div
+            v-else
+            class="text-center py-12"
+          >
+            <p class="text-gray-600">
+              Nenhum curso disponível no momento.
+            </p>
           </div>
         </div>
       </div>

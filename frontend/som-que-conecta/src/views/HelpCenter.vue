@@ -3,7 +3,9 @@
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <!-- Header -->
       <div class="text-center mb-10">
-        <h1 class="text-3xl font-bold text-gray-900 mb-3">Central de Ajuda</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">
+          Central de Ajuda
+        </h1>
         <p class="text-lg text-gray-600 max-w-2xl mx-auto">
           Estamos aqui para ajudar. Preencha o formulário abaixo e nossa equipe entrará em contato o mais breve possível.
         </p>
@@ -11,10 +13,16 @@
 
       <!-- Help Form -->
       <div class="bg-white rounded-lg shadow-sm p-8">
-        <form @submit.prevent="submitHelpRequest" class="space-y-6">
+        <form
+          class="space-y-6"
+          @submit.prevent="submitHelpRequest"
+        >
           <!-- Name Field -->
           <div>
-            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Nome completo</label>
+            <label
+              for="name"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >Nome completo</label>
             <input
               id="name"
               v-model="form.name"
@@ -22,12 +30,15 @@
               required
               placeholder="Digite seu nome completo"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            >
           </div>
 
           <!-- Email Field -->
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email de contato</label>
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >Email de contato</label>
             <input
               id="email"
               v-model="form.email"
@@ -35,31 +46,51 @@
               required
               placeholder="seu.email@exemplo.com"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            >
           </div>
 
           <!-- Subject Field -->
           <div>
-            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Assunto</label>
+            <label
+              for="subject"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >Assunto</label>
             <select
               id="subject"
               v-model="form.subject"
               required
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">Selecione um assunto</option>
-              <option value="account">Conta e Perfil</option>
-              <option value="courses">Cursos e Conteúdo</option>
-              <option value="payment">Pagamentos</option>
-              <option value="technical">Problemas Técnicos</option>
-              <option value="feedback">Sugestões e Feedback</option>
-              <option value="other">Outro Assunto</option>
+              <option value="">
+                Selecione um assunto
+              </option>
+              <option value="account">
+                Conta e Perfil
+              </option>
+              <option value="courses">
+                Cursos e Conteúdo
+              </option>
+              <option value="payment">
+                Pagamentos
+              </option>
+              <option value="technical">
+                Problemas Técnicos
+              </option>
+              <option value="feedback">
+                Sugestões e Feedback
+              </option>
+              <option value="other">
+                Outro Assunto
+              </option>
             </select>
           </div>
 
           <!-- Message Field -->
           <div>
-            <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Mensagem</label>
+            <label
+              for="message"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >Mensagem</label>
             <textarea
               id="message"
               v-model="form.message"
@@ -67,7 +98,7 @@
               required
               placeholder="Descreva detalhadamente como podemos ajudar..."
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            ></textarea>
+            />
           </div>
 
           <!-- Attachment Option -->
@@ -77,23 +108,26 @@
               <input
                 ref="fileInput"
                 type="file"
-                @change="handleFileAttachment"
                 class="hidden"
-              />
+                @change="handleFileAttachment"
+              >
               <button
                 type="button"
-                @click="$refs.fileInput.click()"
                 class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                @click="$refs.fileInput.click()"
               >
                 <PaperClip class="h-4 w-4" />
                 Anexar arquivo
               </button>
-              <span v-if="form.attachment" class="ml-3 text-sm text-gray-600">
+              <span
+                v-if="form.attachment"
+                class="ml-3 text-sm text-gray-600"
+              >
                 {{ form.attachment.name }} ({{ formatFileSize(form.attachment.size) }})
                 <button 
-                  @click="removeAttachment" 
                   type="button" 
-                  class="ml-2 text-red-600 hover:text-red-800"
+                  class="ml-2 text-red-600 hover:text-red-800" 
+                  @click="removeAttachment"
                 >
                   <X class="h-4 w-4 inline" />
                 </button>
@@ -111,8 +145,14 @@
               :disabled="isSubmitting"
               class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
             >
-              <Loader2 v-if="isSubmitting" class="h-5 w-5 animate-spin" />
-              <Send v-else class="h-5 w-5" />
+              <Loader2
+                v-if="isSubmitting"
+                class="h-5 w-5 animate-spin"
+              />
+              <Send
+                v-else
+                class="h-5 w-5"
+              />
               {{ isSubmitting ? 'Enviando...' : 'Enviar Mensagem' }}
             </button>
           </div>
@@ -121,13 +161,19 @@
 
       <!-- FAQ Section -->
       <div class="mt-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Perguntas Frequentes</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+          Perguntas Frequentes
+        </h2>
         
         <div class="space-y-4">
-          <div v-for="(faq, index) in faqs" :key="index" class="border border-gray-200 rounded-lg">
+          <div
+            v-for="(faq, index) in faqs"
+            :key="index"
+            class="border border-gray-200 rounded-lg"
+          >
             <button
-              @click="toggleFaq(index)"
               class="w-full px-6 py-4 flex items-center justify-between text-left focus:outline-none"
+              @click="toggleFaq(index)"
             >
               <span class="font-medium text-gray-900">{{ faq.question }}</span>
               <ChevronDown
@@ -137,27 +183,37 @@
                 ]"
               />
             </button>
-            <div v-if="openFaq === index" class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <p class="text-gray-700">{{ faq.answer }}</p>
+            <div
+              v-if="openFaq === index"
+              class="px-6 py-4 bg-gray-50 border-t border-gray-200"
+            >
+              <p class="text-gray-700">
+                {{ faq.answer }}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Success Modal -->
-      <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div
+        v-if="showSuccessModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      >
         <div class="bg-white rounded-lg w-full max-w-md mx-4 p-6">
           <div class="text-center">
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
               <CheckCircle class="h-6 w-6 text-green-600" />
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">Mensagem Enviada!</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">
+              Mensagem Enviada!
+            </h3>
             <p class="text-gray-600 mb-6">
               Obrigado por entrar em contato. Nossa equipe responderá em breve para o email fornecido.
             </p>
             <button
-              @click="showSuccessModal = false"
               class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              @click="showSuccessModal = false"
             >
               Fechar
             </button>

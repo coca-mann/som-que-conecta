@@ -3,8 +3,12 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Artigos Musicais</h1>
-        <p class="text-gray-600">Conteúdo especializado criado por professores e especialistas</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          Artigos Musicais
+        </h1>
+        <p class="text-gray-600">
+          Conteúdo especializado criado por professores e especialistas
+        </p>
       </div>
       
       <router-link 
@@ -19,8 +23,13 @@
 
     <!-- Filters -->
     <div class="flex gap-4 mb-6">
-      <select v-model="selectedCategory" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <option value="">Todas as Categorias</option>
+      <select
+        v-model="selectedCategory"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="">
+          Todas as Categorias
+        </option>
         
         <option 
           v-for="category in categories" 
@@ -31,24 +40,45 @@
         </option>
       </select>
       
-      <select v-model="sortBy" class="px-4 py-2 border border-gray-300 rounded-lg   focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <option value="-created_at">Mais Recentes</option>
-        <option value="-popularity">Mais Populares</option>
-        <option value="-rating">Melhor Avaliados</option>
-        <option value="-read_count">Mais Visualizados</option>
+      <select
+        v-model="sortBy"
+        class="px-4 py-2 border border-gray-300 rounded-lg   focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="-created_at">
+          Mais Recentes
+        </option>
+        <option value="-popularity">
+          Mais Populares
+        </option>
+        <option value="-rating">
+          Melhor Avaliados
+        </option>
+        <option value="-read_count">
+          Mais Visualizados
+        </option>
       </select>
       
       <div class="flex-1 max-w-md">
         <div class="relative">
           <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input v-model="searchQuery" type="text" placeholder="Buscar artigos..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Buscar artigos..."
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
         </div>
       </div>
     </div>
 
     <!-- Articles Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <article v-for="article in filteredArticles" :key="article.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" @click="openArticle(article)">
+      <article
+        v-for="article in filteredArticles"
+        :key="article.id"
+        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+        @click="openArticle(article)"
+      >
         <div class="relative">
           <img 
             :src="article.cover_image && article.cover_image.includes('default.png') && article.cover_link ? article.cover_link : article.cover_image" 
@@ -56,7 +86,10 @@
             class="w-full h-48 object-cover"
           >
           
-          <div v-if="!article.is_published" class="absolute inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center text-white p-4">
+          <div
+            v-if="!article.is_published"
+            class="absolute inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center text-white p-4"
+          >
             <EyeOff class="h-8 w-8 mb-2" />
             <span class="font-bold text-lg">Não Publicado</span>
             <span class="text-sm opacity-80">(Visível apenas para você)</span>
@@ -75,8 +108,12 @@
         </div>
         
         <div class="p-6">
-          <h3 class="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">{{ article.title }}</h3>
-          <p class="text-gray-600 mb-4 line-clamp-3">{{ article.excerpt }}</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
+            {{ article.title }}
+          </h3>
+          <p class="text-gray-600 mb-4 line-clamp-3">
+            {{ article.excerpt }}
+          </p>
           
           <!-- Article Stats -->
           <div class="flex items-center justify-between mb-4">
@@ -93,9 +130,12 @@
             
             <div class="flex items-center gap-1">
               <div class="flex items-center">
-                <Star v-for="star in 5" :key="star" 
-                     :class="star <= Math.floor(article.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'"
-                     class="h-4 w-4" />
+                <Star
+                  v-for="star in 5"
+                  :key="star" 
+                  :class="star <= Math.floor(article.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'"
+                  class="h-4 w-4"
+                />
               </div>
               <span class="text-sm text-gray-600 ml-1">({{ article.rating }})</span>
             </div>
@@ -104,10 +144,18 @@
           <!-- Author Info -->
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <img :src="article.author?.profile_picture" :alt="article.author?.get_full_name" class="w-8 h-8 rounded-full">
+              <img
+                :src="article.author?.profile_picture"
+                :alt="article.author?.get_full_name"
+                class="w-8 h-8 rounded-full"
+              >
               <div>
-                <p class="text-sm font-medium text-gray-900">{{ article.author?.get_full_name }}</p>
-                <p class="text-xs text-gray-500">{{ formatDate(article.created_at) }}</p>
+                <p class="text-sm font-medium text-gray-900">
+                  {{ article.author?.get_full_name }}
+                </p>
+                <p class="text-xs text-gray-500">
+                  {{ formatDate(article.created_at) }}
+                </p>
               </div>
             </div>
           </div>
@@ -116,11 +164,21 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="filteredArticles.length === 0" class="text-center py-12">
+    <div
+      v-if="filteredArticles.length === 0"
+      class="text-center py-12"
+    >
       <BookOpen class="h-16 w-16 text-gray-400 mx-auto mb-4" />
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Nenhum artigo encontrado</h3>
-      <p class="text-gray-600 mb-4">Tente ajustar os filtros ou termos de busca</p>
-      <button @click="clearFilters" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+      <h3 class="text-lg font-medium text-gray-900 mb-2">
+        Nenhum artigo encontrado
+      </h3>
+      <p class="text-gray-600 mb-4">
+        Tente ajustar os filtros ou termos de busca
+      </p>
+      <button
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        @click="clearFilters"
+      >
         Limpar Filtros
       </button>
     </div>

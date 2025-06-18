@@ -3,7 +3,9 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <!-- Header -->
       <div class="text-center mb-10">
-        <h1 class="text-3xl font-bold text-gray-900 mb-3">Termos de Uso</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">
+          Termos de Uso
+        </h1>
         <p class="text-gray-600">
           Última atualização: 5 de junho de 2024
         </p>
@@ -104,8 +106,8 @@
         <!-- Print Button -->
         <div class="mt-8 text-center">
           <button 
-            @click="printTerms" 
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto" 
+            @click="printTerms"
           >
             <Printer class="h-5 w-5" />
             Imprimir Termos

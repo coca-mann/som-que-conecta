@@ -1,31 +1,50 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div v-if="isLoading" class="flex items-center justify-center min-h-screen">
+    <div
+      v-if="isLoading"
+      class="flex items-center justify-center min-h-screen"
+    >
       <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Carregando...</p>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
+        <p class="mt-4 text-gray-600">
+          Carregando...
+        </p>
       </div>
     </div>
 
-    <div v-else-if="error" class="flex items-center justify-center min-h-screen">
+    <div
+      v-else-if="error"
+      class="flex items-center justify-center min-h-screen"
+    >
       <div class="text-center text-red-600">
         <p>{{ error }}</p>
-        <button @click="fetchCourseData" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <button
+          class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          @click="fetchCourseData"
+        >
           Tentar novamente
         </button>
       </div>
     </div>
 
-    <div v-else-if="course && task" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div
+      v-else-if="course && task"
+      class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
       <!-- Course Navigation Header -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <button @click="goBackToCourse" class="p-2 text-gray-600 hover:text-blue-600 transition-colors">
+            <button
+              class="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              @click="goBackToCourse"
+            >
               <ArrowLeft class="h-5 w-5" />
             </button>
             <div>
-              <h1 class="text-xl font-bold text-gray-900">{{ course?.title }}</h1>
+              <h1 class="text-xl font-bold text-gray-900">
+                {{ course?.title }}
+              </h1>
               <div class="flex items-center gap-2 text-sm text-gray-600">
                 <span>Tarefa {{ currentTaskIndex + 1 }} de {{ course?.tasks.length }}</span>
                 <span>•</span>
@@ -36,11 +55,18 @@
           
           <div class="hidden md:block">
             <div class="flex items-center gap-2">
-              <div class="text-sm text-gray-600">Progresso do curso:</div>
-              <div class="w-48 bg-gray-200 rounded-full h-2">
-                <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="{ width: `${courseProgress}%` }"></div>
+              <div class="text-sm text-gray-600">
+                Progresso do curso:
               </div>
-              <div class="text-sm font-medium text-blue-600">{{ courseProgress }}%</div>
+              <div class="w-48 bg-gray-200 rounded-full h-2">
+                <div
+                  class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  :style="{ width: `${courseProgress}%` }"
+                />
+              </div>
+              <div class="text-sm font-medium text-blue-600">
+                {{ courseProgress }}%
+              </div>
             </div>
           </div>
         </div>
@@ -49,18 +75,27 @@
       <!-- Task Content -->
       <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
         <!-- Video Section -->
-        <div class="relative w-full" style="padding-top: 56.25%;">
+        <div
+          class="relative w-full"
+          style="padding-top: 56.25%;"
+        >
           <div class="absolute top-0 left-0 w-full h-full bg-black">
-            <div v-if="task?.video_url" class="w-full h-full">
+            <div
+              v-if="task?.video_url"
+              class="w-full h-full"
+            >
               <iframe 
                 :src="getYouTubeEmbedUrl(task.video_url)" 
                 class="w-full h-full" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen
-              ></iframe>
+              />
             </div>
-            <div v-else class="w-full h-full flex items-center justify-center text-white">
+            <div
+              v-else
+              class="w-full h-full flex items-center justify-center text-white"
+            >
               <Play class="h-16 w-16 mx-auto mb-4 opacity-50" />
               <p>Vídeo não disponível</p>
             </div>
@@ -69,17 +104,28 @@
 
         <!-- Task Details -->
         <div class="p-6">
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">{{ task?.title }}</h2>
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            {{ task?.title }}
+          </h2>
           
           <div class="prose max-w-none mb-8">
             <p>{{ task?.description }}</p>
             
-            <div v-if="task?.content" v-html="task.content" class="mt-4"></div>
+            <div
+              v-if="task?.content"
+              class="mt-4"
+              v-html="task.content"
+            />
           </div>
           
           <!-- Task Resources -->
-          <div v-if="resources.length > 0" class="mb-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Recursos Adicionais</h3>
+          <div
+            v-if="resources.length > 0"
+            class="mb-8"
+          >
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">
+              Recursos Adicionais
+            </h3>
             <div class="space-y-2">
               <a 
                 v-for="resource in resources" 
@@ -89,11 +135,26 @@
                 class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                  <FileText v-if="resource.type === 'DOCUMENT'" class="h-5 w-5" />
-                  <Music v-else-if="resource.type === 'AUDIO'" class="h-5 w-5" />
-                  <Video v-else-if="resource.type === 'VIDEO'" class="h-5 w-5" />
-                  <Image v-else-if="resource.type === 'IMAGE'" class="h-5 w-5" />
-                  <Link v-else class="h-5 w-5" />
+                  <FileText
+                    v-if="resource.type === 'DOCUMENT'"
+                    class="h-5 w-5"
+                  />
+                  <Music
+                    v-else-if="resource.type === 'AUDIO'"
+                    class="h-5 w-5"
+                  />
+                  <Video
+                    v-else-if="resource.type === 'VIDEO'"
+                    class="h-5 w-5"
+                  />
+                  <Image
+                    v-else-if="resource.type === 'IMAGE'"
+                    class="h-5 w-5"
+                  />
+                  <Link
+                    v-else
+                    class="h-5 w-5"
+                  />
                 </div>
                 <div>
                   <div class="font-medium text-gray-900">{{ resource.type_display }}</div>
@@ -106,23 +167,29 @@
           <!-- Task Completion -->
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
             <div class="flex items-center gap-2">
-              <div v-if="task?.is_completed" class="flex items-center gap-2 text-green-600">
+              <div
+                v-if="task?.is_completed"
+                class="flex items-center gap-2 text-green-600"
+              >
                 <CheckCircle class="h-5 w-5" />
                 <span class="font-medium">Tarefa concluída</span>
               </div>
-              <div v-else class="text-gray-600">
+              <div
+                v-else
+                class="text-gray-600"
+              >
                 <span>Marque como concluída quando terminar esta tarefa</span>
               </div>
             </div>
             
             <button 
-              @click="markTaskAsComplete" 
               :class="[
                 'px-6 py-2 rounded-lg font-medium transition-colors',
                 task?.is_completed 
                   ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' 
                   : 'bg-blue-600 text-white hover:bg-blue-700'
-              ]"
+              ]" 
+              @click="markTaskAsComplete"
             >
               {{ task?.is_completed ? 'Marcar como não concluída' : 'Marcar como concluída' }}
             </button>
@@ -133,28 +200,28 @@
       <!-- Navigation Buttons -->
       <div class="flex justify-between">
         <button 
-          @click="navigateToPreviousTask" 
-          :disabled="currentTaskIndex === 0"
+          :disabled="currentTaskIndex === 0" 
           :class="[
             'flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors',
             currentTaskIndex === 0
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
               : 'bg-white text-gray-700 hover:bg-gray-100'
           ]"
+          @click="navigateToPreviousTask"
         >
           <ChevronLeft class="h-5 w-5" />
           Tarefa Anterior
         </button>
         
         <button 
-          @click="navigateToNextTask" 
-          :disabled="currentTaskIndex === course?.tasks.length - 1"
+          :disabled="currentTaskIndex === course?.tasks.length - 1" 
           :class="[
             'flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors',
             currentTaskIndex === course?.tasks.length - 1
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
               : 'bg-blue-600 text-white hover:bg-blue-700'
           ]"
+          @click="navigateToNextTask"
         >
           Próxima Tarefa
           <ChevronRight class="h-5 w-5" />

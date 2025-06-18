@@ -5,23 +5,33 @@
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <button @click="goBack" class="p-2 text-gray-600 hover:text-blue-600 transition-colors">
+            <button
+              class="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              @click="goBack"
+            >
               <ArrowLeft class="h-5 w-5" />
             </button>
             <div>
               <h1 class="text-2xl font-bold text-gray-900">
                 {{ isEditing ? 'Editar Artigo' : 'Criar Novo Artigo' }}
               </h1>
-              <p class="text-gray-600">Compartilhe seu conhecimento musical com a comunidade</p>
+              <p class="text-gray-600">
+                Compartilhe seu conhecimento musical com a comunidade
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-6">
+      <form
+        class="space-y-6"
+        @submit.prevent="handleSubmit"
+      >
         <!-- Article Header -->
         <div class="bg-white rounded-lg shadow-sm p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Informações Básicas</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            Informações Básicas
+          </h2>
           
           <!-- Title -->
           <div class="mb-6">
@@ -33,7 +43,9 @@
               placeholder="Digite um título atrativo para seu artigo"
               class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-            <p class="text-xs text-gray-500 mt-1">{{ form.title?.length || 0 }}/100 caracteres</p>
+            <p class="text-xs text-gray-500 mt-1">
+              {{ form.title?.length || 0 }}/100 caracteres
+            </p>
           </div>
 
           <!-- Category and Reading Time -->
@@ -45,8 +57,14 @@
                 required 
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option :value="null">Selecione uma categoria</option>
-                <option v-for="category in categories" :key="category.id" :value="category.name">
+                <option :value="null">
+                  Selecione uma categoria
+                </option>
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.name"
+                >
                   {{ category.name }}
                 </option>
               </select>
@@ -62,7 +80,9 @@
                 placeholder="5"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-              <p class="text-xs text-gray-500 mt-1">Em minutos</p>
+              <p class="text-xs text-gray-500 mt-1">
+                Em minutos
+              </p>
             </div>
 
             <div>
@@ -71,10 +91,18 @@
                 v-model="form.difficulty" 
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option :value="null">Selecione o nível de dificuldade</option>
-                <option value="BEGINNER">Iniciante</option>
-                <option value="INTERMEDIATE">Intermediário</option>
-                <option value="ADVANCED">Avançado</option>
+                <option :value="null">
+                  Selecione o nível de dificuldade
+                </option>
+                <option value="BEGINNER">
+                  Iniciante
+                </option>
+                <option value="INTERMEDIATE">
+                  Intermediário
+                </option>
+                <option value="ADVANCED">
+                  Avançado
+                </option>
               </select>
             </div>
           </div>
@@ -89,22 +117,26 @@
               placeholder="Escreva um breve resumo que desperte o interesse do leitor..."
               maxlength="300"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            ></textarea>
-            <p class="text-xs text-gray-500 mt-1">{{ form.excerpt?.length || 0 }}/300 caracteres</p>
+            />
+            <p class="text-xs text-gray-500 mt-1">
+              {{ form.excerpt?.length || 0 }}/300 caracteres
+            </p>
           </div>
         </div>
 
         <!-- Featured Image -->
         <div class="bg-white rounded-lg shadow-sm p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Imagem de Capa</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            Imagem de Capa
+          </h2>
           
           <!-- Image Upload Method Selection -->
           <div class="mb-4">
             <div class="flex gap-4">
               <label class="flex items-center">
                 <input 
-                  type="radio" 
                   v-model="imageUploadMethod" 
+                  type="radio" 
                   value="upload" 
                   class="mr-2 text-blue-600 focus:ring-blue-500"
                 >
@@ -112,8 +144,8 @@
               </label>
               <label class="flex items-center">
                 <input 
-                  type="radio" 
                   v-model="imageUploadMethod" 
+                  type="radio" 
                   value="url" 
                   class="mr-2 text-blue-600 focus:ring-blue-500"
                 >
@@ -126,8 +158,16 @@
             <div class="flex items-start gap-6">
               <!-- Image Preview -->
               <div class="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 relative overflow-hidden">
-                <img v-if="form.cover_image" :src="form.cover_image" alt="Preview" class="w-full h-full object-cover rounded-lg">
-                <div v-else class="text-center">
+                <img
+                  v-if="form.cover_image"
+                  :src="form.cover_image"
+                  alt="Preview"
+                  class="w-full h-full object-cover rounded-lg"
+                >
+                <div
+                  v-else
+                  class="text-center"
+                >
                   <ImageIcon class="h-8 w-8 text-gray-400 mx-auto mb-2" />
                   <span class="text-sm text-gray-500">Imagem de capa</span>
                 </div>
@@ -135,9 +175,9 @@
                 <!-- Remove Image Button -->
                 <button 
                   v-if="form.cover_image" 
-                  @click="removeImage" 
-                  type="button"
+                  type="button" 
                   class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  @click="removeImage"
                 >
                   <X class="h-3 w-3" />
                 </button>
@@ -146,19 +186,22 @@
               <!-- Upload Controls -->
               <div class="flex-1">
                 <!-- File Upload -->
-                <div v-if="imageUploadMethod === 'upload'" class="space-y-3">
+                <div
+                  v-if="imageUploadMethod === 'upload'"
+                  class="space-y-3"
+                >
                   <div>
                     <input 
                       ref="fileInput"
                       type="file" 
                       accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
-                      @change="handleFileUpload"
                       class="hidden"
+                      @change="handleFileUpload"
                     >
                     <button 
-                      @click="$refs.fileInput.click()" 
-                      type="button"
+                      type="button" 
                       class="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                      @click="$refs.fileInput.click()"
                     >
                       <Upload class="h-5 w-5 text-gray-400" />
                       <span class="text-gray-600">Clique para selecionar uma imagem</span>
@@ -166,13 +209,19 @@
                   </div>
                   
                   <!-- Upload Progress -->
-                  <div v-if="uploadProgress > 0 && uploadProgress < 100" class="space-y-2">
+                  <div
+                    v-if="uploadProgress > 0 && uploadProgress < 100"
+                    class="space-y-2"
+                  >
                     <div class="flex justify-between text-sm text-gray-600">
                       <span>Enviando...</span>
                       <span>{{ uploadProgress }}%</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
-                      <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="{ width: uploadProgress + '%' }"></div>
+                      <div
+                        class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        :style="{ width: uploadProgress + '%' }"
+                      />
                     </div>
                   </div>
                   
@@ -182,13 +231,16 @@
                 </div>
 
                 <!-- URL Input -->
-                <div v-else class="space-y-3">
+                <div
+                  v-else
+                  class="space-y-3"
+                >
                   <input 
-                    type="url" 
                     v-model="form.cover_link" 
-                    @input="handleUrlInput"
+                    type="url" 
                     placeholder="Cole a URL da imagem aqui"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    @input="handleUrlInput"
                   >
                   <p class="text-sm text-gray-600">
                     Cole o link direto de uma imagem da internet
@@ -196,7 +248,10 @@
                 </div>
                 
                 <!-- Image Info -->
-                <div v-if="imageInfo" class="mt-3 p-3 bg-gray-50 rounded-lg">
+                <div
+                  v-if="imageInfo"
+                  class="mt-3 p-3 bg-gray-50 rounded-lg"
+                >
                   <div class="text-sm text-gray-600 space-y-1">
                     <div v-if="imageInfo.name">
                       <strong>Nome:</strong> {{ imageInfo.name }}
@@ -214,7 +269,9 @@
             
             <!-- Recommendations -->
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-blue-900 mb-2">💡 Dicas para uma boa imagem de capa:</h4>
+              <h4 class="text-sm font-medium text-blue-900 mb-2">
+                💡 Dicas para uma boa imagem de capa:
+              </h4>
               <ul class="text-sm text-blue-800 space-y-1">
                 <li>• Use proporção 16:9 (ex: 1600x900px) para melhor visualização</li>
                 <li>• Resolução mínima recomendada: 800x450px</li>
@@ -226,7 +283,9 @@
         </div>
 
         <div class="bg-white rounded-lg shadow-sm p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Conteúdo do Artigo *</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            Conteúdo do Artigo *
+          </h2>
           <div class="flex justify-center">
             <div class="w-full max-w-5xl">
               <RichTextEditor v-model="form.content" />
@@ -242,19 +301,26 @@
           <!-- Status Info -->
           <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
             <div class="flex flex-col gap-2">
-              <h3 class="text-sm font-medium text-gray-700">Moderação</h3>
+              <h3 class="text-sm font-medium text-gray-700">
+                Moderação
+              </h3>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2 text-sm text-gray-600">
-                  <div class="w-2 h-2 rounded-full" :class="{
-                    'bg-red-500': aiStatus === false,
-                    'bg-green-500': aiStatus === true,
-                    'bg-blue-500': aiStatus === null
-                  }"></div>
-                  <span :class="{
-                    'text-red-600': aiStatus === false,
-                    'text-green-600': aiStatus === true,
-                    'text-gray-600': aiStatus === null
-                  }">{{ aiFeedback || 'Seu artigo será revisado antes da publicação' }}</span>
+                  <div
+                    class="w-2 h-2 rounded-full"
+                    :class="{
+                      'bg-red-500': aiStatus === false,
+                      'bg-green-500': aiStatus === true,
+                      'bg-blue-500': aiStatus === null
+                    }"
+                  />
+                  <span
+                    :class="{
+                      'text-red-600': aiStatus === false,
+                      'text-green-600': aiStatus === true,
+                      'text-gray-600': aiStatus === null
+                    }"
+                  >{{ aiFeedback || 'Seu artigo será revisado antes da publicação' }}</span>
                 </div>
                 <div class="text-xs text-gray-500">
                   Última modificação: {{ formatDate(form.modified_at) }}
@@ -272,9 +338,9 @@
                 <div class="relative group">
                   <button 
                     type="button" 
-                    @click="saveDraft" 
-                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed" 
                     :disabled="!form.category"
+                    @click="saveDraft"
                   >
                     <Save class="h-4 w-4" />
                     <span class="hidden sm:inline">Salvar Rascunho</span>
@@ -287,15 +353,15 @@
                     class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10"
                   >
                     Selecione uma categoria primeiro
-                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
                   </div>
                 </div>
 
                 <!-- Preview Button -->
                 <button 
                   type="button" 
-                  @click="previewArticle" 
-                  class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all duration-200 font-medium border border-blue-200"
+                  class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all duration-200 font-medium border border-blue-200" 
+                  @click="previewArticle"
                 >
                   <Eye class="h-4 w-4" />
                   <span class="hidden sm:inline">Visualizar</span>
@@ -306,9 +372,9 @@
                 <button 
                   v-if="isEditing"
                   type="button" 
-                  @click="confirmDelete" 
-                  class="inline-flex items-center justify-center w-10 h-10 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 border border-red-200 group"
+                  class="inline-flex items-center justify-center w-10 h-10 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 border border-red-200 group" 
                   title="Excluir artigo"
+                  @click="confirmDelete"
                 >
                   <Trash2 class="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
                 </button>
@@ -318,8 +384,8 @@
               <div class="flex gap-3 order-1 sm:order-2">
                 <button 
                   type="button" 
-                  @click="goBack" 
-                  class="px-6 py-2.5 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium border border-gray-300"
+                  class="px-6 py-2.5 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium border border-gray-300" 
+                  @click="goBack"
                 >
                   Cancelar
                 </button>
@@ -328,7 +394,10 @@
                   class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center gap-2"
                   :disabled="isLoading"
                 >
-                  <div v-if="isLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div
+                    v-if="isLoading"
+                    class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
+                  />
                   {{ isLoading ? 'Salvando...' : (isEditing ? 'Atualizar Artigo' : 'Publicar Artigo') }}
                 </button>
               </div>
@@ -339,42 +408,72 @@
     </div>
 
     <!-- Preview Modal -->
-    <div v-if="showPreview" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+    <div
+      v-if="showPreview"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+    >
       <div class="bg-white/95 backdrop-blur-sm rounded-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-lg font-semibold">Visualização do Artigo</h3>
-          <button @click="showPreview = false" class="text-gray-400 hover:text-gray-600">
+          <h3 class="text-lg font-semibold">
+            Visualização do Artigo
+          </h3>
+          <button
+            class="text-gray-400 hover:text-gray-600"
+            @click="showPreview = false"
+          >
             <X class="h-6 w-6" />
           </button>
         </div>
         <div class="p-6">
-          <img v-if="form.cover_image" :src="form.cover_image" :alt="form.title" class="w-full h-64 object-cover rounded-lg mb-6">
-          <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ form.title }}</h1>
-          <p class="text-xl text-gray-600 mb-6">{{ form.excerpt }}</p>
-          <div class="prose max-w-none" v-html="form.content"></div>
+          <img
+            v-if="form.cover_image"
+            :src="form.cover_image"
+            :alt="form.title"
+            class="w-full h-64 object-cover rounded-lg mb-6"
+          >
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">
+            {{ form.title }}
+          </h1>
+          <p class="text-xl text-gray-600 mb-6">
+            {{ form.excerpt }}
+          </p>
+          <div
+            class="prose max-w-none"
+            v-html="form.content"
+          />
         </div>
       </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+    <div
+      v-if="showDeleteConfirm"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+    >
       <div class="bg-white/95 backdrop-blur-sm rounded-lg w-full max-w-md mx-4 p-6 shadow-xl">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirmar Exclusão</h3>
-        <p class="text-gray-600 mb-6">Tem certeza que deseja excluir este artigo? Esta ação não pode ser desfeita.</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Confirmar Exclusão
+        </h3>
+        <p class="text-gray-600 mb-6">
+          Tem certeza que deseja excluir este artigo? Esta ação não pode ser desfeita.
+        </p>
         <div class="flex justify-end gap-3">
           <button 
-            @click="showDeleteConfirm = false" 
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors" 
             :disabled="isDeleting"
+            @click="showDeleteConfirm = false"
           >
             Cancelar
           </button>
           <button 
-            @click="deleteArticle" 
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2" 
             :disabled="isDeleting"
+            @click="deleteArticle"
           >
-            <div v-if="isDeleting" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            <div
+              v-if="isDeleting"
+              class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
+            />
             {{ isDeleting ? 'Excluindo...' : 'Excluir' }}
           </button>
         </div>

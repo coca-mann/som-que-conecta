@@ -2,17 +2,21 @@
   <div class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">Agendar Aula</h2>
+        <h2 class="text-2xl font-bold text-gray-900">
+          Agendar Aula
+        </h2>
         <button 
-          @click="$emit('close')"
           class="text-gray-400 hover:text-gray-500"
+          @click="$emit('close')"
         >
           <X class="h-6 w-6" />
         </button>
       </div>
 
       <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-        <h3 class="font-semibold text-gray-900 mb-2">{{ instrument.name }}</h3>
+        <h3 class="font-semibold text-gray-900 mb-2">
+          {{ instrument.name }}
+        </h3>
         <div class="flex items-center gap-2 text-sm text-gray-600">
           <MapPin class="h-4 w-4" />
           <span>{{ instrument.location }}</span>
@@ -23,12 +27,18 @@
         </div>
       </div>
 
-      <div v-if="error" class="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+      <div
+        v-if="error"
+        class="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm"
+      >
         <p><b>Erro ao agendar:</b></p>
         <p>{{ error }}</p>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form
+        class="space-y-4"
+        @submit.prevent="handleSubmit"
+      >
         <div>
           <label class="block text-sm font-medium text-gray-700">Data</label>
           <input 
@@ -46,7 +56,11 @@
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               required
             >
-              <option v-for="hour in hours" :key="hour" :value="hour">
+              <option
+                v-for="hour in hours"
+                :key="hour"
+                :value="hour"
+              >
                 {{ hour.toString().padStart(2, '0') }}h
               </option>
             </select>
@@ -55,7 +69,11 @@
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               required
             >
-              <option v-for="minute in minutes" :key="minute" :value="minute">
+              <option
+                v-for="minute in minutes"
+                :key="minute"
+                :value="minute"
+              >
                 {{ minute.toString().padStart(2, '0') }}min
               </option>
             </select>
@@ -69,7 +87,11 @@
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               required
             >
-              <option v-for="hour in hours" :key="hour" :value="hour">
+              <option
+                v-for="hour in hours"
+                :key="hour"
+                :value="hour"
+              >
                 {{ hour.toString().padStart(2, '0') }}h
               </option>
             </select>
@@ -78,7 +100,11 @@
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               required
             >
-              <option v-for="minute in minutes" :key="minute" :value="minute">
+              <option
+                v-for="minute in minutes"
+                :key="minute"
+                :value="minute"
+              >
                 {{ minute.toString().padStart(2, '0') }}min
               </option>
             </select>

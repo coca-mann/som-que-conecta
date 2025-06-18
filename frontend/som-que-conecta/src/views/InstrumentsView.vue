@@ -2,14 +2,25 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Instrumentos Disponíveis</h1>
-      <p class="text-gray-600">Instrumentos musicais disponibilizados por ONGs e professores independentes</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        Instrumentos Disponíveis
+      </h1>
+      <p class="text-gray-600">
+        Instrumentos musicais disponibilizados por ONGs e professores independentes
+      </p>
     </div>
 
     <!-- Mensagem de Login -->
-    <div v-if="!isAuthenticated" class="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-      <h2 class="text-xl font-semibold text-blue-900 mb-2">Faça login para acessar os instrumentos</h2>
-      <p class="text-blue-700 mb-4">Para solicitar o empréstimo de instrumentos, você precisa estar logado em sua conta.</p>
+    <div
+      v-if="!isAuthenticated"
+      class="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center"
+    >
+      <h2 class="text-xl font-semibold text-blue-900 mb-2">
+        Faça login para acessar os instrumentos
+      </h2>
+      <p class="text-blue-700 mb-4">
+        Para solicitar o empréstimo de instrumentos, você precisa estar logado em sua conta.
+      </p>
       <router-link 
         to="/auth?redirect=/instruments" 
         class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -19,29 +30,72 @@
     </div>
 
     <!-- Filters -->
-    <div v-if="isAuthenticated" class="mb-8 flex flex-wrap gap-4">
-      <select v-model="selectedType" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <option value="">Todos os Tipos</option>
-        <option v-for="type in instrumentTypes" :key="type.id" :value="type.name">{{ type.name }}</option>
+    <div
+      v-if="isAuthenticated"
+      class="mb-8 flex flex-wrap gap-4"
+    >
+      <select
+        v-model="selectedType"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="">
+          Todos os Tipos
+        </option>
+        <option
+          v-for="type in instrumentTypes"
+          :key="type.id"
+          :value="type.name"
+        >
+          {{ type.name }}
+        </option>
       </select>
       
-      <select v-model="selectedBrand" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <option value="">Todas as Marcas</option>
-        <option v-for="brand in instrumentBrands" :key="brand.id" :value="brand.name">{{ brand.name }}</option>
+      <select
+        v-model="selectedBrand"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="">
+          Todas as Marcas
+        </option>
+        <option
+          v-for="brand in instrumentBrands"
+          :key="brand.id"
+          :value="brand.name"
+        >
+          {{ brand.name }}
+        </option>
       </select>
       
       <div class="flex items-center gap-2">
-        <input v-model="showAvailableOnly" type="checkbox" id="available" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-        <label for="available" class="text-sm text-gray-700">Apenas disponíveis</label>
+        <input
+          id="available"
+          v-model="showAvailableOnly"
+          type="checkbox"
+          class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        >
+        <label
+          for="available"
+          class="text-sm text-gray-700"
+        >Apenas disponíveis</label>
       </div>
     </div>
 
     <!-- Instruments Grid -->
-    <div v-if="isAuthenticated" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="instrument in filteredInstruments" :key="instrument.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
+    <div
+      v-if="isAuthenticated"
+      class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+    >
+      <div
+        v-for="instrument in filteredInstruments"
+        :key="instrument.id"
+        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
+      >
         <div class="relative">
           <div class="relative w-full h-48 overflow-hidden">
-            <div class="flex transition-transform duration-300 ease-in-out" :style="{ transform: `translateX(-${currentImageIndex[instrument.id] * 100}%)` }">
+            <div
+              class="flex transition-transform duration-300 ease-in-out"
+              :style="{ transform: `translateX(-${currentImageIndex[instrument.id] * 100}%)` }"
+            >
               <img 
                 v-for="(image, index) in instrument.images" 
                 :key="image.id"
@@ -52,44 +106,75 @@
             </div>
             
             <!-- Controles do carrossel -->
-            <div v-if="instrument.images.length > 1" class="absolute inset-0 flex items-center">
+            <div
+              v-if="instrument.images.length > 1"
+              class="absolute inset-0 flex items-center"
+            >
               <div class="absolute left-2">
                 <button 
                   v-show="currentImageIndex[instrument.id] > 0"
-                  @click="previousImage(instrument.id)"
                   class="rounded-full p-1 text-white transition-all duration-200 bg-black/20 hover:bg-black/40"
+                  @click="previousImage(instrument.id)"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                 </button>
               </div>
               <div class="absolute right-2">
                 <button 
                   v-show="currentImageIndex[instrument.id] < instrument.images.length - 1"
-                  @click="nextImage(instrument.id)"
                   class="rounded-full p-1 text-white transition-all duration-200 bg-black/20 hover:bg-black/40"
+                  @click="nextImage(instrument.id)"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               </div>
             </div>
             
             <!-- Indicadores -->
-            <div v-if="instrument.images.length > 1" class="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+            <div
+              v-if="instrument.images.length > 1"
+              class="absolute bottom-2 left-0 right-0 flex justify-center gap-1"
+            >
               <button 
                 v-for="(_, index) in instrument.images" 
                 :key="index"
-                @click="currentImageIndex[instrument.id] = index"
                 class="w-2 h-2 rounded-full transition-colors"
                 :class="currentImageIndex[instrument.id] === index ? 'bg-white' : 'bg-white bg-opacity-50'"
-              ></button>
+                @click="currentImageIndex[instrument.id] = index"
+              />
             </div>
           </div>
           <div class="absolute top-3 right-3">
-            <span :class="instrument.is_loanable ? 'bg-green-500' : 'bg-red-500'" class="px-2 py-1 text-white text-xs rounded-full font-medium">
+            <span
+              :class="instrument.is_loanable ? 'bg-green-500' : 'bg-red-500'"
+              class="px-2 py-1 text-white text-xs rounded-full font-medium"
+            >
               {{ instrument.is_loanable ? 'Disponível' : 'Indisponível' }}
             </span>
           </div>
@@ -101,14 +186,21 @@
             <span class="text-sm font-medium text-gray-600">{{ instrument.brand_name }}</span>
           </div>
           
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ instrument.name }}</h3>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            {{ instrument.name }}
+          </h3>
           
           <div class="space-y-2 mb-4">
             <div class="flex items-center gap-2 text-sm text-gray-600">
-              <div class="w-4 h-4 rounded-full border-2 border-gray-300" :style="{ backgroundColor: instrument.color }"></div>
+              <div
+                class="w-4 h-4 rounded-full border-2 border-gray-300"
+                :style="{ backgroundColor: instrument.color }"
+              />
               <span class="capitalize">{{ instrument.color_name }}</span>
             </div>
-            <p class="text-gray-600 text-sm leading-relaxed">{{ instrument.description }}</p>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              {{ instrument.description }}
+            </p>
           </div>
           
           <div class="space-y-2 mb-4 pt-4 border-t border-gray-100">
@@ -130,14 +222,14 @@
           
           <div class="mt-auto pt-4">
             <button 
-              @click="requestScheduling(instrument)" 
-              :disabled="!instrument.is_loanable || !isAuthenticated"
+              :disabled="!instrument.is_loanable || !isAuthenticated" 
               :class="[
                 'w-full px-4 py-2 rounded-lg transition-colors font-medium',
                 instrument.is_loanable && isAuthenticated
                   ? 'bg-blue-600 text-white hover:bg-blue-700' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               ]"
+              @click="requestScheduling(instrument)"
             >
               {{ !isAuthenticated ? 'Faça login para agendar' : instrument.is_loanable ? 'Solicitar Agendamento' : 'Indisponível' }}
             </button>

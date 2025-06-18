@@ -3,11 +3,18 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Gerenciar Instrumentos</h1>
-        <p class="text-gray-600">Gerencie os instrumentos disponíveis para empréstimo</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          Gerenciar Instrumentos
+        </h1>
+        <p class="text-gray-600">
+          Gerencie os instrumentos disponíveis para empréstimo
+        </p>
       </div>
       
-      <button @click="showAddModal = true" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+      <button
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        @click="showAddModal = true"
+      >
         <Plus class="h-5 w-5" />
         Adicionar Instrumento
       </button>
@@ -15,16 +22,34 @@
 
     <!-- Filters -->
     <div class="mb-8 flex flex-wrap gap-4">
-      <select v-model="selectedType" class="px-4 py-2 border border-gray-300 rounded-lg ...">
-        <option value="">Todos os Tipos</option>
-        <option v-for="type in instrumentTypes" :key="type.id" :value="type.name">
+      <select
+        v-model="selectedType"
+        class="px-4 py-2 border border-gray-300 rounded-lg ..."
+      >
+        <option value="">
+          Todos os Tipos
+        </option>
+        <option
+          v-for="type in instrumentTypes"
+          :key="type.id"
+          :value="type.name"
+        >
           {{ type.name }}
         </option>
       </select>
       
-      <select v-model="selectedStatus" class="px-4 py-2 border border-gray-300 rounded-lg ...">
-        <option value="">Todos os Status</option>
-        <option v-for="option in statusOptions" :key="option.text" :value="option.value">
+      <select
+        v-model="selectedStatus"
+        class="px-4 py-2 border border-gray-300 rounded-lg ..."
+      >
+        <option value="">
+          Todos os Status
+        </option>
+        <option
+          v-for="option in statusOptions"
+          :key="option.text"
+          :value="option.value"
+        >
           {{ option.text }}
         </option>
       </select>
@@ -32,11 +57,22 @@
 
     <!-- Instruments Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="instrument in filteredInstruments" :key="instrument.id" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      <div
+        v-for="instrument in filteredInstruments"
+        :key="instrument.id"
+        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+      >
         <div class="relative">
-          <img :src="instrument.main_image || '/placeholder.svg'" :alt="instrument.name" class="w-full h-48 object-cover">
+          <img
+            :src="instrument.main_image || '/placeholder.svg'"
+            :alt="instrument.name"
+            class="w-full h-48 object-cover"
+          >
           <div class="absolute top-3 right-3">
-            <span :class="getStatusColor(instrument.is_active)" class="px-2 py-1 text-white text-xs rounded-full font-medium">
+            <span
+              :class="getStatusColor(instrument.is_active)"
+              class="px-2 py-1 text-white text-xs rounded-full font-medium"
+            >
               {{ getStatusLabel(instrument.is_active) }}
             </span>
           </div>
@@ -48,14 +84,21 @@
             <span class="text-sm font-medium text-gray-600">{{ instrument.brand_name }}</span>
           </div>
           
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ instrument.name }}</h3>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            {{ instrument.name }}
+          </h3>
           
           <div class="space-y-2 mb-4">
             <div class="flex items-center gap-2 text-sm text-gray-600">
-              <div class="w-4 h-4 rounded-full border-2 border-gray-300" :style="{ backgroundColor: instrument.color }"></div>
+              <div
+                class="w-4 h-4 rounded-full border-2 border-gray-300"
+                :style="{ backgroundColor: instrument.color }"
+              />
               <span class="capitalize">{{ instrument.color_name || instrument.color }}</span>
             </div>
-            <p class="text-gray-600 text-sm leading-relaxed">{{ instrument.description }}</p>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              {{ instrument.description }}
+            </p>
           </div>
           
           <div class="p-6">
@@ -75,23 +118,31 @@
                 </div>
               </div>
             </template>
-
-            </div>
+          </div>
           
           <div class="flex gap-2">
-            <button @click="editInstrument(instrument)" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+            <button
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              @click="editInstrument(instrument)"
+            >
               <Edit class="h-4 w-4 inline mr-1" />
               Editar
             </button>
-            <button @click="toggleAvailability(instrument)" :class="[
-              'flex-1 px-4 py-2 rounded-lg transition-colors text-sm',
-              instrument.is_active 
-                ? 'bg-red-100 text-red-700 hover:bg-red-200' 
-                : 'bg-green-100 text-green-700 hover:bg-green-200'
-            ]">
+            <button
+              :class="[
+                'flex-1 px-4 py-2 rounded-lg transition-colors text-sm',
+                instrument.is_active 
+                  ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                  : 'bg-green-100 text-green-700 hover:bg-green-200'
+              ]"
+              @click="toggleAvailability(instrument)"
+            >
               {{ instrument.is_active ? 'Desativar' : 'Ativar' }}
             </button>
-            <button @click="deleteInstrument(instrument)" class="px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">
+            <button
+              class="px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+              @click="deleteInstrument(instrument)"
+            >
               <Trash2 class="h-4 w-4" />
             </button>
           </div>
@@ -103,29 +154,40 @@
     <InstrumentFormModal 
       v-if="showAddModal || editingInstrument" 
       :instrument="editingInstrument"
-      @close="closeModal" 
-      @saved="handleInstrumentSaved"
+      :show-detailed-fields="showDetailedInfo" 
+      @close="closeModal"
       
-      :show-detailed-fields="showDetailedInfo"
+      @saved="handleInstrumentSaved"
     />
 
     <!-- Delete Confirmation Modal -->
-    <div v-if="instrumentToDelete" class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+    <div
+      v-if="instrumentToDelete"
+      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+    >
       <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div class="text-center">
           <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle class="h-8 w-8 text-red-600" />
           </div>
-          <h3 class="text-lg font-semibold mb-2">Confirmar Exclusão</h3>
+          <h3 class="text-lg font-semibold mb-2">
+            Confirmar Exclusão
+          </h3>
           <p class="text-gray-600 mb-6">
             Tem certeza que deseja excluir o instrumento "{{ instrumentToDelete.name }}"? 
             Esta ação não pode ser desfeita.
           </p>
           <div class="flex gap-3 justify-center">
-            <button @click="instrumentToDelete = null" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+            <button
+              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              @click="instrumentToDelete = null"
+            >
               Cancelar
             </button>
-            <button @click="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            <button
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              @click="confirmDelete"
+            >
               Excluir
             </button>
           </div>

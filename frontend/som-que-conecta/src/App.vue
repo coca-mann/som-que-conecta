@@ -1,5 +1,8 @@
 <template>
-  <div id="app" class="min-h-screen flex flex-col bg-gray-50">
+  <div
+    id="app"
+    class="min-h-screen flex flex-col bg-gray-50"
+  >
     <AppNavbar />
     <main class="flex-grow container mx-auto px-4 py-8">
       <router-view v-slot="{ Component }">

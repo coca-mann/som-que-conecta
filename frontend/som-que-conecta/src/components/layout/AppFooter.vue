@@ -12,40 +12,95 @@
             Conectamos estudantes, professores e instrumentos.
           </p>
           <div class="flex space-x-4">
-            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
               <Facebook class="h-5 w-5" />
             </a>
-            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
               <Instagram class="h-5 w-5" />
             </a>
-            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
               <Youtube class="h-5 w-5" />
             </a>
           </div>
         </div>
         
         <div>
-          <h3 class="text-lg font-semibold mb-4">Navegação</h3>
+          <h3 class="text-lg font-semibold mb-4">
+            Navegação
+          </h3>
           <ul class="space-y-2">
-            <li><a @click="handleNavigation('/')" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Início</a></li>
-            <li><a @click="handleNavigation('/articles')" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Artigos</a></li>
-            <li><a @click="handleNavigation('/instruments')" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Instrumentos</a></li>
-            <li><a @click="handleNavigation('/courses')" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Minicursos</a></li>
+            <li>
+              <a
+                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                @click="handleNavigation('/')"
+              >Início</a>
+            </li>
+            <li>
+              <a
+                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                @click="handleNavigation('/articles')"
+              >Artigos</a>
+            </li>
+            <li>
+              <a
+                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                @click="handleNavigation('/instruments')"
+              >Instrumentos</a>
+            </li>
+            <li>
+              <a
+                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                @click="handleNavigation('/courses')"
+              >Minicursos</a>
+            </li>
           </ul>
         </div>
         
         <div>
-          <h3 class="text-lg font-semibold mb-4">Suporte</h3>
+          <h3 class="text-lg font-semibold mb-4">
+            Suporte
+          </h3>
           <ul class="space-y-2">
-            <li><a @click="handleNavigation('/help')" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Central de Ajuda</a></li>
-            <li><a @click="handleNavigation('/contact')" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Contato</a></li>
-            <li><a @click="handleNavigation('/terms')" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Termos de Uso</a></li>
-            <li><a @click="handleNavigation('/privacy')" class="text-gray-400 hover:text-white transition-colors cursor-pointer">Política de Privacidade</a></li>
+            <li>
+              <a
+                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                @click="handleNavigation('/help')"
+              >Central de Ajuda</a>
+            </li>
+            <li>
+              <a
+                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                @click="handleNavigation('/contact')"
+              >Contato</a>
+            </li>
+            <li>
+              <a
+                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                @click="handleNavigation('/terms')"
+              >Termos de Uso</a>
+            </li>
+            <li>
+              <a
+                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                @click="handleNavigation('/privacy')"
+              >Política de Privacidade</a>
+            </li>
           </ul>
         </div>
         
         <div>
-          <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+          <h3 class="text-lg font-semibold mb-4">
+            Newsletter
+          </h3>
           <p class="text-gray-400 mb-4">
             Receba dicas musicais e novidades em seu email
           </p>
