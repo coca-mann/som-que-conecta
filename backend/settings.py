@@ -300,3 +300,9 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # Google Gemini API
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://somqueconecta.fun',
+    'https://admin.somqueconecta.fun',
+    'https://www.somqueconecta.fun' # Boa prática adicionar o www também
+]
