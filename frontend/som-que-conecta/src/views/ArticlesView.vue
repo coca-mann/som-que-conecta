@@ -1,6 +1,5 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
     <div class="flex justify-between items-center mb-8">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
@@ -14,18 +13,17 @@
       <router-link 
         v-if="canCreateArticle" 
         to="/articles/create" 
-        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
       >
         <Plus class="h-5 w-5" />
         Novo Artigo
       </router-link>
     </div>
 
-    <!-- Filters -->
     <div class="flex gap-4 mb-6">
       <select
         v-model="selectedCategory"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
       >
         <option value="">
           Todas as Categorias
@@ -42,7 +40,7 @@
       
       <select
         v-model="sortBy"
-        class="px-4 py-2 border border-gray-300 rounded-lg   focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
       >
         <option value="-created_at">
           Mais Recentes
@@ -65,13 +63,12 @@
             v-model="searchQuery"
             type="text"
             placeholder="Buscar artigos..."
-            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
           >
         </div>
       </div>
     </div>
 
-    <!-- Articles Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <article
         v-for="article in filteredArticles"
@@ -96,7 +93,7 @@
           </div>
           
           <div class="absolute top-3 right-3">
-            <span class="px-2 py-1 bg-blue-600 text-white text-xs rounded-full font-medium">
+            <span class="px-2 py-1 bg-red-600 text-white text-xs rounded-full font-medium">
               {{ article.category || 'Sem categoria' }}
             </span>
           </div>
@@ -115,7 +112,6 @@
             {{ article.excerpt }}
           </p>
           
-          <!-- Article Stats -->
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-4 text-sm text-gray-500">
               <div class="flex items-center gap-1">
@@ -141,7 +137,6 @@
             </div>
           </div>
           
-          <!-- Author Info -->
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <img
@@ -163,7 +158,6 @@
       </article>
     </div>
 
-    <!-- Empty State -->
     <div
       v-if="filteredArticles.length === 0"
       class="text-center py-12"
@@ -176,7 +170,7 @@
         Tente ajustar os filtros ou termos de busca
       </p>
       <button
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
         @click="clearFilters"
       >
         Limpar Filtros

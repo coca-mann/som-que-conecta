@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Header -->
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -14,10 +13,9 @@
           </div>
             
           <div class="mt-4 sm:mt-0 flex items-center space-x-3">
-            <!-- Filter by Status -->
             <select 
               v-model="selectedStatus" 
-              class="px-4 py-2 border border-gray-300 rounded-lg ..."
+              class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             >
               <option value="">
                 Todos os Status
@@ -33,13 +31,12 @@
               </option>
             </select>
               
-            <!-- View Toggle -->
             <div class="flex bg-gray-100 rounded-lg p-1">
               <button
                 :class="[
                   'px-3 py-1 text-sm font-medium rounded-md transition-all duration-200',
                   currentView === 'calendar' 
-                    ? 'bg-white text-blue-600 shadow-sm' 
+                    ? 'bg-white text-red-600 shadow-sm' 
                     : 'text-gray-500 hover:text-gray-700'
                 ]"
                 @click="currentView = 'calendar'"
@@ -51,7 +48,7 @@
                 :class="[
                   'px-3 py-1 text-sm font-medium rounded-md transition-all duration-200',
                   currentView === 'list' 
-                    ? 'bg-white text-blue-600 shadow-sm' 
+                    ? 'bg-white text-red-600 shadow-sm' 
                     : 'text-gray-500 hover:text-gray-700'
                 ]"
                 @click="currentView = 'list'"
@@ -63,8 +60,7 @@
           </div>
         </div>
       </div>
-  
-      <!-- Stats Cards -->
+ 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-6">
           <div class="flex items-center">
@@ -123,8 +119,8 @@
         <div class="bg-white rounded-lg shadow-sm p-6">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <TrendingUp class="h-5 w-5 text-blue-600" />
+              <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <TrendingUp class="h-5 w-5 text-red-600" />
               </div>
             </div>
             <div class="ml-4">
@@ -138,8 +134,7 @@
           </div>
         </div>
       </div>
-  
-      <!-- Calendar View -->
+ 
       <div
         v-if="currentView === 'calendar'"
         class="bg-white rounded-lg shadow-sm p-6"
@@ -156,7 +151,7 @@
               <ChevronLeft class="h-5 w-5" />
             </button>
             <button
-              class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200"
+              class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200"
               @click="goToToday"
             >
               Hoje
@@ -169,10 +164,8 @@
             </button>
           </div>
         </div>
-  
-        <!-- Calendar Grid -->
+ 
         <div class="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden">
-          <!-- Day Headers -->
           <div
             v-for="day in dayHeaders"
             :key="day"
@@ -180,22 +173,21 @@
           >
             {{ day }}
           </div>
-  
-          <!-- Calendar Days -->
+ 
           <div
             v-for="day in calendarDays"
             :key="`${day.date}-${day.isCurrentMonth}`"
             :class="[
               'bg-white p-2 min-h-[120px] relative',
               !day.isCurrentMonth ? 'bg-gray-50 text-gray-400' : '',
-              isToday(day.date) ? 'bg-blue-50' : ''
+              isToday(day.date) ? 'bg-red-50' : ''
             ]"
           >
             <div class="flex items-center justify-between mb-2">
               <span
                 :class="[
                   'text-sm font-medium',
-                  isToday(day.date) ? 'text-blue-600' : day.isCurrentMonth ? 'text-gray-900' : 'text-gray-400'
+                  isToday(day.date) ? 'text-red-600' : day.isCurrentMonth ? 'text-gray-900' : 'text-gray-400'
                 ]"
               >
                 {{ day.date.getDate() }}
@@ -204,11 +196,10 @@
                 v-if="getBookingsForDay(day.date).length > 0"
                 class="flex space-x-1"
               >
-                <div class="w-2 h-2 bg-blue-500 rounded-full" />
+                <div class="w-2 h-2 bg-red-500 rounded-full" />
               </div>
             </div>
-  
-            <!-- Bookings for this day -->
+ 
             <div class="space-y-1">
               <div
                 v-for="booking in getBookingsForDay(day.date).slice(0, 2)"
@@ -238,8 +229,7 @@
           </div>
         </div>
       </div>
-  
-      <!-- List View -->
+ 
       <div
         v-else
         class="bg-white rounded-lg shadow-sm overflow-hidden"
@@ -249,7 +239,7 @@
             Lista de Agendamentos
           </h2>
         </div>
-  
+ 
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -335,7 +325,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
-                    class="text-blue-600 hover:text-blue-900 transition-colors duration-200"
+                    class="text-red-600 hover:text-red-900 transition-colors duration-200"
                     @click="openBookingModal(booking)"
                   >
                     Ver Detalhes
@@ -345,8 +335,7 @@
             </tbody>
           </table>
         </div>
-  
-        <!-- Empty State -->
+ 
         <div
           v-if="filteredBookings.length === 0"
           class="text-center py-12"
@@ -361,8 +350,7 @@
         </div>
       </div>
     </div>
-  
-    <!-- Booking Details Modal -->
+ 
     <Transition
       enter-active-class="transition ease-out duration-300"
       enter-from-class="opacity-0"
@@ -376,24 +364,20 @@
         class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       >
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-          <!-- Modal Header -->
           <div class="flex items-center justify-between p-6 border-b border-gray-200">
             <h3 class="text-xl font-semibold text-gray-900">
               Detalhes do Agendamento
             </h3>
             <button
-              class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              class="text-gray-400 hover:text-red-600 transition-colors duration-200"
               @click="closeBookingModal"
             >
               <X class="h-6 w-6" />
             </button>
           </div>
-  
-          <!-- Modal Content -->
+ 
           <div class="p-6 space-y-6">
-            <!-- Booking Info -->
             <div class="grid md:grid-cols-2 gap-6">
-              <!-- Instrument -->
               <div>
                 <h4 class="text-sm font-medium text-gray-500 mb-3">
                   Instrumento
@@ -417,8 +401,7 @@
                   </div>
                 </div>
               </div>
-  
-              <!-- Client -->
+ 
               <div>
                 <h4 class="text-sm font-medium text-gray-500 mb-3">
                   Cliente
@@ -443,8 +426,7 @@
                 </div>
               </div>
             </div>
-  
-            <!-- Date and Time -->
+ 
             <div class="grid md:grid-cols-3 gap-4">
               <div>
                 <h4 class="text-sm font-medium text-gray-500 mb-2">
@@ -476,8 +458,7 @@
                 </div>
               </div>
             </div>
-  
-            <!-- Status -->
+ 
             <div>
               <h4 class="text-sm font-medium text-gray-500 mb-2">
                 Status
@@ -491,8 +472,7 @@
                 {{ getStatusLabel(selectedBooking.status) }}
               </span>
             </div>
-  
-            <!-- Notes -->
+ 
             <div v-if="selectedBooking.notes">
               <h4 class="text-sm font-medium text-gray-500 mb-2">
                 Observações
@@ -501,8 +481,7 @@
                 {{ selectedBooking.notes }}
               </p>
             </div>
-  
-            <!-- Rejection Reason -->
+ 
             <div v-if="selectedBooking.status === 'rejected' && selectedBooking.rejectionReason">
               <h4 class="text-sm font-medium text-gray-500 mb-2">
                 Motivo da Rejeição
@@ -511,8 +490,7 @@
                 {{ selectedBooking.rejectionReason }}
               </p>
             </div>
-  
-            <!-- Rejection Form -->
+ 
             <div
               v-if="showRejectionForm"
               class="border-t border-gray-200 pt-6"
@@ -528,8 +506,7 @@
               />
             </div>
           </div>
-  
-          <!-- Modal Actions -->
+ 
           <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
             <button
               class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"

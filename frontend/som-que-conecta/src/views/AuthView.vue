@@ -1,13 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-gradient-to-br from-red-50 via-white to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
-      <!-- Header -->
       <div class="text-center">
         <router-link
           to="/"
           class="inline-flex items-center space-x-2 group"
         >
-          <Music class="h-10 w-10 text-blue-600 transition-transform duration-300 group-hover:scale-110" />
+          <Music class="h-10 w-10 text-red-600 transition-transform duration-300 group-hover:scale-110" />
           <span class="text-2xl font-bold text-gray-900">MusicLearn</span>
         </router-link>
         <h2 class="mt-6 text-3xl font-bold text-gray-900">
@@ -18,15 +17,13 @@
         </p>
       </div>
 
-      <!-- Auth Form Card -->
       <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-        <!-- Toggle Buttons -->
         <div class="flex bg-gray-100 rounded-lg p-1 mb-8">
           <button
             :class="[
               'flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-300',
               isLogin 
-                ? 'bg-white text-blue-600 shadow-sm' 
+                ? 'bg-white text-red-600 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
             ]"
             @click="setMode('login')"
@@ -37,7 +34,7 @@
             :class="[
               'flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-300',
               !isLogin 
-                ? 'bg-white text-blue-600 shadow-sm' 
+                ? 'bg-white text-red-600 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'
             ]"
             @click="setMode('register')"
@@ -46,7 +43,6 @@
           </button>
         </div>
 
-        <!-- Google Sign In -->
         <button
           :disabled="isLoading"
           class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed"
@@ -78,7 +74,6 @@
           </div>
         </button>
 
-        <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
             <div class="w-full border-t border-gray-300" />
@@ -88,12 +83,10 @@
           </div>
         </div>
 
-        <!-- Form -->
         <form
           class="space-y-6"
           @submit.prevent="handleSubmit"
         >
-          <!-- Name Fields (Register only) -->
           <Transition
             enter-active-class="transition ease-out duration-300"
             enter-from-class="transform opacity-0 -translate-y-2"
@@ -119,7 +112,7 @@
                   type="text"
                   required
                   placeholder="João"
-                  class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
                 >
               </div>
               <div>
@@ -135,13 +128,12 @@
                   type="text"
                   required
                   placeholder="Silva"
-                  class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
                 >
               </div>
             </div>
           </Transition>
 
-          <!-- Email -->
           <div>
             <label
               for="email"
@@ -156,13 +148,12 @@
                 type="email"
                 required
                 placeholder="seu.email@exemplo.com"
-                class="w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                class="w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
               >
               <Mail class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
           </div>
 
-          <!-- Password -->
           <div>
             <label
               for="password"
@@ -177,7 +168,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 required
                 :placeholder="isLogin ? 'Sua senha' : 'Mínimo 8 caracteres'"
-                class="w-full px-3 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                class="w-full px-3 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
               >
               <Lock class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <button
@@ -192,7 +183,6 @@
               </button>
             </div>
             
-            <!-- Password Strength (Register only) -->
             <Transition
               enter-active-class="transition ease-out duration-300"
               enter-from-class="transform opacity-0 -translate-y-2"
@@ -224,7 +214,6 @@
             </Transition>
           </div>
 
-          <!-- Confirm Password (Register only) -->
           <Transition
             enter-active-class="transition ease-out duration-300"
             enter-from-class="transform opacity-0 -translate-y-2"
@@ -247,7 +236,7 @@
                   :type="showConfirmPassword ? 'text' : 'password'"
                   required
                   placeholder="Confirme sua senha"
-                  class="w-full px-3 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  class="w-full px-3 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
                   :class="{ 'border-red-300': form.confirmPassword && !passwordsMatch }"
                 >
                 <Lock class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -271,7 +260,6 @@
             </div>
           </Transition>
 
-          <!-- Terms and Conditions (Register only) -->
           <Transition
             enter-active-class="transition ease-out duration-300"
             enter-from-class="transform opacity-0 -translate-y-2"
@@ -289,7 +277,7 @@
                 v-model="form.acceptTerms"
                 type="checkbox"
                 required
-                class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
+                class="mt-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded transition-colors duration-200"
               >
               <label
                 for="terms"
@@ -298,14 +286,14 @@
                 Eu concordo com os 
                 <router-link
                   to="/terms"
-                  class="text-blue-600 hover:text-blue-700 underline"
+                  class="text-red-600 hover:text-red-700 underline"
                 >
                   Termos de Uso
                 </router-link>
                 e a
                 <router-link
                   to="/privacy"
-                  class="text-blue-600 hover:text-blue-700 underline"
+                  class="text-red-600 hover:text-red-700 underline"
                 >
                   Política de Privacidade
                 </router-link>
@@ -313,7 +301,6 @@
             </div>
           </Transition>
 
-          <!-- Remember Me / Forgot Password (Login only) -->
           <Transition
             enter-active-class="transition ease-out duration-300"
             enter-from-class="transform opacity-0 -translate-y-2"
@@ -332,7 +319,7 @@
                     id="remember"
                     v-model="form.rememberMe"
                     type="checkbox"
-                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200"
+                    class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded transition-colors duration-200"
                   >
                   <label
                     for="remember"
@@ -343,7 +330,7 @@
                 </div>
                 <button
                   type="button"
-                  class="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                  class="text-sm text-red-600 hover:text-red-700 transition-colors duration-200"
                   @click="showForgotPassword = true"
                 >
                   Esqueceu a senha?
@@ -358,11 +345,10 @@
             </div>
           </Transition>
 
-          <!-- Submit Button -->
           <button
             type="submit"
             :disabled="isLoading || (!isLogin && !isFormValid)"
-            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 group"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 group"
           >
             <span
               v-if="!isLoading"
@@ -381,12 +367,11 @@
           </button>
         </form>
 
-        <!-- Additional Links -->
         <div class="mt-6 text-center">
           <p class="text-sm text-gray-600">
             {{ isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?' }}
             <button
-              class="font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200"
+              class="font-medium text-red-600 hover:text-red-700 transition-colors duration-200"
               @click="toggleMode"
             >
               {{ isLogin ? 'Registre-se aqui' : 'Entre aqui' }}
@@ -395,27 +380,26 @@
         </div>
       </div>
 
-      <!-- Features -->
       <div class="grid grid-cols-3 gap-4 mt-8">
         <div class="text-center">
-          <div class="inline-flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg mb-2">
-            <BookOpen class="h-5 w-5 text-blue-600" />
+          <div class="inline-flex items-center justify-center w-10 h-10 bg-red-100 rounded-lg mb-2">
+            <BookOpen class="h-5 w-5 text-red-600" />
           </div>
           <p class="text-xs text-gray-600">
             Cursos Online
           </p>
         </div>
         <div class="text-center">
-          <div class="inline-flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg mb-2">
-            <Users class="h-5 w-5 text-green-600" />
+          <div class="inline-flex items-center justify-center w-10 h-10 bg-gray-200 rounded-lg mb-2">
+            <Users class="h-5 w-5 text-gray-600" />
           </div>
           <p class="text-xs text-gray-600">
             Comunidade
           </p>
         </div>
         <div class="text-center">
-          <div class="inline-flex items-center justify-center w-10 h-10 bg-purple-100 rounded-lg mb-2">
-            <Award class="h-5 w-5 text-purple-600" />
+          <div class="inline-flex items-center justify-center w-10 h-10 bg-red-100 rounded-lg mb-2">
+            <Award class="h-5 w-5 text-red-600" />
           </div>
           <p class="text-xs text-gray-600">
             Certificados
@@ -424,7 +408,6 @@
       </div>
     </div>
 
-    <!-- Forgot Password Modal -->
     <Transition
       enter-active-class="transition ease-out duration-300"
       enter-from-class="opacity-0"
@@ -443,7 +426,7 @@
               Recuperar Senha
             </h3>
             <button
-              class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              class="text-gray-400 hover:text-red-600 transition-colors duration-200"
               @click="showForgotPassword = false"
             >
               <X class="h-6 w-6" />
@@ -471,7 +454,7 @@
                 type="email"
                 required
                 placeholder="seu.email@exemplo.com"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
             </div>
             
@@ -486,7 +469,7 @@
               <button
                 type="submit"
                 :disabled="isLoading"
-                class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
+                class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
               >
                 Enviar Link
               </button>

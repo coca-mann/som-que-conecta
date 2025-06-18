@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <!-- Header -->
       <div class="text-center mb-10">
         <h1 class="text-3xl font-bold text-gray-900 mb-3">
           Central de Ajuda
@@ -11,13 +10,11 @@
         </p>
       </div>
 
-      <!-- Help Form -->
       <div class="bg-white rounded-lg shadow-sm p-8">
         <form
           class="space-y-6"
           @submit.prevent="submitHelpRequest"
         >
-          <!-- Name Field -->
           <div>
             <label
               for="name"
@@ -29,11 +26,10 @@
               type="text"
               required
               placeholder="Digite seu nome completo"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             >
           </div>
 
-          <!-- Email Field -->
           <div>
             <label
               for="email"
@@ -45,11 +41,10 @@
               type="email"
               required
               placeholder="seu.email@exemplo.com"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             >
           </div>
 
-          <!-- Subject Field -->
           <div>
             <label
               for="subject"
@@ -59,7 +54,7 @@
               id="subject"
               v-model="form.subject"
               required
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             >
               <option value="">
                 Selecione um assunto
@@ -85,7 +80,6 @@
             </select>
           </div>
 
-          <!-- Message Field -->
           <div>
             <label
               for="message"
@@ -97,11 +91,10 @@
               rows="6"
               required
               placeholder="Descreva detalhadamente como podemos ajudar..."
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
             />
           </div>
 
-          <!-- Attachment Option -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Anexo (opcional)</label>
             <div class="flex items-center">
@@ -138,12 +131,11 @@
             </p>
           </div>
 
-          <!-- Submit Button -->
           <div class="pt-4">
             <button
               type="submit"
               :disabled="isSubmitting"
-              class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              class="w-full px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
             >
               <Loader2
                 v-if="isSubmitting"
@@ -159,7 +151,6 @@
         </form>
       </div>
 
-      <!-- FAQ Section -->
       <div class="mt-12">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">
           Perguntas Frequentes
@@ -195,7 +186,6 @@
         </div>
       </div>
 
-      <!-- Success Modal -->
       <div
         v-if="showSuccessModal"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -212,7 +202,7 @@
               Obrigado por entrar em contato. Nossa equipe responderá em breve para o email fornecido.
             </p>
             <button
-              class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               @click="showSuccessModal = false"
             >
               Fechar

@@ -1,6 +1,5 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">
         Minicursos
@@ -10,33 +9,31 @@
       </p>
     </div>
 
-    <!-- Mensagem de Login -->
     <div
       v-if="!isLoggedIn"
-      class="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center"
+      class="mb-8 bg-red-50 border border-red-200 rounded-lg p-6 text-center"
     >
-      <h2 class="text-xl font-semibold text-blue-900 mb-2">
+      <h2 class="text-xl font-semibold text-red-900 mb-2">
         Faça login para acessar os minicursos
       </h2>
-      <p class="text-blue-700 mb-4">
+      <p class="text-red-700 mb-4">
         Para iniciar ou continuar seus estudos, você precisa estar logado em sua conta.
       </p>
       <router-link 
         to="/auth?redirect=/courses" 
-        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
       >
         Fazer Login
       </router-link>
     </div>
 
-    <!-- Filters -->
     <div
       v-if="isLoggedIn"
       class="mb-8 flex flex-wrap gap-4"
     >
       <select
         v-model="selectedLevel"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
       >
         <option value="">
           Todos os Níveis
@@ -52,7 +49,7 @@
       
       <select
         v-model="selectedInstrument"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
       >
         <option value="">
           Todos os Instrumentos
@@ -67,7 +64,6 @@
       </select>
     </div>
 
-    <!-- Courses Grid -->
     <div
       v-if="isLoggedIn"
       class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -75,7 +71,7 @@
       <div
         v-for="course in courses"
         :key="course.id"
-        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+        class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
       >
         <img
           :src="course.cover"
@@ -83,16 +79,16 @@
           class="w-full h-48 object-cover"
         >
         
-        <div class="p-6">
+        <div class="p-6 flex flex-col flex-grow">
           <div class="flex items-center gap-2 mb-2">
-            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">{{ course.skill_level_display }}</span>
-            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">{{ course.instrument_type_name }}</span>
+            <span class="px-2 py-1 bg-gray-200 text-gray-800 text-xs rounded-full font-medium">{{ course.skill_level_display }}</span>
+            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full font-medium">{{ course.instrument_type_name }}</span>
           </div>
           
           <h3 class="text-xl font-semibold text-gray-900 mb-2">
             {{ course.title }}
           </h3>
-          <p class="text-gray-600 mb-4">
+          <p class="text-gray-600 mb-4 flex-grow">
             {{ course.description }}
           </p>
           
@@ -113,12 +109,12 @@
               class="space-y-1"
             >
               <div class="flex justify-between text-sm">
-                <span>Progresso</span>
-                <span>{{ course.progress }}%</span>
+                <span class="font-medium text-gray-700">Progresso</span>
+                <span class="font-bold text-red-600">{{ course.progress }}%</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  class="bg-red-600 h-2 rounded-full transition-all duration-300"
                   :style="{ width: course.progress + '%' }"
                 />
               </div>
@@ -127,9 +123,9 @@
           
           <button 
             :class="[
-              'w-full px-4 py-2 rounded-lg transition-colors',
+              'w-full px-4 py-2 mt-auto rounded-lg transition-colors font-medium',
               isLoggedIn 
-                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                ? 'bg-red-600 text-white hover:bg-red-700' 
                 : 'bg-gray-600 text-white hover:bg-gray-700'
             ]" 
             @click="accessCourse(course)"

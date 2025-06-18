@@ -4,7 +4,7 @@
       <div class="grid md:grid-cols-4 gap-8">
         <div>
           <div class="flex items-center space-x-2 mb-4">
-            <Music class="h-8 w-8 text-blue-400" />
+            <Music class="h-8 w-8 text-red-500" />
             <span class="text-xl font-bold">MusicLearn</span>
           </div>
           <p class="text-gray-400 mb-4">
@@ -14,19 +14,19 @@
           <div class="flex space-x-4">
             <a
               href="#"
-              class="text-gray-400 hover:text-white transition-colors"
+              class="text-gray-400 hover:text-red-500 transition-colors"
             >
               <Facebook class="h-5 w-5" />
             </a>
             <a
               href="#"
-              class="text-gray-400 hover:text-white transition-colors"
+              class="text-gray-400 hover:text-red-500 transition-colors"
             >
               <Instagram class="h-5 w-5" />
             </a>
             <a
               href="#"
-              class="text-gray-400 hover:text-white transition-colors"
+              class="text-gray-400 hover:text-red-500 transition-colors"
             >
               <Youtube class="h-5 w-5" />
             </a>
@@ -40,25 +40,25 @@
           <ul class="space-y-2">
             <li>
               <a
-                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/')"
               >Início</a>
             </li>
             <li>
               <a
-                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/articles')"
               >Artigos</a>
             </li>
             <li>
               <a
-                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/instruments')"
               >Instrumentos</a>
             </li>
             <li>
               <a
-                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/courses')"
               >Minicursos</a>
             </li>
@@ -72,25 +72,25 @@
           <ul class="space-y-2">
             <li>
               <a
-                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/help')"
               >Central de Ajuda</a>
             </li>
             <li>
               <a
-                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/contact')"
               >Contato</a>
             </li>
             <li>
               <a
-                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/terms')"
               >Termos de Uso</a>
             </li>
             <li>
               <a
-                class="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/privacy')"
               >Política de Privacidade</a>
             </li>
@@ -108,11 +108,11 @@
             <input 
               type="email" 
               placeholder="Seu email" 
-              class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-white placeholder-gray-400"
             >
             <button 
               type="submit" 
-              class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Inscrever-se
             </button>

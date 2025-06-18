@@ -1,6 +1,5 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
     <div class="flex justify-between items-center mb-8">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
@@ -12,7 +11,7 @@
       </div>
       
       <button
-        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
         @click="showAddModal = true"
       >
         <Plus class="h-5 w-5" />
@@ -20,11 +19,10 @@
       </button>
     </div>
 
-    <!-- Filters -->
     <div class="mb-8 flex flex-wrap gap-4">
       <select
         v-model="selectedType"
-        class="px-4 py-2 border border-gray-300 rounded-lg ..."
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
       >
         <option value="">
           Todos os Tipos
@@ -40,7 +38,7 @@
       
       <select
         v-model="selectedStatus"
-        class="px-4 py-2 border border-gray-300 rounded-lg ..."
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
       >
         <option value="">
           Todos os Status
@@ -55,7 +53,6 @@
       </select>
     </div>
 
-    <!-- Instruments Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="instrument in filteredInstruments"
@@ -80,7 +77,7 @@
         
         <div class="p-6">
           <div class="flex items-center justify-between mb-3">
-            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">{{ instrument.type_name }}</span>
+            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full font-medium">{{ instrument.type_name }}</span>
             <span class="text-sm font-medium text-gray-600">{{ instrument.brand_name }}</span>
           </div>
           
@@ -122,7 +119,7 @@
           
           <div class="flex gap-2">
             <button
-              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
               @click="editInstrument(instrument)"
             >
               <Edit class="h-4 w-4 inline mr-1" />
@@ -150,7 +147,6 @@
       </div>
     </div>
 
-    <!-- Add/Edit Instrument Modal -->
     <InstrumentFormModal 
       v-if="showAddModal || editingInstrument" 
       :instrument="editingInstrument"
@@ -160,7 +156,6 @@
       @saved="handleInstrumentSaved"
     />
 
-    <!-- Delete Confirmation Modal -->
     <div
       v-if="instrumentToDelete"
       class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"

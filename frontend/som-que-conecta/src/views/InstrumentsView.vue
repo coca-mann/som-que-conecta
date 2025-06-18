@@ -1,6 +1,5 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">
         Instrumentos Disponíveis
@@ -10,33 +9,31 @@
       </p>
     </div>
 
-    <!-- Mensagem de Login -->
     <div
       v-if="!isAuthenticated"
-      class="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center"
+      class="mb-8 bg-red-50 border border-red-200 rounded-lg p-6 text-center"
     >
-      <h2 class="text-xl font-semibold text-blue-900 mb-2">
+      <h2 class="text-xl font-semibold text-red-900 mb-2">
         Faça login para acessar os instrumentos
       </h2>
-      <p class="text-blue-700 mb-4">
+      <p class="text-red-700 mb-4">
         Para solicitar o empréstimo de instrumentos, você precisa estar logado em sua conta.
       </p>
       <router-link 
         to="/auth?redirect=/instruments" 
-        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
       >
         Fazer Login
       </router-link>
     </div>
 
-    <!-- Filters -->
     <div
       v-if="isAuthenticated"
       class="mb-8 flex flex-wrap gap-4"
     >
       <select
         v-model="selectedType"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
       >
         <option value="">
           Todos os Tipos
@@ -52,7 +49,7 @@
       
       <select
         v-model="selectedBrand"
-        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
       >
         <option value="">
           Todas as Marcas
@@ -71,7 +68,7 @@
           id="available"
           v-model="showAvailableOnly"
           type="checkbox"
-          class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          class="rounded border-gray-300 text-red-600 focus:ring-red-500"
         >
         <label
           for="available"
@@ -80,7 +77,6 @@
       </div>
     </div>
 
-    <!-- Instruments Grid -->
     <div
       v-if="isAuthenticated"
       class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -105,7 +101,6 @@
               >
             </div>
             
-            <!-- Controles do carrossel -->
             <div
               v-if="instrument.images.length > 1"
               class="absolute inset-0 flex items-center"
@@ -114,7 +109,7 @@
                 <button 
                   v-show="currentImageIndex[instrument.id] > 0"
                   class="rounded-full p-1 text-white transition-all duration-200 bg-black/20 hover:bg-black/40"
-                  @click="previousImage(instrument.id)"
+                  @click.stop="previousImage(instrument.id)"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +131,7 @@
                 <button 
                   v-show="currentImageIndex[instrument.id] < instrument.images.length - 1"
                   class="rounded-full p-1 text-white transition-all duration-200 bg-black/20 hover:bg-black/40"
-                  @click="nextImage(instrument.id)"
+                  @click.stop="nextImage(instrument.id)"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +151,6 @@
               </div>
             </div>
             
-            <!-- Indicadores -->
             <div
               v-if="instrument.images.length > 1"
               class="absolute bottom-2 left-0 right-0 flex justify-center gap-1"
@@ -166,7 +160,7 @@
                 :key="index"
                 class="w-2 h-2 rounded-full transition-colors"
                 :class="currentImageIndex[instrument.id] === index ? 'bg-white' : 'bg-white bg-opacity-50'"
-                @click="currentImageIndex[instrument.id] = index"
+                @click.stop="currentImageIndex[instrument.id] = index"
               />
             </div>
           </div>
@@ -182,7 +176,7 @@
         
         <div class="p-6 flex flex-col flex-grow">
           <div class="flex items-center justify-between mb-3">
-            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">{{ instrument.type_name }}</span>
+            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full font-medium">{{ instrument.type_name }}</span>
             <span class="text-sm font-medium text-gray-600">{{ instrument.brand_name }}</span>
           </div>
           
@@ -226,7 +220,7 @@
               :class="[
                 'w-full px-4 py-2 rounded-lg transition-colors font-medium',
                 instrument.is_loanable && isAuthenticated
-                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  ? 'bg-red-600 text-white hover:bg-red-700' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               ]"
               @click="requestScheduling(instrument)"
@@ -238,7 +232,6 @@
       </div>
     </div>
 
-    <!-- Scheduling Modal -->
     <Teleport to="body">
       <SchedulingModal 
         v-if="selectedInstrument" 

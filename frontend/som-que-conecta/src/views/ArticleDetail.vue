@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Toast Notification -->
     <div
       v-if="showToast" 
       class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out z-[9999] flex items-center gap-3"
@@ -15,10 +14,9 @@
       </button>
     </div>
 
-    <!-- Back Navigation -->
     <div class="mb-6">
       <button
-        class="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+        class="flex items-center gap-2 text-red-600 hover:text-red-800 transition-colors font-medium"
         @click="goBack"
       >
         <ArrowLeft class="h-4 w-4" />
@@ -30,7 +28,6 @@
       v-if="article"
       class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
-      <!-- Article Header -->
       <article class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="relative h-64 md:h-80">
           <div class="absolute inset-0">
@@ -43,7 +40,7 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
             <div class="p-6 text-white">
               <div class="flex items-center gap-3 mb-3">
-                <span class="px-3 py-1 bg-blue-600 rounded-full text-sm font-medium">
+                <span class="px-3 py-1 bg-red-600 rounded-full text-sm font-medium">
                   {{ article.category?.name || article.category }}
                 </span>
                 <span class="text-sm opacity-90">{{ formatDate(article.published_at) }}</span>
@@ -55,7 +52,6 @@
           </div>
         </div>
 
-        <!-- Article Meta -->
         <div class="p-6 border-b border-gray-200">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-4">
@@ -95,7 +91,6 @@
           </div>
         </div>
 
-        <!-- Article Content -->
         <div class="p-6 md:p-8">
           <div class="prose prose-lg max-w-none">
             <p class="text-xl text-gray-600 mb-6 font-medium">
@@ -109,7 +104,6 @@
           </div>
         </div>
 
-        <!-- Article Actions -->
         <div class="p-6 bg-gray-50 border-t border-gray-200">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -162,19 +156,17 @@
         </div>
       </article>
 
-      <!-- Comments Section -->
       <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">
           Comentários ({{ comments.length }})
         </h2>
         
-        <!-- Add Comment Form -->
         <div
           v-if="isLoggedIn"
           class="mb-8 p-4 bg-gray-50 rounded-lg"
         >
-          <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p class="text-sm text-blue-800">
+          <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-sm text-red-800">
               <span class="font-medium">Atenção:</span> Os comentários são moderados e podem ser removidos caso não estejam de acordo com nossas diretrizes de comunidade.
             </p>
           </div>
@@ -189,14 +181,14 @@
               v-model="newComment" 
               rows="4" 
               placeholder="Compartilhe sua opinião sobre este artigo..."
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
               :disabled="isSubmittingComment"
               required
             />
             <div class="flex justify-end">
               <button 
                 type="submit" 
-                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
                 :disabled="isSubmittingComment"
               >
                 <div
@@ -211,17 +203,16 @@
         
         <div
           v-else
-          class="mb-8 p-4 bg-blue-50 rounded-lg text-center"
+          class="mb-8 p-4 bg-red-50 rounded-lg text-center"
         >
-          <p class="text-blue-800 mb-3">
+          <p class="text-red-800 mb-3">
             Faça login para comentar neste artigo
           </p>
-          <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
             Fazer Login
           </button>
         </div>
 
-        <!-- Comments List -->
         <div class="space-y-6">
           <div
             v-for="comment in comments"
@@ -271,20 +262,18 @@
       </div>
     </div>
     
-    <!-- Loading State -->
     <div
       v-else
       class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
       <div class="bg-white rounded-lg shadow-lg p-8 text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4" />
         <p class="text-gray-600">
           Carregando artigo...
         </p>
       </div>
     </div>
 
-    <!-- Delete Comment Confirmation Modal -->
     <div
       v-if="showDeleteCommentModal"
       class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"

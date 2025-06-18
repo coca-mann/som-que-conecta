@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Header -->
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div class="flex items-center justify-between">
           <div>
@@ -18,7 +17,7 @@
             :class="[
               'px-6 py-2 rounded-lg transition-colors flex items-center gap-2',
               isSaving ? 'bg-gray-400 cursor-not-allowed' : 
-              (isEditing ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-blue-600 text-white hover:bg-blue-700')
+              (isEditing ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-red-600 text-white hover:bg-red-700')
             ]"
             @click="toggleEditMode"
           >
@@ -32,12 +31,9 @@
       </div>
 
       <div class="grid lg:grid-cols-3 gap-6">
-        <!-- Left Column - Profile Info -->
         <div class="lg:col-span-1 space-y-6">
-          <!-- Profile Picture & Basic Info -->
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="text-center">
-              <!-- Profile Picture -->
               <div class="relative inline-block mb-4">
                 <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mx-auto relative">
                   <img 
@@ -53,10 +49,9 @@
                     <User class="h-16 w-16 text-gray-400" />
                   </div>
                   
-                  <!-- Edit Photo Button -->
                   <button 
                     v-if="isEditing"
-                    class="absolute bottom-0 left-1/2 -translate-x-1/2 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg"
+                    class="absolute bottom-0 left-1/2 -translate-x-1/2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-lg"
                     @click="$refs.avatarInput.click()"
                   >
                     <Camera class="h-4 w-4" />
@@ -72,7 +67,6 @@
                 >
               </div>
 
-              <!-- Name -->
               <div v-if="!isEditing">
                 <h2 class="text-2xl font-bold text-gray-900">
                   {{ userProfile.first_name }} {{ userProfile.last_name }}
@@ -81,16 +75,15 @@
                   {{ userProfile.email }}
                 </p>
                 <div class="flex items-center justify-center gap-2 mt-2">
-                  <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                  <span class="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full font-medium">
                     {{ userProfile.skill_level_display }}
                   </span>
-                  <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                  <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full font-medium">
                     {{ userProfile.gender === 'M' ? 'Masculino' : userProfile.gender === 'F' ? 'Feminino' : 'Outro' }}
                   </span>
                 </div>
               </div>
 
-              <!-- Edit Form -->
               <div
                 v-else
                 class="space-y-4"
@@ -100,19 +93,19 @@
                     v-model="editForm.first_name" 
                     type="text" 
                     placeholder="Nome"
-                    class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                   >
                   <input 
                     v-model="editForm.last_name" 
                     type="text" 
                     placeholder="Sobrenome"
-                    class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                   >
                 </div>
                 
                 <select 
                   v-model="editForm.gender" 
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 >
                   <option value="">
                     Selecione o sexo
@@ -135,15 +128,14 @@
                   v-model="editForm.email" 
                   type="email" 
                   placeholder="Email"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 >
               </div>
             </div>
 
-            <!-- Stats -->
             <div class="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
               <div class="text-center">
-                <div class="text-2xl font-bold text-blue-600">
+                <div class="text-2xl font-bold text-red-600">
                   {{ userProfile.lessons_counter }}
                 </div>
                 <div class="text-sm text-gray-600">
@@ -159,7 +151,7 @@
                 </div>
               </div>
               <div class="text-center">
-                <div class="text-2xl font-bold text-purple-600">
+                <div class="text-2xl font-bold text-gray-700">
                   {{ userProfile.instruments_counter }}
                 </div>
                 <div class="text-sm text-gray-600">
@@ -169,7 +161,6 @@
             </div>
           </div>
 
-          <!-- Quick Actions -->
           <div class="bg-white rounded-lg shadow-sm p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">
               Ações Rápidas
@@ -177,7 +168,7 @@
             <div class="space-y-3">
               <router-link 
                 to="/manage-instruments" 
-                class="flex items-center gap-3 p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                class="flex items-center gap-3 p-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
               >
                 <Music class="h-5 w-5" />
                 <span>Gerenciar Instrumentos</span>
@@ -196,7 +187,7 @@
               <router-link 
                 v-if="authStore.user?.role !== 'student'"
                 to="/articles/create" 
-                class="flex items-center gap-3 p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
+                class="flex items-center gap-3 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 <PenTool class="h-5 w-5" />
                 <span>Criar Artigo</span>
@@ -206,7 +197,6 @@
           </div>
         </div>
 
-        <!-- Right Column - Dashboard -->
         <div class="lg:col-span-2 space-y-6">
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
@@ -215,7 +205,7 @@
               </h3>
               <router-link
                 to="/courses"
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                class="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-1"
               >
                 Ver todos
                 <ChevronRight class="h-4 w-4" />
@@ -266,7 +256,7 @@
                       </div>
                       <div class="w-full bg-gray-200 rounded-full h-2">
                         <div 
-                          class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                          class="bg-red-600 h-2 rounded-full transition-all duration-300" 
                           :style="{ width: course.progress + '%' }"
                         />
                       </div>
@@ -274,7 +264,7 @@
                     
                     <div class="flex items-center justify-end mt-3">
                       <button 
-                        class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+                        class="px-3 py-1 bg-red-600 text-white text-xs rounded-lg hover:bg-red-700 transition-colors"
                         @click="continueCourse(course)"
                       >
                         Continuar
@@ -298,14 +288,13 @@
               </p>
               <router-link
                 to="/courses"
-                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Explorar Cursos
               </router-link>
             </div>
           </div>
 
-          <!-- My Instruments -->
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-semibold text-gray-900">
@@ -313,7 +302,7 @@
               </h3>
               <router-link
                 to="/manage-instruments"
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                class="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-1"
               >
                 Gerenciar
                 <ChevronRight class="h-4 w-4" />
@@ -376,14 +365,13 @@
               </p>
               <router-link
                 to="/manage-instruments"
-                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Adicionar Instrumento
               </router-link>
             </div>
           </div>
 
-          <!-- Recent Activity -->
           <div class="bg-white rounded-lg shadow-sm p-6">
             <h3 class="text-xl font-semibold text-gray-900 mb-6">
               Atividade Recente
@@ -415,10 +403,9 @@
                 <div
                   :class="[
                     'p-2 rounded-full',
-                    // A lógica de cor pode ser baseada na ação
                     activity.action.includes('INSTRUMENT') ? 'bg-green-100 text-green-600' :
-                    activity.action.includes('ARTICLE') ? 'bg-purple-100 text-purple-600' :
-                    'bg-blue-100 text-blue-600'
+                    activity.action.includes('ARTICLE') ? 'bg-gray-100 text-gray-700' :
+                    'bg-red-100 text-red-600'
                   ]"
                 >
                   <component
@@ -446,14 +433,13 @@
             </div>
           </div>
 
-          <!-- Learning Goals -->
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-6">
               <h3 class="text-xl font-semibold text-gray-900">
                 Metas de Aprendizado
               </h3>
               <button
-                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                class="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-1"
                 @click="showGoalsModal = true"
               >
                 <Plus class="h-4 w-4" />
@@ -509,7 +495,7 @@
                   <div class="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       class="h-2 rounded-full transition-all duration-300" 
-                      :class="goal.progress === 100 ? 'bg-green-600' : 'bg-blue-600'"
+                      :class="goal.progress === 100 ? 'bg-green-600' : 'bg-red-600'"
                       :style="{ width: goal.progress + '%' }"
                     />
                   </div>
@@ -533,7 +519,6 @@
       </div>
     </div>
 
-    <!-- Goals Modal -->
     <div
       v-if="showGoalsModal"
       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
@@ -560,7 +545,7 @@
                 type="text" 
                 placeholder="Ex: Aprender 5 acordes básicos"
                 :class="[
-                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent',
                   goalErrors.title ? 'border-red-500' : 'border-gray-300'
                 ]"
               >
@@ -579,7 +564,7 @@
                 rows="3"
                 placeholder="Descreva sua meta em detalhes..."
                 :class="[
-                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none',
+                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none',
                   goalErrors.description ? 'border-red-500' : 'border-gray-300'
                 ]"
               />
@@ -597,7 +582,7 @@
                 v-model="newGoal.deadline"
                 type="date" 
                 :class="[
-                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                  'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent',
                   goalErrors.deadline ? 'border-red-500' : 'border-gray-300'
                 ]"
               >
@@ -619,7 +604,7 @@
             </button>
             <button 
               :disabled="isCreatingGoal"
-              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-red-400 disabled:cursor-not-allowed"
               @click="addGoal"
             >
               {{ isCreatingGoal ? 'Criando...' : 'Criar Meta' }}
@@ -629,7 +614,6 @@
       </div>
     </div>
 
-    <!-- Delete Goal Confirmation Modal -->
     <div
       v-if="showDeleteModal"
       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"

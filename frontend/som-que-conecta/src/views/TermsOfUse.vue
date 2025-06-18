@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <!-- Header -->
       <div class="text-center mb-10">
         <h1 class="text-3xl font-bold text-gray-900 mb-3">
           Termos de Uso
@@ -11,7 +10,6 @@
         </p>
       </div>
 
-      <!-- Terms Content -->
       <div class="bg-white rounded-lg shadow-sm p-8">
         <div class="prose max-w-none">
           <h2>1. Aceitação dos Termos</h2>
@@ -99,14 +97,13 @@
 
           <h2>11. Contato</h2>
           <p>
-            Se você tiver dúvidas sobre estes Termos de Uso, entre em contato conosco pelo email: <a href="mailto:termos@musiclearning.com">termos@musiclearning.com</a>
+            Se você tiver dúvidas sobre estes Termos de Uso, entre em contato conosco pelo email: <a href="mailto:termos@musiclearning.com" class="text-red-600 hover:underline">termos@musiclearning.com</a>
           </p>
         </div>
 
-        <!-- Print Button -->
         <div class="mt-8 text-center">
           <button 
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto" 
+            class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 mx-auto" 
             @click="printTerms"
           >
             <Printer class="h-5 w-5" />
@@ -115,14 +112,13 @@
         </div>
       </div>
 
-      <!-- Acceptance Section -->
-      <div class="mt-8 bg-blue-50 rounded-lg p-6 text-center">
+      <div class="mt-8 bg-red-50 rounded-lg p-6 text-center">
         <p class="text-gray-700 mb-4">
           Ao utilizar nossa plataforma, você confirma que leu, entendeu e concorda com estes Termos de Uso.
         </p>
         <router-link 
           to="/" 
-          class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
         >
           Voltar para a Página Inicial
         </router-link>

@@ -6,14 +6,14 @@
           Agendar Aula
         </h2>
         <button 
-          class="text-gray-400 hover:text-gray-500"
+          class="text-gray-400 hover:text-red-600 transition-colors"
           @click="$emit('close')"
         >
           <X class="h-6 w-6" />
         </button>
       </div>
 
-      <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+      <div class="mb-6 p-4 bg-gray-50 rounded-lg border">
         <h3 class="font-semibold text-gray-900 mb-2">
           {{ instrument.name }}
         </h3>
@@ -44,7 +44,7 @@
           <input 
             v-model="date"
             type="date"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 transition"
             required
           >
         </div>
@@ -53,7 +53,7 @@
           <div class="flex gap-2">
             <select 
               v-model="startHour"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 transition"
               required
             >
               <option
@@ -66,7 +66,7 @@
             </select>
             <select 
               v-model="startMinute"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 transition"
               required
             >
               <option
@@ -84,7 +84,7 @@
           <div class="flex gap-2">
             <select 
               v-model="endHour"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 transition"
               required
             >
               <option
@@ -97,7 +97,7 @@
             </select>
             <select 
               v-model="endMinute"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 transition"
               required
             >
               <option
@@ -110,20 +110,21 @@
             </select>
           </div>
         </div>
-        <div class="flex justify-end space-x-2 mt-6">
+
+        <div class="flex justify-end space-x-3 pt-4 mt-6 border-t">
           <button 
             type="button"
-            class="px-4 py-2 text-gray-700 hover:text-gray-900"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
             @click="$emit('close')"
           >
             Cancelar
           </button>
           <button 
             type="submit"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed transition-colors"
             :disabled="isLoading"
           >
-            {{ isLoading ? 'Agendando...' : 'Agendar' }}
+            {{ isLoading ? 'Agendando...' : 'Confirmar Agendamento' }}
           </button>
         </div>
       </form>

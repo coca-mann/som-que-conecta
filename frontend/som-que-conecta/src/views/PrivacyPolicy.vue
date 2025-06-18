@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <!-- Header -->
       <div class="text-center mb-10">
         <h1 class="text-3xl font-bold text-gray-900 mb-3">
           Política de Privacidade
@@ -11,7 +10,6 @@
         </p>
       </div>
 
-      <!-- Table of Contents -->
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">
           Índice
@@ -23,7 +21,7 @@
           >
             <a 
               :href="`#section-${index + 1}`" 
-              class="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
+              class="text-red-600 hover:text-red-800 hover:underline flex items-center"
             >
               {{ index + 1 }}. {{ section.title }}
               <ChevronRight class="h-4 w-4 ml-1" />
@@ -32,7 +30,6 @@
         </ul>
       </div>
 
-      <!-- Privacy Policy Content -->
       <div class="bg-white rounded-lg shadow-sm p-8">
         <div class="prose max-w-none">
           <p class="text-gray-700 mb-6">
@@ -55,14 +52,13 @@
             12. Contato
           </h2>
           <p>
-            Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade ou sobre nossas práticas de privacidade, entre em contato conosco pelo email: <a href="mailto:privacidade@musiclearning.com">privacidade@musiclearning.com</a>
+            Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade ou sobre nossas práticas de privacidade, entre em contato conosco pelo email: <a href="mailto:privacidade@musiclearning.com" class="text-red-600 hover:underline">privacidade@musiclearning.com</a>
           </p>
         </div>
 
-        <!-- Print Button -->
         <div class="mt-8 text-center">
           <button 
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto" 
+            class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 mx-auto" 
             @click="printPolicy"
           >
             <Printer class="h-5 w-5" />
@@ -71,8 +67,7 @@
         </div>
       </div>
 
-      <!-- Cookie Preferences -->
-      <div class="mt-8 bg-blue-50 rounded-lg p-6">
+      <div class="mt-8 bg-red-50 rounded-lg p-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
           Preferências de Cookies
         </h3>
@@ -97,7 +92,7 @@
                 disabled
                 class="sr-only peer"
               >
-              <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600" />
+              <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-red-600" />
               <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
             </div>
           </div>
@@ -120,7 +115,7 @@
               >
               <label
                 for="performance"
-                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"
+                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-red-600 block cursor-pointer"
               />
               <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
             </div>
@@ -144,7 +139,7 @@
               >
               <label
                 for="marketing"
-                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"
+                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-red-600 block cursor-pointer"
               />
               <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
             </div>
@@ -168,7 +163,7 @@
               >
               <label
                 for="analytics"
-                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 block cursor-pointer"
+                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-red-600 block cursor-pointer"
               />
               <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
             </div>
@@ -177,7 +172,7 @@
         
         <div class="mt-6 flex justify-center">
           <button 
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" 
+            class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors" 
             @click="saveCookiePreferences"
           >
             Salvar Preferências

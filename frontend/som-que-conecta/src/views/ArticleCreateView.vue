@@ -1,12 +1,11 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Header -->
       <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <button
-              class="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              class="p-2 text-gray-600 hover:text-red-600 transition-colors"
               @click="goBack"
             >
               <ArrowLeft class="h-5 w-5" />
@@ -27,13 +26,11 @@
         class="space-y-6"
         @submit.prevent="handleSubmit"
       >
-        <!-- Article Header -->
         <div class="bg-white rounded-lg shadow-sm p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">
             Informações Básicas
           </h2>
           
-          <!-- Title -->
           <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">Título do Artigo *</label>
             <input 
@@ -41,21 +38,20 @@
               type="text" 
               required 
               placeholder="Digite um título atrativo para seu artigo"
-              class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             >
             <p class="text-xs text-gray-500 mt-1">
               {{ form.title?.length || 0 }}/100 caracteres
             </p>
           </div>
 
-          <!-- Category and Reading Time -->
           <div class="grid md:grid-cols-3 gap-4 mb-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Categoria *</label>
               <select 
                 v-model="form.category" 
                 required 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
                 <option :value="null">
                   Selecione uma categoria
@@ -78,7 +74,7 @@
                 min="1" 
                 max="60"
                 placeholder="5"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
               <p class="text-xs text-gray-500 mt-1">
                 Em minutos
@@ -89,7 +85,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">Dificuldade</label>
               <select 
                 v-model="form.difficulty" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
                 <option :value="null">
                   Selecione o nível de dificuldade
@@ -107,7 +103,6 @@
             </div>
           </div>
 
-          <!-- Excerpt -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Resumo *</label>
             <textarea 
@@ -116,7 +111,7 @@
               required
               placeholder="Escreva um breve resumo que desperte o interesse do leitor..."
               maxlength="300"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
             />
             <p class="text-xs text-gray-500 mt-1">
               {{ form.excerpt?.length || 0 }}/300 caracteres
@@ -124,13 +119,11 @@
           </div>
         </div>
 
-        <!-- Featured Image -->
         <div class="bg-white rounded-lg shadow-sm p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">
             Imagem de Capa
           </h2>
           
-          <!-- Image Upload Method Selection -->
           <div class="mb-4">
             <div class="flex gap-4">
               <label class="flex items-center">
@@ -138,7 +131,7 @@
                   v-model="imageUploadMethod" 
                   type="radio" 
                   value="upload" 
-                  class="mr-2 text-blue-600 focus:ring-blue-500"
+                  class="mr-2 text-red-600 focus:ring-red-500"
                 >
                 <span class="text-sm font-medium text-gray-700">Enviar do computador</span>
               </label>
@@ -147,7 +140,7 @@
                   v-model="imageUploadMethod" 
                   type="radio" 
                   value="url" 
-                  class="mr-2 text-blue-600 focus:ring-blue-500"
+                  class="mr-2 text-red-600 focus:ring-red-500"
                 >
                 <span class="text-sm font-medium text-gray-700">Link da internet</span>
               </label>
@@ -156,7 +149,6 @@
 
           <div class="space-y-4">
             <div class="flex items-start gap-6">
-              <!-- Image Preview -->
               <div class="w-48 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 relative overflow-hidden">
                 <img
                   v-if="form.cover_image"
@@ -172,20 +164,17 @@
                   <span class="text-sm text-gray-500">Imagem de capa</span>
                 </div>
                 
-                <!-- Remove Image Button -->
                 <button 
                   v-if="form.cover_image" 
                   type="button" 
-                  class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  class="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
                   @click="removeImage"
                 >
                   <X class="h-3 w-3" />
                 </button>
               </div>
               
-              <!-- Upload Controls -->
               <div class="flex-1">
-                <!-- File Upload -->
                 <div
                   v-if="imageUploadMethod === 'upload'"
                   class="space-y-3"
@@ -200,7 +189,7 @@
                     >
                     <button 
                       type="button" 
-                      class="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                      class="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-red-400 hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
                       @click="$refs.fileInput.click()"
                     >
                       <Upload class="h-5 w-5 text-gray-400" />
@@ -208,7 +197,6 @@
                     </button>
                   </div>
                   
-                  <!-- Upload Progress -->
                   <div
                     v-if="uploadProgress > 0 && uploadProgress < 100"
                     class="space-y-2"
@@ -219,7 +207,7 @@
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        class="bg-red-600 h-2 rounded-full transition-all duration-300"
                         :style="{ width: uploadProgress + '%' }"
                       />
                     </div>
@@ -230,7 +218,6 @@
                   </p>
                 </div>
 
-                <!-- URL Input -->
                 <div
                   v-else
                   class="space-y-3"
@@ -239,7 +226,7 @@
                     v-model="form.cover_link" 
                     type="url" 
                     placeholder="Cole a URL da imagem aqui"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                     @input="handleUrlInput"
                   >
                   <p class="text-sm text-gray-600">
@@ -247,7 +234,6 @@
                   </p>
                 </div>
                 
-                <!-- Image Info -->
                 <div
                   v-if="imageInfo"
                   class="mt-3 p-3 bg-gray-50 rounded-lg"
@@ -267,12 +253,11 @@
               </div>
             </div>
             
-            <!-- Recommendations -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 class="text-sm font-medium text-blue-900 mb-2">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+              <h4 class="text-sm font-medium text-red-900 mb-2">
                 💡 Dicas para uma boa imagem de capa:
               </h4>
-              <ul class="text-sm text-blue-800 space-y-1">
+              <ul class="text-sm text-red-800 space-y-1">
                 <li>• Use proporção 16:9 (ex: 1600x900px) para melhor visualização</li>
                 <li>• Resolução mínima recomendada: 800x450px</li>
                 <li>• Evite imagens com muito texto</li>
@@ -296,9 +281,7 @@
           </div>
         </div>
 
-        <!-- Submit Actions - REFATORADO -->
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-          <!-- Status Info -->
           <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
             <div class="flex flex-col gap-2">
               <h3 class="text-sm font-medium text-gray-700">
@@ -311,7 +294,7 @@
                     :class="{
                       'bg-red-500': aiStatus === false,
                       'bg-green-500': aiStatus === true,
-                      'bg-blue-500': aiStatus === null
+                      'bg-gray-500': aiStatus === null
                     }"
                   />
                   <span
@@ -329,12 +312,9 @@
             </div>
           </div>
 
-          <!-- Main Actions -->
           <div class="px-6 py-6">
             <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-              <!-- Primary Actions -->
               <div class="flex flex-wrap gap-3 order-2 sm:order-1">
-                <!-- Save Draft Button -->
                 <div class="relative group">
                   <button 
                     type="button" 
@@ -347,7 +327,6 @@
                     <span class="sm:hidden">Rascunho</span>
                   </button>
                   
-                  <!-- Tooltip for disabled state -->
                   <div 
                     v-if="!form.category" 
                     class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10"
@@ -357,10 +336,9 @@
                   </div>
                 </div>
 
-                <!-- Preview Button -->
                 <button 
                   type="button" 
-                  class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all duration-200 font-medium border border-blue-200" 
+                  class="inline-flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-all duration-200 font-medium border border-red-200" 
                   @click="previewArticle"
                 >
                   <Eye class="h-4 w-4" />
@@ -368,7 +346,6 @@
                   <span class="sm:hidden">Preview</span>
                 </button>
 
-                <!-- Delete Button (only when editing) -->
                 <button 
                   v-if="isEditing"
                   type="button" 
@@ -380,7 +357,6 @@
                 </button>
               </div>
 
-              <!-- Submit Actions -->
               <div class="flex gap-3 order-1 sm:order-2">
                 <button 
                   type="button" 
@@ -391,7 +367,7 @@
                 </button>
                 <button 
                   type="submit" 
-                  class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center gap-2"
+                  class="px-6 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
                   :disabled="isLoading"
                 >
                   <div
@@ -407,7 +383,6 @@
       </form>
     </div>
 
-    <!-- Preview Modal -->
     <div
       v-if="showPreview"
       class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
@@ -418,7 +393,7 @@
             Visualização do Artigo
           </h3>
           <button
-            class="text-gray-400 hover:text-gray-600"
+            class="text-gray-400 hover:text-red-600 transition-colors"
             @click="showPreview = false"
           >
             <X class="h-6 w-6" />
@@ -445,7 +420,6 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
     <div
       v-if="showDeleteConfirm"
       class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"

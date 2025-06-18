@@ -1,6 +1,5 @@
 <template>
   <main class="relative min-h-screen">
-    <!-- Background Image -->
     <div class="fixed inset-0 w-full h-full">
       <img
         src="@/assets/homebackground.jpg"
@@ -9,7 +8,6 @@
       >
     </div>
 
-    <!-- Hero Section -->
     <section class="relative py-24 overflow-hidden">
       <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
@@ -27,13 +25,13 @@
           <div class="mt-8 flex justify-center space-x-3 sm:mt-12">
             <router-link
               to="/courses"
-              class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
             >
               Começar Agora
             </router-link>
             <router-link
               to="/articles"
-              class="inline-flex items-center justify-center px-5 py-3 text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
+              class="inline-flex items-center justify-center px-5 py-3 text-base font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
             >
               Ler Artigos
             </router-link>
@@ -42,7 +40,6 @@
       </div>
     </section>
 
-    <!-- Features Section -->
     <section class="py-16 bg-white/90 backdrop-blur-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
@@ -56,7 +53,7 @@
         
         <div class="grid md:grid-cols-3 gap-8">
           <div class="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-            <BookOpen class="h-12 w-12 text-blue-600 mx-auto mb-4" />
+            <BookOpen class="h-12 w-12 text-red-600 mx-auto mb-4" />
             <h3 class="text-xl font-semibold mb-2">
               Artigos Especializados
             </h3>
@@ -66,7 +63,7 @@
           </div>
           
           <div class="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-            <Guitar class="h-12 w-12 text-blue-600 mx-auto mb-4" />
+            <Guitar class="h-12 w-12 text-red-600 mx-auto mb-4" />
             <h3 class="text-xl font-semibold mb-2">
               Instrumentos Disponíveis
             </h3>
@@ -76,7 +73,7 @@
           </div>
           
           <div class="text-center p-6 rounded-lg border border-gray-200 hover:shadow-lg transition-shadow">
-            <GraduationCap class="h-12 w-12 text-blue-600 mx-auto mb-4" />
+            <GraduationCap class="h-12 w-12 text-red-600 mx-auto mb-4" />
             <h3 class="text-xl font-semibold mb-2">
               Minicursos Práticos
             </h3>
@@ -88,8 +85,7 @@
       </div>
     </section>
 
-    <!-- Latest Article Section -->
-    <section class="py-16 bg-gradient-to-br from-blue-50/90 to-indigo-100/90 backdrop-blur-sm">
+    <section class="py-16 bg-gradient-to-br from-red-100 to-red-200 backdrop-blur-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h2 class="text-3xl font-bold text-gray-900 mb-4">
@@ -105,7 +101,7 @@
             v-if="isLoading"
             class="flex justify-center items-center h-64"
           >
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" />
           </div>
           
           <div
@@ -124,7 +120,7 @@
               </div>
               <div class="md:w-1/2 p-8">
                 <div class="flex items-center gap-3 mb-4">
-                  <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full font-medium">
+                  <span class="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full font-medium">
                     {{ latestArticle.category }}
                   </span>
                   <div class="flex items-center text-yellow-500">
@@ -165,7 +161,7 @@
                 
                 <router-link
                   :to="`/articles/${latestArticle.id}`"
-                  class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
                 >
                   Ler Artigo Completo
                   <ArrowRight class="h-4 w-4" />
@@ -186,8 +182,7 @@
       </div>
     </section>
 
-    <!-- Latest Course Section -->
-    <section class="py-16 bg-gradient-to-br from-purple-50/90 to-pink-100/90 backdrop-blur-sm">
+    <section class="py-16 bg-gradient-to-br from-gray-200 to-red-100 backdrop-blur-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h2 class="text-3xl font-bold text-gray-900 mb-4">
@@ -203,7 +198,7 @@
             v-if="isLoading"
             class="flex justify-center items-center h-64"
           >
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600" />
           </div>
           
           <div
@@ -220,7 +215,7 @@
               </div>
               <div class="md:w-1/2 p-8">
                 <div class="flex items-center gap-3 mb-4">
-                  <span class="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full font-medium">
+                  <span class="px-3 py-1 bg-gray-200 text-gray-800 text-sm rounded-full font-medium">
                     {{ latestCourse.skill_level_display }}
                   </span>
                   <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full font-medium">
@@ -238,11 +233,11 @@
                 
                 <div class="grid grid-cols-2 gap-4 mb-6">
                   <div class="flex items-center gap-2 text-sm text-gray-600">
-                    <Clock class="h-4 w-4 text-purple-600" />
+                    <Clock class="h-4 w-4 text-red-600" />
                     <span>{{ latestCourse.duration_display }}</span>
                   </div>
                   <div class="flex items-center gap-2 text-sm text-gray-600">
-                    <BookOpen class="h-4 w-4 text-purple-600" />
+                    <BookOpen class="h-4 w-4 text-red-600" />
                     <span>{{ latestCourse.tasks_count }} aulas</span>
                   </div>
                 </div>
@@ -269,7 +264,7 @@
                 <div class="flex gap-3">
                   <router-link
                     :to="`/course/${latestCourse.id}`"
-                    class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                    class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
                   >
                     {{ isLoggedIn ? 'Iniciar Curso' : 'Ver Detalhes' }}
                     <Play class="h-4 w-4" />

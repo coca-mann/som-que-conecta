@@ -5,7 +5,7 @@
       class="flex items-center justify-center min-h-screen"
     >
       <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto" />
         <p class="mt-4 text-gray-600">
           Carregando...
         </p>
@@ -19,7 +19,7 @@
       <div class="text-center text-red-600">
         <p>{{ error }}</p>
         <button
-          class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
           @click="fetchCourseData"
         >
           Tentar novamente
@@ -31,12 +31,11 @@
       v-else-if="course && task"
       class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
     >
-      <!-- Course Navigation Header -->
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
             <button
-              class="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              class="p-2 text-gray-600 hover:text-red-600 transition-colors"
               @click="goBackToCourse"
             >
               <ArrowLeft class="h-5 w-5" />
@@ -60,11 +59,11 @@
               </div>
               <div class="w-48 bg-gray-200 rounded-full h-2">
                 <div
-                  class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  class="bg-red-600 h-2 rounded-full transition-all duration-300"
                   :style="{ width: `${courseProgress}%` }"
                 />
               </div>
-              <div class="text-sm font-medium text-blue-600">
+              <div class="text-sm font-medium text-red-600">
                 {{ courseProgress }}%
               </div>
             </div>
@@ -72,9 +71,7 @@
         </div>
       </div>
 
-      <!-- Task Content -->
       <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-        <!-- Video Section -->
         <div
           class="relative w-full"
           style="padding-top: 56.25%;"
@@ -102,7 +99,6 @@
           </div>
         </div>
 
-        <!-- Task Details -->
         <div class="p-6">
           <h2 class="text-2xl font-bold text-gray-900 mb-4">
             {{ task?.title }}
@@ -118,7 +114,6 @@
             />
           </div>
           
-          <!-- Task Resources -->
           <div
             v-if="resources.length > 0"
             class="mb-8"
@@ -134,7 +129,7 @@
                 target="_blank" 
                 class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                <div class="p-2 bg-red-100 text-red-600 rounded-lg">
                   <FileText
                     v-if="resource.type === 'DOCUMENT'"
                     class="h-5 w-5"
@@ -164,7 +159,6 @@
             </div>
           </div>
           
-          <!-- Task Completion -->
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
             <div class="flex items-center gap-2">
               <div
@@ -187,7 +181,7 @@
                 'px-6 py-2 rounded-lg font-medium transition-colors',
                 task?.is_completed 
                   ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' 
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-red-600 text-white hover:bg-red-700'
               ]" 
               @click="markTaskAsComplete"
             >
@@ -197,7 +191,6 @@
         </div>
       </div>
 
-      <!-- Navigation Buttons -->
       <div class="flex justify-between">
         <button 
           :disabled="currentTaskIndex === 0" 
@@ -219,7 +212,7 @@
             'flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-colors',
             currentTaskIndex === course?.tasks.length - 1
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-red-600 text-white hover:bg-red-700'
           ]"
           @click="navigateToNextTask"
         >
