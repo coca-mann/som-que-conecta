@@ -399,10 +399,10 @@
         </div>
         <div class="text-center">
           <div class="inline-flex items-center justify-center w-10 h-10 bg-red-100 rounded-lg mb-2">
-            <Award class="h-5 w-5 text-red-600" />
+            <Newspaper class="h-5 w-5 text-red-600" />
           </div>
           <p class="text-xs text-gray-600">
-            Certificados
+            Artigos
           </p>
         </div>
       </div>
@@ -496,7 +496,9 @@ import {
   X,
   BookOpen,
   Users,
-  Award
+  Award,
+  newspaper,
+  Newspaper
 } from 'lucide-vue-next'
 
 const errorMessage = ref(null);
