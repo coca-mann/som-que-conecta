@@ -279,7 +279,17 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://somqueconecta.fun',
+    'https://admin.somqueconecta.fun',
+    'https://www.somqueconecta.fun' # Boa prática adicionar o www também
+]
 
+USE_X_FORWARDED_HOST = config('USE_X_FORWARDED_HOST')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE')
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE')
 
 SITE_ID = 1
 
@@ -301,8 +311,3 @@ AUTH_USER_MODEL = 'accounts.User'
 # Google Gemini API
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://somqueconecta.fun',
-    'https://admin.somqueconecta.fun',
-    'https://www.somqueconecta.fun' # Boa prática adicionar o www também
-]
