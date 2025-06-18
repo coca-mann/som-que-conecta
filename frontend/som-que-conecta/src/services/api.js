@@ -42,7 +42,7 @@ api.interceptors.response.use(
             // Se não houver refresh token, não há como continuar. Deslogue.
             throw new Error("No refresh token found");
         }
-        const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
+        const response = await axios.post(`${process.env.VUE_APP_BASE_URL}/api/token/refresh/`, {
           refresh: refreshToken,
         });
 

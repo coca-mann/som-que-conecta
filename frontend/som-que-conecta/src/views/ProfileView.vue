@@ -731,8 +731,7 @@ const fetchProfile = async () => {
     
     // Constrói a URL completa da imagem de perfil
     if (profileData.profile_picture) {
-      // Assumindo que a API está em http://127.0.0.1:8000
-      profileData.avatar = `http://127.0.0.1:8000${profileData.profile_picture}`;
+      profileData.avatar = `${process.env.VUE_APP_BASE_URL}${profileData.profile_picture}`;
     } else {
       profileData.avatar = null;
     }
@@ -835,7 +834,7 @@ const toggleEditMode = async () => {
 
       const updatedProfileData = response.data;
       if (updatedProfileData.profile_picture) {
-        updatedProfileData.avatar = `http://127.0.0.1:8000${updatedProfileData.profile_picture}`;
+        updatedProfileData.avatar = `${process.env.VUE_APP_BASE_URL}${updatedProfileData.profile_picture}`;
       } else {
         updatedProfileData.avatar = null;
       }
