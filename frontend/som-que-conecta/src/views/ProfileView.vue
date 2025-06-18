@@ -396,7 +396,7 @@
               class="space-y-4"
             >
               <div
-                v-for="activity in recentActivity"
+                v-for="activity in recentActivity.slice(0, displayedActivitiesCount)"
                 :key="activity.id"
                 class="flex items-start gap-4 p-3 bg-gray-50 rounded-lg"
               >
@@ -422,6 +422,18 @@
                     {{ formatRelativeTime(new Date(activity.created_at)) }}
                   </p>
                 </div>
+              </div>
+
+              <div 
+                v-if="recentActivity.length > displayedActivitiesCount"
+                class="text-center pt-2"
+              >
+                <button
+                  class="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-1 mx-auto"
+                  @click="displayedActivitiesCount += 5"
+                >
+                  Carregar mais atividades
+                </button>
               </div>
             </div>
 
@@ -690,6 +702,7 @@ const instrumentsError = ref(null);
 const recentActivity = ref([]);
 const isActivityLoading = ref(true);
 const activityError = ref(null);
+const displayedActivitiesCount = ref(5); // Nova variável para controlar quantos itens são exibidos
 
 // --- NOVO: Estados para as metas ---
 const learningGoals = ref([]);
