@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path, include
-from backend.accounts.views import UserRegistrationViewSet, UserDetailView, ProfileView, InProgressCourseListView, RecentActivityListView, UserGoalViewSet
+from backend.accounts.views import UserRegistrationViewSet, UserDetailView, ProfileView, InProgressCourseListView, RecentActivityListView, UserGoalViewSet, AccountActivationView
 from backend.instruments.views import UserInstrumentListView
 
 router = DefaultRouter()
@@ -14,4 +14,5 @@ urlpatterns = [
     path('profile/in-progress-courses/', InProgressCourseListView.as_view(), name='in-progress-courses'),
     path('profile/my-instruments/', UserInstrumentListView.as_view(), name='my-instruments'),
     path('profile/recent-activity/', RecentActivityListView.as_view(), name='recent-activity'),
+    path('activate/<str:token>/', AccountActivationView.as_view(), name='account-activation'),
 ]

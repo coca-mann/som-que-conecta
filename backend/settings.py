@@ -327,3 +327,5 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # E-mail padrão que aparecerá como remetente
 DEFAULT_FROM_EMAIL = 'Som que Conecta <nao-responda@somqueconecta.fun>'
+
+FRONTEND_URL=config('FRONTEND_URL')

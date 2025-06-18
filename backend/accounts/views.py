@@ -1,3 +1,4 @@
+import uuid
 from rest_framework import viewsets, status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
@@ -14,7 +15,7 @@ from backend.accounts.serializers import (
 )
 from backend.lessons.models import Lesson, UserTask, Task
 from backend.instruments.models import Instrument
-from backend.accounts.models import UserHistory, UserGoals
+from backend.accounts.models import UserHistory, UserGoals, EmailVerificationToken
 
 
 User = get_user_model()
@@ -79,7 +80,8 @@ class ProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class InProgressCourseListView(generics.ListAPIView):
     """
     Retorna uma lista de cursos (lições) que o usuário logado iniciou.
@@ -164,3 +166,32 @@ class UserGoalViewSet(viewsets.ModelViewSet):
         Associa automaticamente a nova meta ao usuário logado ao salvar.
         """
         serializer.save(user=self.request.user)
+
+
+class AccountActivationView(APIView):
+    permission_classes = [AllowAny] # Qualquer um pode acessar o link
+
+    def get(self, request, token, *args, **kwargs):
+        try:
+            # Converte a string do token para um objeto UUID
+            token_uuid = uuid.UUID(token, version=4)
+            # Busca o token no banco de dados
+            verification_token = EmailVerificationToken.objects.get(id=token_uuid)
+        except (EmailVerificationToken.DoesNotExist, ValueError):
+            return Response({'error': 'Token inválido ou não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Verifica se o token expirou
+        if verification_token.is_expired():
+            # (Opcional) Você pode deletar tokens expirados aqui
+            verification_token.delete()
+            return Response({'error': 'Token de ativação expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Ativa o usuário
+        user = verification_token.user
+        user.is_active = True
+        user.save()
+
+        # Deleta o token após o uso para segurança
+        verification_token.delete()
+
+        return Response({'message': 'Conta ativada com sucesso!'}, status=status.HTTP_200_OK)

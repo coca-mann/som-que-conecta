@@ -1,6 +1,9 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 from backend.core.utils import rename_and_upload_path
 from backend.accounts.managers import CustomUserManager
 
@@ -128,3 +131,16 @@ class UserHistory(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+class EmailVerificationToken(models.Model):
+    # Usamos UUID para tokens seguros e únicos
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # Ligação com o usuário que precisa ser verificado
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # Data de criação para calcular a expiração
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def is_expired(self):
+        # Define que o token expira em 1 hora (ajuste conforme necessário)
+        return self.created_at < timezone.now() - timedelta(hours=1)
+

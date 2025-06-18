@@ -2,10 +2,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from backend.lessons.models import Lesson, UserTask
-from backend.accounts.models import UserHistory, UserGoals
+from backend.accounts.models import UserHistory, UserGoals, EmailVerificationToken
 
 User = get_user_model()
 
@@ -20,7 +23,35 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+        user = User.objects.create_user(
+            is_active=False,
+            **validated_data
+        )
+        token = EmailVerificationToken.objects.create(user=user)
+        activation_link = f"{settings.FRONTEND_URL}/activate-account/{token.id}"
+        
+        subject = 'Som que Conecta - Ative sua conta'
+        message = f"""
+            Olá {user.first_name},
+
+            Obrigado por se registrar no Som que Conecta!
+            Para ativar sua conta, por favor, clique no link abaixo:
+
+            {activation_link}
+
+            Se você não se registrou, por favor, ignore este e-mail.
+
+            Atenciosamente,
+            Equipe Som que Conecta
+        """
+        
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False, # Mude para True em produção se preferir
+        )
         
         # 3. Geramos os tokens para o usuário recém-criado
         refresh = RefreshToken.for_user(user)
@@ -29,6 +60,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.refresh = str(refresh)
         user.access = str(refresh.access_token)
         return user
+
 
 class UserSerializer(serializers.ModelSerializer):
     """
