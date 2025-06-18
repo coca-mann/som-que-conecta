@@ -8,7 +8,11 @@
             class="flex items-center space-x-2 group"
           >
             <div class="relative">
-              <Music class="h-8 w-8 text-red-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
+              <img 
+                :src="logoImage" 
+                alt="Som que Conecta Logo"
+                class="h-10 w-10 text-red-600 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 object-contain"
+              >
               <div class="absolute inset-0 bg-red-600/20 rounded-full scale-0 group-hover:scale-150 transition-transform duration-300" />
             </div>
             <span class="text-xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-red-600">
@@ -200,6 +204,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 // A importação do store
 import { useAuthStore } from '@/stores/auth.store';
+import logoImage from '@/assets/logo.png';
 
 import { 
   Music, User, ChevronDown, LogOut, Search, X, Home, FileText,

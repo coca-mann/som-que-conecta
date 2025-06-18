@@ -4,8 +4,12 @@
       <div class="grid md:grid-cols-4 gap-8">
         <div>
           <div class="flex items-center space-x-2 mb-4">
-            <Music class="h-8 w-8 text-red-500" />
-            <span class="text-xl font-bold">MusicLearn</span>
+            <img 
+              :src="logoImage" 
+              alt="Som que Conecta Logo"
+              class="h-14 w-14 object-contain"
+            >
+            <span class="text-xl font-bold">Som que Conecta</span>
           </div>
           <p class="text-gray-400 mb-4">
             Sua plataforma completa para aprender música do zero. 
@@ -128,8 +132,9 @@
 </template>
 
 <script setup>
-import { Music, Facebook, Instagram, Youtube } from 'lucide-vue-next'
+import { Facebook, Instagram, Youtube } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import logoImage from '@/assets/logo.png'
 
 const router = useRouter()
 
