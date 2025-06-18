@@ -65,7 +65,7 @@ onMounted(async () => {
   try {
     // 2. Faz a chamada GET para a API de ativação do Django
     //    Certifique-se de que a URL base da sua API está correta
-    const response = await axios.get(`http://127.0.0.1:8000/api/activate/${token}/`);
+    const response = await axios.get(`${process.env.VUE_APP_BASE_URL}/api/activate/${token}/`);
 
     // 3. Processa a resposta de sucesso
     message.value = response.data.message;
