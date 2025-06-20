@@ -52,7 +52,7 @@
             12. Contato
           </h2>
           <p>
-            Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade ou sobre nossas práticas de privacidade, entre em contato conosco pelo email: <a href="mailto:privacidade@musiclearning.com" class="text-red-600 hover:underline">privacidade@musiclearning.com</a>
+            Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade ou sobre nossas práticas de privacidade, entre em contato conosco pelo email: <a href="mailto:contato@somqueconecta.fun" class="text-red-600 hover:underline">contato@somqueconecta.fun</a>
           </p>
         </div>
 

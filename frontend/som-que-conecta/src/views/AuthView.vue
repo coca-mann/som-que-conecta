@@ -7,7 +7,7 @@
           class="inline-flex items-center space-x-2 group"
         >
           <Music class="h-10 w-10 text-red-600 transition-transform duration-300 group-hover:scale-110" />
-          <span class="text-2xl font-bold text-gray-900">MusicLearn</span>
+          <span class="text-2xl font-bold text-gray-900">Som que Conecta</span>
         </router-link>
         <h2 class="mt-6 text-3xl font-bold text-gray-900">
           {{ isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta' }}

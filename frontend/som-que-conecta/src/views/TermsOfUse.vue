@@ -97,7 +97,7 @@
 
           <h2>11. Contato</h2>
           <p>
-            Se você tiver dúvidas sobre estes Termos de Uso, entre em contato conosco pelo email: <a href="mailto:termos@musiclearning.com" class="text-red-600 hover:underline">termos@musiclearning.com</a>
+            Se você tiver dúvidas sobre estes Termos de Uso, entre em contato conosco pelo email: <a href="mailto:contato@somqueconecta.fun" class="text-red-600 hover:underline">contato@somqueconecta.fun</a>
           </p>
         </div>
 

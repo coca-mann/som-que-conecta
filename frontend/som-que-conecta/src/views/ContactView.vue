@@ -22,10 +22,10 @@
             Para dúvidas, sugestões ou parcerias, envie-nos um email.
           </p>
           <a 
-            href="mailto:contato@musiclearning.com" 
+            href="mailto:contato@somqueconecta.fun" 
             class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
-            contato@musiclearning.com
+            contato@somqueconecta.fun
           </a>
         </div>
 
@@ -40,10 +40,10 @@
             Precisa de ajuda? Nossa equipe de suporte está pronta para atendê-lo.
           </p>
           <a 
-            href="mailto:suporte@musiclearning.com" 
+            href="mailto:contato@somqueconecta.fun" 
             class="inline-flex items-center px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors"
           >
-            suporte@musiclearning.com
+            contato@somqueconecta.fun
           </a>
         </div>
       </div>
@@ -55,7 +55,7 @@
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <a 
-            href="https://instagram.com/musiclearning" 
+            href="#" 
             target="_blank" 
             rel="noopener noreferrer"
             class="flex flex-col items-center p-6 rounded-lg hover:bg-gray-50 transition-colors group"
@@ -64,11 +64,11 @@
               <Instagram class="h-7 w-7 text-white" />
             </div>
             <h3 class="font-medium text-gray-900">Instagram</h3>
-            <p class="text-sm text-gray-500">@musiclearning</p>
+            <p class="text-sm text-gray-500">@somqueconecta</p>
           </a>
 
           <a 
-            href="https://facebook.com/musiclearning" 
+            href="#" 
             target="_blank" 
             rel="noopener noreferrer"
             class="flex flex-col items-center p-6 rounded-lg hover:bg-gray-50 transition-colors group"
@@ -77,11 +77,11 @@
               <Facebook class="h-7 w-7 text-white" />
             </div>
             <h3 class="font-medium text-gray-900">Facebook</h3>
-            <p class="text-sm text-gray-500">/musiclearning</p>
+            <p class="text-sm text-gray-500">/somqueconecta</p>
           </a>
 
           <a 
-            href="https://youtube.com/musiclearning" 
+            href="#" 
             target="_blank" 
             rel="noopener noreferrer"
             class="flex flex-col items-center p-6 rounded-lg hover:bg-gray-50 transition-colors group"
@@ -90,11 +90,11 @@
               <Youtube class="h-7 w-7 text-white" />
             </div>
             <h3 class="font-medium text-gray-900">YouTube</h3>
-            <p class="text-sm text-gray-500">/musiclearning</p>
+            <p class="text-sm text-gray-500">/somqueconecta</p>
           </a>
 
           <a 
-            href="https://twitter.com/musiclearning" 
+            href="#" 
             target="_blank" 
             rel="noopener noreferrer"
             class="flex flex-col items-center p-6 rounded-lg hover:bg-gray-50 transition-colors group"
@@ -103,7 +103,7 @@
               <Twitter class="h-7 w-7 text-white" />
             </div>
             <h3 class="font-medium text-gray-900">Twitter</h3>
-            <p class="text-sm text-gray-500">@musiclearning</p>
+            <p class="text-sm text-gray-500">@somqueconecta</p>
           </a>
         </div>
       </div>
