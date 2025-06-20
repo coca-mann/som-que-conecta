@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-4xl mx-auto px-0 sm:px-6 lg:px-8 py-8">
       <div
         v-if="course"
         class="bg-white rounded-lg shadow-lg overflow-hidden"

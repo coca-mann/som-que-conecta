@@ -29,7 +29,7 @@
 
     <div
       v-else-if="course && task"
-      class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="max-w-5xl mx-auto px-0 sm:px-6 lg:px-8 py-8"
     >
       <div class="bg-white rounded-lg shadow-md p-4 mb-6">
         <div class="flex items-center justify-between">

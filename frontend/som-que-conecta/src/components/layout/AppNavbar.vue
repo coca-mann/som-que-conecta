@@ -146,6 +146,7 @@
           </div>
           
           <button
+            id="hamburger-menu-btn"
             class="md:hidden p-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-300"
             @click="toggleMobileMenu"
           >
@@ -191,8 +192,33 @@
       >
         <div
           v-if="showMobileMenu"
-          class="md:hidden border-t border-gray-200"
-        />
+          class="md:hidden border-t border-gray-200 bg-white py-4 space-y-2 mobile-menu"
+        >
+          <router-link
+            v-for="link in navigationLinks"
+            :key="link.path"
+            :to="link.path"
+            class="block px-4 py-2 text-gray-700 hover:text-red-600 rounded-lg transition-all duration-300"
+            @click="showMobileMenu = false"
+          >
+            <span class="flex items-center gap-2">
+              <component :is="link.icon" class="h-4 w-4" />
+              {{ link.name }}
+            </span>
+          </router-link>
+          <div v-if="authStore.isAuthenticated" class="border-t border-gray-100 my-2" />
+          <div v-if="authStore.isAuthenticated" class="px-4">
+            <router-link to="/profile" class="block py-2 text-gray-700 hover:text-red-600">Meu Perfil</router-link>
+            <button
+              class="block w-full text-left py-2 text-red-600 hover:bg-red-50 rounded-lg"
+              @click="() => { handleLogout(); showMobileMenu = false; }"
+            >Sair</button>
+          </div>
+          <div v-else class="px-4">
+            <router-link to="/auth?mode=login" class="block py-2 text-gray-700 hover:text-red-600">Entrar</router-link>
+            <router-link to="/auth?mode=register" class="block py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg text-center">Cadastrar</router-link>
+          </div>
+        </div>
       </Transition>
     </div>
   </nav>
@@ -285,7 +311,13 @@ const isActiveRoute = (path) => {
   return route.path.startsWith(path)
 }
 
-const toggleMobileMenu = () => { /* ... */ }
+const toggleMobileMenu = () => {
+  showMobileMenu.value = !showMobileMenu.value
+  if (showMobileMenu.value) {
+    showUserMenu.value = false
+    showSearch.value = false
+  }
+}
 const toggleUserMenu = () => {
   showUserMenu.value = !showUserMenu.value
   if (showUserMenu.value) {
@@ -301,8 +333,12 @@ const closeMenus = (event) => {
   if (showUserMenu.value && !event.target.closest('.user-menu')) {
     showUserMenu.value = false
   }
-  // Fecha o menu mobile se o clique foi fora dele
-  if (showMobileMenu.value && !event.target.closest('.mobile-menu')) {
+  // Fecha o menu mobile se o clique foi fora dele e fora do botão do menu
+  if (
+    showMobileMenu.value &&
+    !event.target.closest('.mobile-menu') &&
+    !event.target.closest('#hamburger-menu-btn')
+  ) {
     showMobileMenu.value = false
   }
   // Fecha a busca se o clique foi fora dela

@@ -26,7 +26,7 @@
 
     <div
       v-if="article"
-      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      class="max-w-4xl mx-auto px-0 sm:px-6 lg:px-8 py-8"
     >
       <article class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="relative h-64 md:h-80">
@@ -67,17 +67,15 @@
               </div>
             </div>
             
-            <div class="flex items-center gap-6">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 w-full sm:w-auto">
               <div class="flex items-center gap-2">
                 <Clock class="h-4 w-4 text-gray-500" />
                 <span class="text-sm text-gray-600">{{ article.reading_time }} min de leitura</span>
               </div>
-              
               <div class="flex items-center gap-2">
                 <Eye class="h-4 w-4 text-gray-500" />
                 <span class="text-sm text-gray-600">{{ article.read_count }} visualizações</span>
               </div>
-              
               <div class="flex items-center gap-1">
                 <Star
                   v-for="star in 5"
@@ -105,8 +103,8 @@
         </div>
 
         <div class="p-6 bg-gray-50 border-t border-gray-200">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
               <button
                 :class="[
                   'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
@@ -131,7 +129,7 @@
               </button>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
               <span class="text-sm text-gray-600">Avalie este artigo:</span>
               <div class="flex items-center gap-1">
                 <button
