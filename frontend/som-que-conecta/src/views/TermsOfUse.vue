@@ -129,6 +129,14 @@
 
 <script setup>
 import { Printer } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Termos de Uso | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Termos de Uso' },
+  ]
+})
 
 const printTerms = () => {
   window.print()

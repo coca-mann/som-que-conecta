@@ -240,6 +240,7 @@ import {
   Image,
   Link
 } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
 
 const route = useRoute()
 const router = useRouter()
@@ -386,6 +387,18 @@ watch(() => route.params, () => {
 }, { immediate: true });
 
 onMounted(fetchCourseData);
+
+watch(task, (newTask) => {
+  if (newTask && course.value) {
+    useHead({
+      // O título da guia mudará assim que a task for carregada
+      title: `${newTask.title} - ${course.value.title} | Som que Conecta`,
+      meta: [
+        { name: 'description', content: 'Tarefa do minicurso.'},
+      ],
+    })
+  }
+})
 </script>
 
 <style scoped>

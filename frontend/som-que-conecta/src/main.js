@@ -1,7 +1,6 @@
-// src/main.js - A ORDEM CORRETA E DEFINITIVA
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { createHead } from '@vueuse/head'
 
 import App from './App.vue'
 import router from './router'
@@ -9,16 +8,11 @@ import router from './router'
 import './assets/tailwind.css'
 import './assets/style.css'
 
-// 1. Crie a instância da aplicação
 const app = createApp(App)
+const head = createHead()
 
-// 2. PRIMEIRO, INSTALE O PINIA.
-// Isso garante que qualquer componente importado a seguir,
-// incluindo o App e seus filhos, já encontre um Pinia ativo.
-app.use(createPinia()) 
-
-// 3. DEPOIS, INSTALE O ROUTER.
+app.use(createPinia())
 app.use(router)
+app.use(head)
 
-// 4. FINALMENTE, MONTE A APLICAÇÃO.
 app.mount('#app')

@@ -300,6 +300,14 @@ import {
   Clock
 } from 'lucide-vue-next'
 import { ArrowRight, Play, Heart, Users, Award } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Página Inicial | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Página inicial com o conteúdo mais recente da plataforma.' },
+  ]
+})
 
 // Estado para armazenar os dados vindos da API
 const latestArticle = ref(null);

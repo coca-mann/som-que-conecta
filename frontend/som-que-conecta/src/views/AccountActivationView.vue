@@ -40,6 +40,14 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios'; // Ou seu serviço de API
 import { Loader2, CircleCheck, CircleX } from 'lucide-vue-next';
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Ativação da Conta | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Ativação da conta.' },
+  ]
+})
 
 // Estado do componente
 const isLoading = ref(true);

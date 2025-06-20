@@ -185,6 +185,14 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 import articleService from '@/services/articleService';
 import { Plus, Search, Star, Eye, MessageCircle, BookOpen } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Artigos | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Leia artigos sobre teoria musical, prática e instrumentos.' },
+  ]
+})
 
 const router = useRouter()
 const authStore = useAuthStore();

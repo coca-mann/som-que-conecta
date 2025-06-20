@@ -144,6 +144,14 @@ import { Clock, BookOpen } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store';
 import lessonService from '@/services/lessonService';
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Minicursos | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Acesse minicursos introdutórios do mundo da música.' },
+  ]
+})
 
 const router = useRouter()
 const authStore = useAuthStore();

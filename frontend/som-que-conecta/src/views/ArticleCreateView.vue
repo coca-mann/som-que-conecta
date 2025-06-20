@@ -472,6 +472,14 @@ import {
   Upload,
   Trash2
 } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Novo Artigo | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Faça a criação de um novo artigo.' },
+  ]
+})
 
 const authStore = useAuthStore()
 const router = useRouter()

@@ -500,6 +500,14 @@ import {
   newspaper,
   Newspaper
 } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Acesse ou Cadastre-se | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Acesse ou cadastre-se na plataforma Som que Conecta para ter acesso aos mini-cursos, instrumentos e artigos incríveis.' },
+  ]
+})
 
 const errorMessage = ref(null);
 

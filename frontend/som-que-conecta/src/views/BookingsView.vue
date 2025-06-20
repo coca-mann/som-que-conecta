@@ -553,7 +553,14 @@ import {
   Calendar, List, Clock, CheckCircle, XCircle, TrendingUp,
   ChevronLeft, ChevronRight, X, Timer, CalendarDays, MapPin
 } from 'lucide-vue-next';
-console.log('Conteúdo do instrumentService importado:', instrumentService);
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Gerenciar Agendamentos | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Gerencie os agendamentos dos seus instrumentos musicais.' },
+  ]
+})
 
 // --- ESTADO PRINCIPAL ---
 const bookings = ref([]);

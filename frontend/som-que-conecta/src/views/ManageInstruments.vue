@@ -198,6 +198,14 @@ import { useAuthStore } from '@/stores/auth.store'
 import { Plus, Edit, Trash2, Star, MapPin, Clock, Calendar, AlertTriangle } from 'lucide-vue-next'
 import InstrumentFormModal from '../components/modals/InstrumentFormModal.vue'
 import instrumentService from '@/services/instrumentService'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Gerenciar Instrumentos | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Gerencie os instrumentos que deseja disponibilizar para empréstimo.' },
+  ]
+})
 
 const authStore = useAuthStore()
 

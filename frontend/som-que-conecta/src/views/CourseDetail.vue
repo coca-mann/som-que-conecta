@@ -173,11 +173,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store';
 import lessonService from '@/services/lessonService';
 import { Clock, BookOpen, User, X, Check, Award } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+
 
 const route = useRoute()
 const router = useRouter()
@@ -206,6 +209,17 @@ const fetchCourseDetail = async () => {
     isLoading.value = false;
   }
 };
+
+watch(course, (newCourse) => {
+  if (newCourse) {
+    useHead({
+      title: `${newCourse.title} | Som que Conecta`,
+      meta: [
+        { name: 'description', content: newCourse.description },
+      ],
+    })
+  }
+})
 
 // --- PROPRIEDADES COMPUTADAS ---
 const completedTasks = computed(() => {

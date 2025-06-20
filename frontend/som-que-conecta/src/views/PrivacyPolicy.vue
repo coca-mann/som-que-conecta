@@ -186,6 +186,14 @@
 <script setup>
 import { ref } from 'vue'
 import { Printer, ChevronRight } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Política de Privacidade | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Política de Privacidade.' },
+  ]
+})
 
 const cookiePreferences = ref({
   performance: true,

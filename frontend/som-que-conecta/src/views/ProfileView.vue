@@ -680,6 +680,14 @@ import {
   Award
 } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth.store';
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Meu Perfil | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Todas as suas informações pessoais reunidas.' },
+  ]
+})
 
 const router = useRouter()
 const isEditing = ref(false)

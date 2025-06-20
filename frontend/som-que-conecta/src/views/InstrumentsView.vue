@@ -250,6 +250,14 @@ import instrumentService from '@/services/instrumentService';
 import { storeToRefs } from 'pinia';
 import { MapPin, User, Clock } from 'lucide-vue-next'
 import SchedulingModal from '@/components/modals/SchedulingModal.vue'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Instrumentos | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Veja os mais diversos instrumentos disponíveis para empréstimo e pratique sua criatividade musical.' },
+  ]
+})
 
 const authStore = useAuthStore();
 const isLoggedIn = computed(() => !!authStore.user);

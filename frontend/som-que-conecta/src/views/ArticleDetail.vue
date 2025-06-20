@@ -317,7 +317,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store';
 import articleService from '@/services/articleService';
@@ -333,6 +333,7 @@ import {
   AlertTriangle,
   X
 } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
 
 const route = useRoute()
 const router = useRouter();
@@ -566,4 +567,17 @@ const deleteComment = async () => {
     isDeletingComment.value = false
   }
 }
+
+watch(article, (newArticle) => {
+  if (newArticle) {
+    useHead({
+      // O título da guia mudará assim que o artigo for carregado
+      title: `${newArticle.title} | Som que Conecta`,
+      meta: [
+        { name: 'description', content: newArticle.short_description },
+      ],
+    })
+  }
+})
+
 </script>

@@ -217,6 +217,14 @@
 <script setup>
 import { ref } from 'vue'
 import { Paperclip, X, Send, Loader2, ChevronDown, CheckCircle } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Central de Ajuda | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Solicite ajuda sobre qualquer situação na plataforma Som que Conecta.' },
+  ]
+})
 
 const form = ref({
   name: '',

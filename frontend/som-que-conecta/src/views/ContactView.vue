@@ -185,6 +185,14 @@ import {
   Youtube, 
   Twitter 
 } from 'lucide-vue-next'
+import { useHead } from '@vueuse/head';
+
+useHead({
+  title: 'Contato | Som que Conecta',
+  meta: [
+    { name: 'description', content: 'Informações de contato com a equipe Som que Conecta.' },
+  ]
+})
 
 const newsletterEmail = ref('')
 
