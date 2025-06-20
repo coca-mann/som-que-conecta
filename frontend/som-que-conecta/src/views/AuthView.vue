@@ -485,6 +485,7 @@
 import { useAuthStore } from '@/stores/auth.store';
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { googleTokenLogin } from "vue3-google-login";
 import {
   Music,
   Mail,
@@ -577,6 +578,8 @@ const isFormValid = computed(() => {
   }
 })
 
+
+
 // Methods
 const setMode = (mode) => {
   isLogin.value = mode === 'login'
@@ -653,27 +656,33 @@ const handleSubmit = async () => {
   }
 }
 
-const signInWithGoogle = async () => {
-  isLoading.value = true
+// --- NOVA FUNÇÃO DE LOGIN COM GOOGLE ---
+const signInWithGoogle = () => {
+  isLoading.value = true;
+  errorMessage.value = null;
   
-  try {
-    // Simulate Google OAuth
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    console.log('Google sign in')
-    
-    // In a real app, you would integrate with Google OAuth
-    // Example: const result = await signInWithPopup(auth, googleProvider)
-    
-    const redirectTo = route.query.redirect || '/'
-    router.push(redirectTo)
-    
-  } catch (error) {
-    console.error('Google sign in error:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
+  googleTokenLogin().then(async (response) => {
+    try {
+      // 1. A biblioteca do Google retornou o token com sucesso.
+      // 2. Agora chamamos nossa action no Pinia para enviar ao backend.
+      await authStore.loginWithGoogle(response);
+      
+      // 3. Se tudo deu certo no backend, redirecionamos o usuário.
+      const redirectTo = route.query.redirect || '/';
+      router.push(redirectTo);
+
+    } catch (error) {
+      console.error('Google sign in error on backend:', error);
+      errorMessage.value = "Falha na autenticação com o Google. Tente novamente.";
+    } finally {
+      isLoading.value = false;
+    }
+  }).catch(error => {
+    // Lidando com erros do próprio popup do Google (ex: usuário fechou a janela)
+    console.error('Google popup error:', error);
+    isLoading.value = false;
+  });
+};
 
 const handleForgotPassword = async () => {
   if (!resetEmail.value) return

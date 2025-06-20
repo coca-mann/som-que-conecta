@@ -85,6 +85,28 @@ export const useAuthStore = defineStore({
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
-        }
+        },
+        async loginWithGoogle(googleResponse) {
+            try {
+              // Envia o access_token para o backend
+              const backendResponse = await authService.loginWithGoogle({
+                access_token: googleResponse.access_token,
+              });
+              
+              // O backend retorna os tokens da NOSSA aplicação (JWT)
+              this.accessToken = backendResponse.data.access_token;
+              this.refreshToken = backendResponse.data.refresh_token;
+              this.user = backendResponse.data.user;
+      
+              // Salva tudo no localStorage
+              localStorage.setItem('accessToken', this.accessToken);
+              localStorage.setItem('refreshToken', this.refreshToken);
+              localStorage.setItem('user', JSON.stringify(this.user));
+      
+            } catch (error) {
+              this.logout();
+              throw error;
+            }
+          },
     }
 });

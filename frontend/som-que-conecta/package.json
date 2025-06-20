@@ -23,7 +23,8 @@
     "lucide-vue-next": "^0.511.0",
     "pinia": "^2.3.1",
     "vue": "^3.2.13",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vue3-google-login": "^2.0.33"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

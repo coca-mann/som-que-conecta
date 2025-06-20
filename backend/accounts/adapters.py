@@ -24,3 +24,6 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
                 sso_id=sso_id,
                 profile_picture=picture,
             )
+
+    def get_user_search_fields(self):
+        return ['email']

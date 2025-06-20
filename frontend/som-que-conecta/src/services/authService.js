@@ -24,7 +24,15 @@ const authService = {
   },
   getMe() {
     return api.get('/profile/');
-  }
+  },
+  /**
+   * Envia o access_token do Google para o backend para login/registro.
+   * @param {object} payload - Objeto contendo o token. Ex: { access_token: '...' }
+   */
+  loginWithGoogle(payload) {
+    // O endpoint deve corresponder ao seu urls.py
+    return api.post('/auth/social/login/', payload);
+  },
 
   // No futuro, você pode adicionar outras funções aqui:
   //
