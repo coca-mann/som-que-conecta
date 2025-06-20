@@ -4,10 +4,9 @@
       <div class="text-center">
         <router-link
           to="/"
-          class="inline-flex items-center space-x-2 group"
+          class="inline-flex flex-col items-center space-y-3 group"
         >
-          <Music class="h-10 w-10 text-red-600 transition-transform duration-300 group-hover:scale-110" />
-          <span class="text-2xl font-bold text-gray-900">Som que Conecta</span>
+          <img :src="logoImage" alt="Som que Conecta Logo" class="h-24 w-24 text-red-600 transition-transform duration-300 group-hover:scale-110 object-contain drop-shadow-lg" />
         </router-link>
         <h2 class="mt-6 text-3xl font-bold text-gray-900">
           {{ isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta' }}
@@ -18,12 +17,17 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-        <div class="flex bg-gray-100 rounded-lg p-1 mb-8">
+        <div class="relative flex bg-gray-100 rounded-lg p-1 mb-8 overflow-hidden">
+          <!-- Slider de fundo animado -->
+          <span
+            class="absolute top-1 left-1 h-[calc(100%-0.5rem)] w-[calc(50%-0.25rem)] bg-white rounded-md shadow transition-all duration-300 z-0"
+            :style="isLogin ? 'transform: translateX(0);' : 'transform: translateX(calc(100% + 0.25rem));'"
+          ></span>
           <button
             :class="[
-              'flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-300',
+              'flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-300 relative z-10',
               isLogin 
-                ? 'bg-white text-red-600 shadow-sm' 
+                ? 'text-red-600'
                 : 'text-gray-500 hover:text-gray-700'
             ]"
             @click="setMode('login')"
@@ -32,9 +36,9 @@
           </button>
           <button
             :class="[
-              'flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-300',
+              'flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-300 relative z-10',
               !isLogin 
-                ? 'bg-white text-red-600 shadow-sm' 
+                ? 'text-red-600'
                 : 'text-gray-500 hover:text-gray-700'
             ]"
             @click="setMode('register')"
@@ -502,6 +506,7 @@ import {
   Newspaper
 } from 'lucide-vue-next'
 import { useHead } from '@vueuse/head';
+import logoImage from '@/assets/logo.png';
 
 useHead({
   title: 'Acesse ou Cadastre-se | Som que Conecta',
