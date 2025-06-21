@@ -18,6 +18,11 @@ const router = createRouter({
       component: () => import('../views/AuthView.vue')
     },
     {
+      path: '/password-reset-confirm/:uid/:token/',
+      name: 'PasswordResetConfirm',
+      component: () => import('../views/PasswordResetConfirmView.vue'),
+    },
+    {
       path: '/activate-account/:token', // O ':token' cria um parâmetro dinâmico na URL
       name: 'AccountActivation',
       component: AccountActivationView

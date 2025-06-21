@@ -690,26 +690,34 @@ const signInWithGoogle = () => {
 };
 
 const handleForgotPassword = async () => {
-  if (!resetEmail.value) return
+  if (!resetEmail.value) {
+    // Adiciona uma mensagem de erro se o campo estiver vazio
+    errorMessage.value = 'Por favor, digite seu endereço de e-mail.';
+    return;
+  }
   
-  isLoading.value = true
+  isLoading.value = true;
+  errorMessage.value = null;
   
   try {
-    // Simulate password reset
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Chama o serviço de API com o email fornecido
+    await authStore.requestPasswordReset({ email: resetEmail.value });
     
-    console.log('Password reset for:', resetEmail.value)
-    alert('Link de recuperação enviado para seu email!')
+    // Mostra uma mensagem de sucesso genérica para o usuário
+    alert('Se uma conta com este e-mail existir, um link de recuperação foi enviado.');
     
-    showForgotPassword.value = false
-    resetEmail.value = ''
+    // Fecha o modal e limpa o campo
+    showForgotPassword.value = false;
+    resetEmail.value = '';
     
   } catch (error) {
-    console.error('Password reset error:', error)
+    // Em caso de erro, mostra uma mensagem genérica para não confirmar se um email existe ou não (segurança)
+    console.error('Password reset error:', error);
+    errorMessage.value = "Ocorreu um erro. Por favor, tente novamente mais tarde.";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 // Initialize based on route query
 const initializeMode = () => {

@@ -107,6 +107,14 @@ export const useAuthStore = defineStore({
               this.logout();
               throw error;
             }
-          },
+        },
+        async requestPasswordReset(payload) {
+            // Apenas repassa a chamada para o serviço
+            return authService.requestPasswordReset(payload);
+        },
+        async confirmPasswordReset(payload) {
+            // Apenas repassa a chamada para o serviço
+            return authService.confirmPasswordReset(payload);
+        },
     }
 });

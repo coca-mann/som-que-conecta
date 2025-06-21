@@ -1,10 +1,6 @@
 console.log("Executando services/authService.js");
 import api from './api';
 
-/**
- * Criamos um objeto `authService` que agrupará todas as funções
- * relacionadas à autenticação.
- */
 const authService = {
   /**
    * Função para realizar o login.
@@ -33,20 +29,13 @@ const authService = {
     // O endpoint deve corresponder ao seu urls.py
     return api.post('/auth/social/login/', payload);
   },
-
-  // No futuro, você pode adicionar outras funções aqui:
-  //
-  // register(userData) {
-  //   return api.post('/register/', userData);
-  // },
-  //
-  // logout() {
-  //   // ...
-  // }
-};
-
-/**
- * Exportamos o objeto authService para que ele possa ser importado
- * e utilizado em qualquer componente da nossa aplicação.
- */
+  requestPasswordReset(payload) {
+    // dj-rest-auth fornece este endpoint por padrão
+    return api.post('/auth/password/reset/', payload);
+  },
+  confirmPasswordReset(payload) {
+    // dj-rest-auth fornece este endpoint por padrão
+    return api.post('/auth/password/reset/confirm/', payload);
+  },
+}
 export default authService;
