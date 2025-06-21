@@ -5,10 +5,13 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
+from dj_rest_auth.serializers import PasswordResetSerializer
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from backend.lessons.models import Lesson, UserTask
 from backend.accounts.models import UserHistory, UserGoals, EmailVerificationToken
+from allauth.account.forms import default_token_generator
+from allauth.account.utils import user_pk_to_url_str
 
 User = get_user_model()
 
@@ -307,3 +310,47 @@ class UserGoalSerializer(serializers.ModelSerializer):
         today = timezone.now().date()
         days_left = (obj.to_do_date - today).days
         return max(0, days_left) # Retorna 0 se a data já passou
+
+
+class CustomPasswordResetSerializer(PasswordResetSerializer):
+    def save(self):
+        request = self.context.get('request')
+        
+        # Pega o formulário e valida para encontrar os usuários
+        reset_form = self.reset_form
+        if not reset_form.is_valid():
+            raise serializers.ValidationError(reset_form.errors)
+
+        # Itera sobre os usuários encontrados (geralmente apenas um)
+        for user in reset_form.users:
+            
+            # --- LÓGICA MANUAL E COMPLETA ---
+            
+            # 1. Gerar o UID e o Token para o link
+            uid = user_pk_to_url_str(user)
+            token = default_token_generator.make_token(user)
+            
+            # 2. Construir a URL do frontend usando nossas configurações
+            reset_path = settings.PASSWORD_RESET_CONFIRM_URL.format(uidb64=uid, token=token)
+            reset_url = f"{settings.FRONTEND_URL}{reset_path}"
+            
+            # 3. Preparar o contexto para o template do e-mail
+            context = {
+                'user': user,
+                'password_reset_url': reset_url, # Passamos a URL completa e correta
+            }
+            
+            # 4. Renderizar o corpo e o assunto do e-mail a partir dos templates
+            subject = render_to_string('account/email/password_reset_key_subject.txt', context).strip()
+            body = render_to_string('account/email/password_reset_key_message.txt', context)
+            
+            # 5. Enviar o e-mail usando a função padrão do Django
+            send_mail(
+                subject=subject,
+                message=body,
+                from_email=settings.DEFAULT_FROM_EMAIL, # Use o remetente padrão do settings
+                recipient_list=[user.email]
+            )
+            
+        # Retorna o e-mail validado, como esperado pelo resto do fluxo
+        return self.validated_data['email']

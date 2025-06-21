@@ -4,32 +4,23 @@ from datetime import timedelta
 import os
 from dotenv import load_dotenv
 
-# Carrega as variáveis do arquivo .env
+
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'backend.accounts.apps.AccountsConfig',
@@ -38,9 +29,7 @@ INSTALLED_APPS = [
     'backend.lessons.apps.LessonsConfig',
     'backend.notifications.apps.NotificationsConfig',
     'backend.core.apps.CoreConfig',
-    'django_ckeditor_5',
     'corsheaders',
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -71,7 +60,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -86,10 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -100,10 +85,6 @@ DATABASES = {
         'PORT': config('PSQL_PORT'),
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -120,10 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'America/Porto_Velho'
@@ -132,48 +109,13 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-
-customColorPalette = [
-    {
-        'color': 'hsl(4, 90%, 58%)',
-        'label': 'Red'
-    },
-    {
-        'color': 'hsl(340, 82%, 52%)',
-        'label': 'Pink'
-    },
-    {
-        'color': 'hsl(291, 64%, 42%)',
-        'label': 'Purple'
-    },
-    {
-        'color': 'hsl(262, 52%, 47%)',
-        'label': 'Deep Purple'
-    },
-    {
-        'color': 'hsl(231, 48%, 48%)',
-        'label': 'Indigo'
-    },
-    {
-        'color': 'hsl(207, 90%, 54%)',
-        'label': 'Blue'
-    },
-]
 
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 SOCIALACCOUNT_EMAIL_REQUIRED = False
@@ -200,6 +142,10 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+REST_AUTH = {
+    'PASSWORD_RESET_SERIALIZER': 'backend.accounts.serializers.CustomPasswordResetSerializer',
 }
 
 SIMPLE_JWT = {
@@ -246,7 +192,11 @@ CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE')
 
 SITE_ID = 1
 
-SOCIALACCOUNT_ADAPTER = 'backend.accounts.adapters.MySocialAccountAdapter'
+ACCOUNT_ADAPTER = 'backend.accounts.adapters.AccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'backend.accounts.adapters.SocialAccountAdapter'
+PASSWORD_RESET_CONFIRM_URL = '/password-reset-confirm/{uidb64}/{token}/'
+
+SITE_ID = 1
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # Não estamos usando um campo 'username'
 ACCOUNT_EMAIL_REQUIRED = True             # O email é obrigatório
@@ -254,7 +204,7 @@ ACCOUNT_UNIQUE_EMAIL = True               # Cada email deve ser único
 ACCOUNT_USERNAME_REQUIRED = False         # O 'username' não é obrigatório
 ACCOUNT_AUTHENTICATION_METHOD = 'email'   # O método de autenticação é o email
 ACCOUNT_EMAIL_VERIFICATION = 'optional' # 'mandatory' para forçar verificação de email
-ACCOUNT_ADAPTER = 'backend.accounts.adapters.MySocialAccountAdapter'
+
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

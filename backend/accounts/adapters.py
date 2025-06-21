@@ -1,29 +1,32 @@
+from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from backend.accounts.models import User
+from django.conf import settings
+
+class AccountAdapter(DefaultAccountAdapter):
+    """
+    Adaptador para ações de contas locais (registro, login, reset de senha).
+    Herdar do padrão já nos dá o método 'clean_email' e outros.
+    """
+    def save_user(self, request, user, form, commit=True):
+        """
+        Salva um novo usuário. Se for o primeiro usuário, o torna superusuário.
+        """
+        user = super().save_user(request, user, form, commit=False)
+        user.is_active = True  # Ativa o usuário diretamente
+        if commit:
+            user.save()
+        return user
 
 
-class MySocialAccountAdapter(DefaultSocialAccountAdapter):
-    def pre_social_login(self, request, sociallogin):
-        user = sociallogin.user
-        extra_data = sociallogin.account.extra_data
-
-        email = extra_data.get("email", "")
-        sso_id = extra_data.get("sub", "")
-        picture = extra_data.get("picture", "")
-        name = extra_data.get("name", "")
-
-        user.email = email
-        user.username = email.split("@")[0]
-        user.first_name = name
+class SocialAccountAdapter(DefaultSocialAccountAdapter):
+    """
+    Adaptador para ações de contas sociais (login com Google).
+    """
+    def save_user(self, request, sociallogin, form=None):
+        """
+        Salva um novo usuário vindo de um login social.
+        """
+        user = super().save_user(request, sociallogin, form)
+        user.auth_provider = 'GOOGLE' # Marca o provedor de autenticação
         user.save()
-
-        if not hasattr(user, "userprofile"):
-            User.objects.create(
-                username=user,
-                auth_provider="google",
-                sso_id=sso_id,
-                profile_picture=picture,
-            )
-
-    def get_user_search_fields(self):
-        return ['email']
+        return user
