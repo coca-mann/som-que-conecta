@@ -351,6 +351,10 @@ const fetchHomePageData = async () => {
   }
 };
 
-onMounted(fetchHomePageData);
+onMounted(() => {
+  // Garantir que a página sempre carregue no topo
+  window.scrollTo(0, 0);
+  fetchHomePageData();
+});
 
 </script>

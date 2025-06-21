@@ -727,7 +727,8 @@ const initializeMode = () => {
 }
 
 onMounted(() => {
-  initializeMode()
+  window.scrollTo(0, 0);
+  initializeMode();
 })
 
 // Watch for route changes
