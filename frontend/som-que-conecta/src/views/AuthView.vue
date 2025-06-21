@@ -422,7 +422,7 @@
     >
       <div
         v-if="showForgotPassword"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       >
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
           <div class="flex items-center justify-between mb-4">
