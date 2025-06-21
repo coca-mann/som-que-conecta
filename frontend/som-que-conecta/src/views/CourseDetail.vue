@@ -256,5 +256,8 @@ const formatDuration = (time, type) => {
     return `${time} ${plural}`;
 }
 
-onMounted(fetchCourseDetail);
+onMounted(() => {
+  window.scrollTo(0, 0);
+  fetchCourseDetail();
+});
 </script>

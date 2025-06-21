@@ -814,6 +814,7 @@ const fetchGoals = async () => {
 
 // --- CHAMA A FUNÇÃO AO MONTAR O COMPONENTE ---
 onMounted(() => {
+  window.scrollTo(0, 0);
   fetchProfile();
   fetchCourses();
   fetchMyInstruments();

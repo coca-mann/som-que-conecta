@@ -386,7 +386,10 @@ watch(() => route.params, () => {
   fetchCourseData();
 }, { immediate: true });
 
-onMounted(fetchCourseData);
+onMounted(() => {
+  window.scrollTo(0, 0);
+  fetchCourseData();
+});
 
 watch(task, (newTask) => {
   if (newTask && course.value) {

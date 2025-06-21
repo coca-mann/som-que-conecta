@@ -244,6 +244,7 @@ watch([selectedCategory, sortBy, searchQuery], fetchArticles);
 
 // Busca inicial
 onMounted(() => {
+  window.scrollTo(0, 0);
   fetchArticles();
   fetchCategories();
 });

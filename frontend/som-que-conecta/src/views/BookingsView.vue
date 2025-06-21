@@ -595,6 +595,7 @@ const fetchBookings = async () => {
 };
 
 onMounted(() => {
+  window.scrollTo(0, 0);
   fetchBookings();
 });
 
