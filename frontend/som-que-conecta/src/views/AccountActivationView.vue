@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4">
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-      
       <div v-if="isLoading" class="flex justify-center items-center flex-col">
         <Loader2 class="h-12 w-12 text-red-600 animate-spin" />
         <h2 class="mt-4 text-2xl font-bold text-gray-800">{{ message }}</h2>
