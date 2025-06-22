@@ -1,117 +1,83 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-0 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="text-center mb-10">
         <h1 class="text-3xl font-bold text-gray-900 mb-3">
           Termos de Uso
         </h1>
         <p class="text-gray-600">
-          Última atualização: 5 de junho de 2024
+          Última atualização: 22 de junho de 2025
         </p>
       </div>
 
       <div class="bg-white rounded-lg shadow-sm p-8">
         <div class="prose max-w-none">
-          <h2>1. Aceitação dos Termos</h2>
+          <h2>1. Bem-vindo ao Som que Conecta!</h2>
           <p>
-            Ao acessar e usar a plataforma Music Learning, você concorda em cumprir e estar vinculado aos seguintes termos e condições de uso. Se você não concordar com qualquer parte destes termos, não poderá acessar ou utilizar nossos serviços.
+            Ao acessar ou usar a plataforma "Som que Conecta" ("Plataforma"), você concorda em cumprir e estar vinculado a estes Termos de Uso ("Termos"). Se você não concordar com qualquer parte destes termos, você não deve acessar ou utilizar nossos serviços.
           </p>
 
-          <h2>2. Descrição do Serviço</h2>
+          <h2>2. Nossos Serviços</h2>
           <p>
-            A Music Learning é uma plataforma educacional online dedicada ao ensino de música, oferecendo cursos, artigos, tutoriais e ferramentas para aprendizado musical. Nossos serviços incluem, mas não se limitam a:
+            O Som que Conecta é uma plataforma dedicada a democratizar o acesso à educação musical. Nossos serviços, oferecidos gratuitamente, incluem:
           </p>
           <ul>
-            <li>Cursos de música online</li>
-            <li>Artigos e conteúdo educacional</li>
-            <li>Ferramentas de prática e aprendizado</li>
-            <li>Comunidade de estudantes e professores</li>
-            <li>Recursos para gerenciamento de instrumentos</li>
+            <li><strong>Minicursos Estruturados:</strong> Cursos com tarefas sequenciais que permitem aos usuários aprender e acompanhar seu próprio progresso.</li>
+            <li><strong>Artigos Educacionais:</strong> Conteúdo informativo e prático criado por nossa comunidade de professores e especialistas.</li>
+            <li><strong>Empréstimo de Instrumentos:</strong> Uma funcionalidade que conecta usuários que desejam aprender com ONGs e professores que disponibilizam instrumentos para empréstimo.</li>
           </ul>
 
-          <h2>3. Cadastro e Conta</h2>
+          <h2>3. Cadastro e Contas de Usuário</h2>
           <p>
-            Para acessar determinados recursos da plataforma, você precisará criar uma conta. Ao se cadastrar, você concorda em:
+            Para acessar a maioria dos recursos, você precisará criar uma conta. Ao se cadastrar, você concorda em fornecer informações verdadeiras e completas, e é responsável por manter a segurança de sua senha e por todas as atividades em sua conta. A plataforma pode oferecer diferentes tipos de perfil (ex: Aluno, Professor, ONG), que podem ter diferentes permissões e exigir validação pela nossa equipe.
+          </p>
+
+          <h2>4. Propriedade Intelectual</h2>
+          <h3>4.1. Conteúdo da Plataforma</h3>
+          <p>
+            Todo o conteúdo disponibilizado pela Som que Conecta, como a estrutura dos cursos, design e software, é de nossa propriedade e protegido por leis de direitos autorais.
+          </p>
+          <h3>4.2. Conteúdo Gerado pelo Usuário</h3>
+          <p>
+            Os usuários com perfil de Professor ou ONG podem criar e publicar conteúdo, como artigos. Ao publicar conteúdo na Plataforma, você afirma que possui os direitos sobre ele. Você retém todos os seus direitos de propriedade sobre seu conteúdo, mas concede à Som que Conecta uma licença mundial, não exclusiva e isenta de royalties para usar, reproduzir, distribuir e exibir esse conteúdo no âmbito dos serviços da Plataforma.
+          </p>
+
+          <h2>5. Empréstimo de Instrumentos</h2>
+          <p>
+            A Som que Conecta atua como uma **intermediária** para facilitar o contato entre usuários que precisam de um instrumento e parceiros (ONGs, Professores) que os disponibilizam.
           </p>
           <ul>
-            <li>Fornecer informações verdadeiras, precisas e completas</li>
-            <li>Manter e atualizar prontamente seus dados cadastrais</li>
-            <li>Manter a segurança de sua senha e identificação</li>
-            <li>Ser integralmente responsável por todas as atividades realizadas com sua conta</li>
-            <li>Notificar imediatamente qualquer uso não autorizado de sua conta</li>
+            <li>O acordo de empréstimo, incluindo termos, duração e responsabilidades, é feito diretamente entre o usuário e o parceiro provedor do instrumento.</li>
+            <li>A Som que Conecta não é parte deste acordo e não se responsabiliza pela condição, manutenção, perda, dano ou devolução dos instrumentos.</li>
           </ul>
 
-          <h2>4. Conteúdo e Propriedade Intelectual</h2>
+          <h2>6. Gratuidade do Serviço</h2>
           <p>
-            Todo o conteúdo disponibilizado na plataforma Music Learning, incluindo textos, gráficos, logotipos, ícones, imagens, clipes de áudio, downloads digitais, compilações de dados e software, é propriedade da Music Learning ou de seus fornecedores de conteúdo e está protegido pelas leis de direitos autorais.
+            O acesso e uso dos recursos educacionais da Som que Conecta são gratuitos. Nossa plataforma é mantida através de doações, parcerias e trabalho voluntário. Não há taxas de assinatura ou custos para acessar os minicursos e artigos.
           </p>
+          
+          <h2>7. Conduta do Usuário</h2>
           <p>
-            Você não pode modificar, reproduzir, distribuir, transmitir, exibir, publicar, vender, licenciar, criar trabalhos derivados ou usar qualquer conteúdo disponível na plataforma para fins comerciais sem o consentimento prévio por escrito da Music Learning.
-          </p>
-
-          <h2>5. Conduta do Usuário</h2>
-          <p>
-            Ao utilizar nossa plataforma, você concorda em não:
-          </p>
-          <ul>
-            <li>Violar quaisquer leis ou regulamentos aplicáveis</li>
-            <li>Publicar ou transmitir material ilegal, ameaçador, difamatório, obsceno ou ofensivo</li>
-            <li>Interferir ou interromper o funcionamento da plataforma</li>
-            <li>Tentar acessar áreas restritas da plataforma</li>
-            <li>Usar a plataforma para fins comerciais não autorizados</li>
-            <li>Coletar informações de outros usuários sem consentimento</li>
-            <li>Fazer upload de vírus ou outros códigos maliciosos</li>
-          </ul>
-
-          <h2>6. Assinaturas e Pagamentos</h2>
-          <p>
-            Alguns serviços da Music Learning podem exigir pagamento ou assinatura. Ao adquirir uma assinatura, você concorda com os seguintes termos:
-          </p>
-          <ul>
-            <li>Fornecer informações de pagamento precisas e completas</li>
-            <li>Autorizar a cobrança pelos serviços selecionados</li>
-            <li>Manter suas informações de pagamento atualizadas</li>
-            <li>Entender que as assinaturas são renovadas automaticamente até que sejam canceladas</li>
-            <li>Aceitar nossa política de reembolso conforme descrita nos termos específicos de cada serviço</li>
-          </ul>
-
-          <h2>7. Cancelamento e Rescisão</h2>
-          <p>
-            Você pode cancelar sua conta a qualquer momento. A Music Learning reserva-se o direito de suspender ou encerrar sua conta e acesso à plataforma se você violar estes Termos de Uso ou por qualquer outro motivo a nosso critério exclusivo.
+            Você concorda em não usar a plataforma para publicar conteúdo ofensivo, violar leis, interferir com o funcionamento do site ou usar indevidamente o sistema de agendamento e empréstimo de instrumentos para assediar ou enganar outros usuários.
           </p>
 
           <h2>8. Limitação de Responsabilidade</h2>
           <p>
-            A Music Learning não será responsável por quaisquer danos diretos, indiretos, incidentais, especiais, consequenciais ou punitivos resultantes do uso ou incapacidade de usar nossos serviços, incluindo, mas não se limitando a, perda de lucros, dados, uso, boa vontade ou outras perdas intangíveis.
+            A plataforma é fornecida "como está". A Som que Conecta não será responsável por quaisquer danos diretos ou indiretos resultantes do uso ou da incapacidade de usar nossos serviços, incluindo as interações relacionadas ao empréstimo de instrumentos.
           </p>
 
           <h2>9. Modificações dos Termos</h2>
           <p>
-            A Music Learning reserva-se o direito de modificar estes Termos de Uso a qualquer momento. As alterações entrarão em vigor imediatamente após a publicação dos termos atualizados. O uso contínuo da plataforma após tais alterações constitui sua aceitação dos novos termos.
+            Reservamo-nos o direito de modificar estes Termos a qualquer momento. Notificaremos sobre as alterações, e o uso contínuo da plataforma após a atualização constituirá sua aceitação dos novos termos.
           </p>
 
-          <h2>10. Lei Aplicável</h2>
+          <h2>10. Contato</h2>
           <p>
-            Estes Termos de Uso serão regidos e interpretados de acordo com as leis do Brasil, independentemente de conflitos de disposições legais.
+            Se você tiver dúvidas sobre estes Termos de Uso, entre em contato conosco pelo e-mail: <a href="mailto:contato@somqueconecta.fun" class="text-red-600 hover:underline">contato@somqueconecta.fun</a>
           </p>
-
-          <h2>11. Contato</h2>
-          <p>
-            Se você tiver dúvidas sobre estes Termos de Uso, entre em contato conosco pelo email: <a href="mailto:contato@somqueconecta.fun" class="text-red-600 hover:underline">contato@somqueconecta.fun</a>
-          </p>
-        </div>
-
-        <div class="mt-8 text-center">
-          <button 
-            class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 mx-auto" 
-            @click="printTerms"
-          >
-            <Printer class="h-5 w-5" />
-            Imprimir Termos
-          </button>
         </div>
       </div>
-
+      
       <div class="mt-8 bg-red-50 rounded-lg p-6 text-center">
         <p class="text-gray-700 mb-4">
           Ao utilizar nossa plataforma, você confirma que leu, entendeu e concorda com estes Termos de Uso.
@@ -128,41 +94,42 @@
 </template>
 
 <script setup>
-import { Printer } from 'lucide-vue-next'
 import { useHead } from '@vueuse/head';
 
 useHead({
   title: 'Termos de Uso | Som que Conecta',
   meta: [
-    { name: 'description', content: 'Termos de Uso' },
+    { name: 'description', content: 'Termos de Uso da plataforma Som que Conecta.' },
   ]
 })
 
-const printTerms = () => {
-  window.print()
-}
 </script>
 
 <style scoped>
+/* O seu CSS scoped continua o mesmo */
 .prose h2 {
   @apply text-xl font-semibold text-gray-900 mt-8 mb-4;
 }
-
-.prose p {
+.prose p, .prose ul {
   @apply text-gray-700 leading-relaxed mb-4;
 }
-
 .prose ul {
-  @apply list-disc list-inside space-y-1 mb-6 text-gray-700 ml-4;
+  @apply list-disc list-inside space-y-1 mb-6 ml-4;
 }
-
 .prose a {
   @apply text-blue-600 hover:text-blue-800 underline;
 }
-
 @media print {
-  button {
-    display: none !important;
+  body * {
+    visibility: hidden;
+  }
+  .prose, .prose * {
+    visibility: visible;
+  }
+  .prose {
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 }
 </style>

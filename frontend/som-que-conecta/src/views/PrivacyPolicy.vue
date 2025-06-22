@@ -1,182 +1,34 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-0 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="text-center mb-10">
         <h1 class="text-3xl font-bold text-gray-900 mb-3">
           Política de Privacidade
         </h1>
         <p class="text-gray-600">
-          Última atualização: 5 de junho de 2024
+          Última atualização: 22 de junho de 2025
         </p>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
-          Índice
-        </h2>
-        <ul class="space-y-2">
-          <li
-            v-for="(section, index) in sections"
-            :key="index"
-          >
-            <a 
-              :href="`#section-${index + 1}`" 
-              class="text-red-600 hover:text-red-800 hover:underline flex items-center"
-            >
-              {{ index + 1 }}. {{ section.title }}
-              <ChevronRight class="h-4 w-4 ml-1" />
-            </a>
-          </li>
-        </ul>
       </div>
 
       <div class="bg-white rounded-lg shadow-sm p-8">
         <div class="prose max-w-none">
           <p class="text-gray-700 mb-6">
-            A Music Learning está comprometida em proteger sua privacidade. Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos suas informações pessoais quando você utiliza nossa plataforma e serviços.
+            Bem-vindo ao <strong>Som que Conecta</strong>. A sua privacidade é uma de nossas maiores prioridades. Esta Política de Privacidade explica como coletamos, usamos e protegemos suas informações quando você utiliza nossa plataforma gratuita de educação musical.
           </p>
 
-          <div
-            v-for="(section, index) in sections"
-            :id="`section-${index + 1}`"
-            :key="index"
-            class="mb-8"
-          >
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          <div v-for="(section, index) in sections" :key="index" class="mb-8">
+            <h2 :id="`section-${index + 1}`" class="text-xl font-semibold text-gray-900 mb-4">
               {{ index + 1 }}. {{ section.title }}
             </h2>
-            <div v-html="section.content" />
+            <div v-html="section.content" class="space-y-4" />
           </div>
 
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">
-            12. Contato
+          <h2 id="contact" class="text-xl font-semibold text-gray-900 mb-4">
+            {{ sections.length + 1 }}. Contato
           </h2>
           <p>
-            Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade ou sobre nossas práticas de privacidade, entre em contato conosco pelo email: <a href="mailto:contato@somqueconecta.fun" class="text-red-600 hover:underline">contato@somqueconecta.fun</a>
+            Se você tiver dúvidas sobre esta Política de Privacidade, entre em contato conosco pelo e-mail: <a href="mailto:contato@somqueconecta.fun" class="text-red-600 hover:underline">contato@somqueconecta.fun</a>
           </p>
-        </div>
-
-        <div class="mt-8 text-center">
-          <button 
-            class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 mx-auto" 
-            @click="printPolicy"
-          >
-            <Printer class="h-5 w-5" />
-            Imprimir Política
-          </button>
-        </div>
-      </div>
-
-      <div class="mt-8 bg-red-50 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Preferências de Cookies
-        </h3>
-        <p class="text-gray-700 mb-4">
-          Você pode gerenciar suas preferências de cookies a qualquer momento. Suas escolhas serão salvas para este navegador e dispositivo.
-        </p>
-        
-        <div class="space-y-4 mt-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="font-medium text-gray-900">
-                Cookies Essenciais
-              </h4>
-              <p class="text-sm text-gray-600">
-                Necessários para o funcionamento básico do site
-              </p>
-            </div>
-            <div class="relative">
-              <input
-                type="checkbox"
-                checked
-                disabled
-                class="sr-only peer"
-              >
-              <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-red-600" />
-              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
-            </div>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="font-medium text-gray-900">
-                Cookies de Desempenho
-              </h4>
-              <p class="text-sm text-gray-600">
-                Ajudam a melhorar a performance e experiência do site
-              </p>
-            </div>
-            <div class="relative">
-              <input
-                id="performance"
-                v-model="cookiePreferences.performance"
-                type="checkbox"
-                class="sr-only peer"
-              >
-              <label
-                for="performance"
-                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-red-600 block cursor-pointer"
-              />
-              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
-            </div>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="font-medium text-gray-900">
-                Cookies de Marketing
-              </h4>
-              <p class="text-sm text-gray-600">
-                Usados para publicidade personalizada
-              </p>
-            </div>
-            <div class="relative">
-              <input
-                id="marketing"
-                v-model="cookiePreferences.marketing"
-                type="checkbox"
-                class="sr-only peer"
-              >
-              <label
-                for="marketing"
-                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-red-600 block cursor-pointer"
-              />
-              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
-            </div>
-          </div>
-          
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="font-medium text-gray-900">
-                Cookies de Análise
-              </h4>
-              <p class="text-sm text-gray-600">
-                Ajudam a entender como os visitantes interagem com o site
-              </p>
-            </div>
-            <div class="relative">
-              <input
-                id="analytics"
-                v-model="cookiePreferences.analytics"
-                type="checkbox"
-                class="sr-only peer"
-              >
-              <label
-                for="analytics"
-                class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-red-600 block cursor-pointer"
-              />
-              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5" />
-            </div>
-          </div>
-        </div>
-        
-        <div class="mt-6 flex justify-center">
-          <button 
-            class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors" 
-            @click="saveCookiePreferences"
-          >
-            Salvar Preferências
-          </button>
         </div>
       </div>
     </div>
@@ -185,169 +37,95 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Printer, ChevronRight } from 'lucide-vue-next'
 import { useHead } from '@vueuse/head';
 
 useHead({
   title: 'Política de Privacidade | Som que Conecta',
   meta: [
-    { name: 'description', content: 'Política de Privacidade.' },
+    { name: 'description', content: 'Entenda como coletamos, usamos e protegemos seus dados na plataforma Som que Conecta.' },
   ]
 })
 
-const cookiePreferences = ref({
-  performance: true,
-  marketing: false,
-  analytics: true
-})
-
-const sections = [
+// O conteúdo da política agora é gerenciado aqui
+const sections = ref([
   {
     title: 'Informações que Coletamos',
     content: `
-      <p>Podemos coletar os seguintes tipos de informações:</p>
+      <p>Para fornecer nossos serviços, coletamos as seguintes informações:</p>
       <ul>
-        <li><strong>Informações de Cadastro:</strong> Nome, endereço de email, senha, data de nascimento e outras informações fornecidas durante o registro.</li>
-        <li><strong>Informações de Perfil:</strong> Foto, biografia, interesses musicais e outras informações que você opta por compartilhar.</li>
-        <li><strong>Informações de Uso:</strong> Dados sobre como você interage com nossa plataforma, incluindo cursos acessados, tempo gasto, progresso de aprendizado e preferências.</li>
-        <li><strong>Informações de Dispositivo:</strong> Tipo de dispositivo, sistema operacional, navegador, endereço IP e identificadores de dispositivo.</li>
-        <li><strong>Informações de Pagamento:</strong> Dados de cartão de crédito, informações de faturamento e histórico de transações.</li>
+        <li><strong>Informações de Cadastro:</strong> Seu nome, sobrenome, endereço de e-mail e senha (criptografada).</li>
+        <li><strong>Informações de Perfil:</strong> Dados que você opta por adicionar, como foto de perfil, biografia, nível de habilidade musical e se você atua como Professor ou ONG.</li>
+        <li><strong>Conteúdo Gerado pelo Usuário:</strong> Artigos, comentários e avaliações que você cria e publica na plataforma.</li>
+        <li><strong>Informações de Progresso:</strong> Registros das tarefas e minicursos que você conclui para que possamos calcular seu progresso e nível de habilidade.</li>
+        <li><strong>Informações de Uso:</strong> Dados anônimos sobre como você interage com o site (quais páginas visita, etc.) para nos ajudar a melhorar a plataforma.</li>
       </ul>
     `
   },
   {
     title: 'Como Usamos Suas Informações',
     content: `
-      <p>Utilizamos suas informações para os seguintes fins:</p>
+      <p>Utilizamos suas informações estritamente para:</p>
       <ul>
-        <li>Fornecer, manter e melhorar nossos serviços</li>
-        <li>Processar transações e gerenciar sua conta</li>
-        <li>Personalizar sua experiência de aprendizado</li>
-        <li>Enviar comunicações relacionadas ao serviço</li>
-        <li>Enviar materiais promocionais e newsletters (se você optar por recebê-los)</li>
-        <li>Analisar tendências de uso e melhorar nossa plataforma</li>
-        <li>Detectar, prevenir e resolver problemas técnicos e de segurança</li>
-        <li>Cumprir obrigações legais</li>
+        <li>Fornecer e manter os serviços da plataforma, como exibir seu progresso nos cursos.</li>
+        <li>Personalizar sua experiência de aprendizado.</li>
+        <li>Permitir a comunicação entre usuários e provedores de instrumentos no processo de agendamento.</li>
+        <li>Exibir seu conteúdo público, como artigos e comentários, atribuindo a autoria a você.</li>
+        <li>Enviar comunicações importantes sobre sua conta ou sobre os serviços (ex: e-mail de redefinição de senha).</li>
+        <li>Garantir a segurança da plataforma e prevenir fraudes.</li>
       </ul>
     `
   },
   {
     title: 'Compartilhamento de Informações',
     content: `
-      <p>Podemos compartilhar suas informações nas seguintes circunstâncias:</p>
+      <p>Sua privacidade é fundamental. Nós não vendemos suas informações pessoais. O compartilhamento de dados ocorre apenas nas seguintes situações:</p>
       <ul>
-        <li><strong>Com Prestadores de Serviços:</strong> Empresas que nos ajudam a fornecer e melhorar nossos serviços (processamento de pagamentos, hospedagem, análise de dados).</li>
-        <li><strong>Com Instrutores:</strong> Informações limitadas sobre seu progresso e participação em cursos específicos.</li>
-        <li><strong>Para Conformidade Legal:</strong> Quando necessário para cumprir obrigações legais, proteger nossos direitos ou responder a solicitações governamentais.</li>
-        <li><strong>Com Seu Consentimento:</strong> Em outras circunstâncias, com seu consentimento explícito.</li>
+        <li><strong>Informações Públicas:</strong> Seu nome de usuário e foto de perfil são visíveis publicamente em conteúdos que você cria, como artigos e comentários.</li>
+        <li><strong>Empréstimo de Instrumentos:</strong> Ao solicitar um instrumento, suas informações de contato (como e-mail) podem ser compartilhadas com o Professor ou ONG responsável para que eles possam coordenar o empréstimo com você.</li>
+        <li><strong>Obrigações Legais:</strong> Se formos obrigados por lei ou por uma ordem judicial a compartilhar informações.</li>
       </ul>
-      <p>Não vendemos suas informações pessoais a terceiros.</p>
     `
   },
   {
-    title: 'Cookies e Tecnologias Semelhantes',
+    title: 'Cookies e Tecnologias Essenciais',
     content: `
-      <p>Utilizamos cookies e tecnologias semelhantes para:</p>
+      <p>Utilizamos tecnologias como cookies e armazenamento local (localStorage) estritamente para o funcionamento essencial da plataforma. Isso inclui:</p>
       <ul>
-        <li>Manter você conectado à sua conta</li>
-        <li>Lembrar suas preferências</li>
-        <li>Entender como você usa nossa plataforma</li>
-        <li>Melhorar nossos serviços</li>
-        <li>Personalizar conteúdo e publicidade</li>
+        <li><strong>Cookies de Autenticação:</strong> Para manter sua sessão ativa e segura enquanto você navega pelo site.</li>
+        <li><strong>Armazenamento de Preferências:</strong> Para lembrar de suas configurações, como o modo de visualização de uma lista.</li>
       </ul>
-      <p>Você pode gerenciar suas preferências de cookies através das configurações do seu navegador ou através das opções disponíveis em nossa plataforma.</p>
+      <p>No momento, não utilizamos cookies para fins de marketing ou publicidade de terceiros. Caso isso mude no futuro, esta política será atualizada e você será notificado para gerenciar suas preferências.</p>
     `
   },
   {
-    title: 'Segurança de Dados',
+    title: 'Seus Direitos e Controle',
     content: `
-      <p>Implementamos medidas de segurança técnicas e organizacionais para proteger suas informações pessoais, incluindo:</p>
-      <ul>
-        <li>Criptografia de dados sensíveis</li>
-        <li>Acesso restrito a informações pessoais</li>
-        <li>Monitoramento de segurança contínuo</li>
-        <li>Avaliações regulares de segurança</li>
-      </ul>
-      <p>No entanto, nenhum método de transmissão pela Internet ou método de armazenamento eletrônico é 100% seguro, e não podemos garantir segurança absoluta.</p>
+      <p>De acordo com a Lei Geral de Proteção de Dados (LGPD) do Brasil, você tem o direito de acessar, corrigir, atualizar e solicitar a exclusão de suas informações pessoais. Você pode gerenciar a maioria dos seus dados diretamente na página do seu perfil ou entrando em contato conosco.</p>
     `
   },
   {
-    title: 'Retenção de Dados',
+    title: 'Segurança e Retenção de Dados',
     content: `
-      <p>Mantemos suas informações pessoais pelo tempo necessário para fornecer nossos serviços e cumprir nossas obrigações legais. Quando suas informações não forem mais necessárias, as excluiremos ou anonimizaremos.</p>
-    `
-  },
-  {
-    title: 'Seus Direitos',
-    content: `
-      <p>Dependendo da sua localização, você pode ter os seguintes direitos em relação às suas informações pessoais:</p>
-      <ul>
-        <li>Acessar e receber uma cópia de suas informações pessoais</li>
-        <li>Corrigir informações imprecisas ou incompletas</li>
-        <li>Excluir suas informações pessoais</li>
-        <li>Restringir ou opor-se ao processamento de suas informações</li>
-        <li>Portabilidade de dados</li>
-        <li>Retirar consentimento</li>
-      </ul>
-      <p>Para exercer esses direitos, entre em contato conosco através dos canais indicados abaixo.</p>
-    `
-  },
-  {
-    title: 'Transferências Internacionais de Dados',
-    content: `
-      <p>Suas informações podem ser transferidas e processadas em países diferentes do seu país de residência. Implementamos salvaguardas apropriadas para proteger suas informações durante essas transferências.</p>
-    `
-  },
-  {
-    title: 'Privacidade de Crianças',
-    content: `
-      <p>Nossos serviços não são direcionados a pessoas menores de 13 anos. Não coletamos intencionalmente informações pessoais de crianças menores de 13 anos. Se tomarmos conhecimento de que coletamos informações pessoais de uma criança menor de 13 anos, tomaremos medidas para excluir essas informações.</p>
-    `
-  },
-  {
-    title: 'Alterações nesta Política',
-    content: `
-      <p>Podemos atualizar esta Política de Privacidade periodicamente. Notificaremos você sobre alterações significativas publicando a nova política em nossa plataforma e, quando apropriado, enviando uma notificação por email.</p>
-    `
-  },
-  {
-    title: 'Seus Direitos de Privacidade na Califórnia',
-    content: `
-      <p>Se você é residente da Califórnia, você tem direitos específicos sob a Lei de Privacidade do Consumidor da Califórnia (CCPA). Para mais informações sobre esses direitos e como exercê-los, consulte nossa <a href="#" class="text-blue-600 hover:text-blue-800 hover:underline">Notificação de Privacidade da Califórnia</a>.</p>
+      <p>Implementamos medidas de segurança para proteger suas informações. Seus dados são mantidos em nossa plataforma apenas enquanto sua conta estiver ativa ou pelo tempo necessário para cumprirmos nossas obrigações legais.</p>
     `
   }
-]
-
-const printPolicy = () => {
-  window.print()
-}
-
-const saveCookiePreferences = () => {
-  console.log('Cookie preferences saved:', cookiePreferences.value)
-  alert('Suas preferências de cookies foram salvas com sucesso!')
-}
+])
 </script>
 
 <style scoped>
 .prose h2 {
   @apply text-xl font-semibold text-gray-900 mt-8 mb-4;
 }
-
-.prose p {
+.prose p, .prose ul {
   @apply text-gray-700 leading-relaxed mb-4;
 }
-
 .prose ul {
-  @apply list-disc list-inside space-y-1 mb-6 text-gray-700 ml-4;
+  @apply list-disc list-inside space-y-2 mb-6 ml-4;
 }
-
+.prose li::marker {
+  color: #DC2626; /* Cor vermelha para os marcadores da lista */
+}
 .prose a {
-  @apply text-blue-600 hover:text-blue-800 underline;
-}
-
-@media print {
-  button, .cookie-preferences {
-    display: none !important;
-  }
+  @apply text-red-600 hover:text-red-800 underline;
 }
 </style>
