@@ -28,6 +28,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(
             is_active=False,
+            auth_provider='LOCAL',
             **validated_data
         )
         token = EmailVerificationToken.objects.create(user=user)
