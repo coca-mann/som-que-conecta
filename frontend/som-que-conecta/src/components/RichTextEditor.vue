@@ -8,10 +8,10 @@
         <div ref="editorElement">
           <ckeditor 
             v-if="editor && config" 
-            :model-value="model-value" 
+            :model-value="modelValue" 
             :editor="editor"
             :config="config" 
-            @update:modelValue="$emit('update:model-value', $event)" 
+            @update:model-value="$emit('update:modelValue', $event)" 
           />
         </div>
       </div>
@@ -27,7 +27,6 @@
 
 import { computed, ref, onMounted } from 'vue';
 import { Ckeditor, useCKEditorCloud } from '@ckeditor/ckeditor5-vue';
-import articleService from '@/services/articleService';
 import api from '@/services/api';
 
 const props = defineProps({
@@ -37,7 +36,7 @@ const props = defineProps({
 	}
 });
 
-defineEmits(['update:model-value']);
+defineEmits(['update:modelValue']);
 
 const LICENSE_KEY = process.env.VUE_APP_CKEDITOR_LICENSE_KEY;
 

@@ -414,7 +414,7 @@
           </p>
           <div
             class="prose max-w-none"
-            v-html="form.content"
+            v-html="sanitizedContent"
           />
         </div>
       </div>
@@ -473,6 +473,7 @@ import {
   Trash2
 } from 'lucide-vue-next'
 import { useHead } from '@vueuse/head';
+import DOMPurify from 'dompurify';
 
 useHead({
   title: 'Novo Artigo | Som que Conecta',
@@ -516,6 +517,8 @@ const form = ref({
 const wordCount = computed(() => {
   return form.value.content.replace(/<[^>]*>/g, '').split(/\s+/).filter(word => word.length > 0).length
 })
+
+const sanitizedContent = computed(() => DOMPurify.sanitize(form.value.content));
 
 const handleSave = async (asDraft = false) => {
   isLoading.value = true;
@@ -802,7 +805,7 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 .prose h1 {
   @apply text-2xl font-bold text-gray-900 mt-6 mb-4;
 }
