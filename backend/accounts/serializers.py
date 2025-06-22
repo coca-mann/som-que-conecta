@@ -354,3 +354,11 @@ class CustomPasswordResetSerializer(PasswordResetSerializer):
             
         # Retorna o e-mail validado, como esperado pelo resto do fluxo
         return self.validated_data['email']
+    
+    
+class ContactFormSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    email = serializers.EmailField()
+    subject = serializers.CharField(max_length=150)
+    message = serializers.CharField()
+    attachment = serializers.FileField(required=False, allow_empty_file=True)

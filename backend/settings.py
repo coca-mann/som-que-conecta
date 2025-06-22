@@ -231,3 +231,5 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Som que Conecta <nao-responda@somqueconecta.fun>'
 
 FRONTEND_URL=config('FRONTEND_URL')
+
+DEVELOPER_EMAIL=config('DEVELOPER_EMAIL')

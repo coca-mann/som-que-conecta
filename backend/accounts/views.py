@@ -3,15 +3,17 @@ from rest_framework import viewsets, status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Count
 from django.contrib.auth import get_user_model
+from django.core.mail import EmailMessage
+from django.conf import settings
 from backend.accounts.serializers import (
     UserRegistrationSerializer,
     UserSerializer,
     ProfileSerializer,
     InProgressCourseSerializer,
     RecentActivitySerializer,
-    UserGoalSerializer
+    UserGoalSerializer,
+    ContactFormSerializer
 )
 from backend.lessons.models import Lesson, UserTask, Task
 from backend.instruments.models import Instrument
@@ -195,3 +197,58 @@ class AccountActivationView(APIView):
         verification_token.delete()
 
         return Response({'message': 'Conta ativada com sucesso!'}, status=status.HTTP_200_OK)
+
+
+class ContactFormView(generics.GenericAPIView):
+    """
+    View para receber dados do formulário de contato e enviar por e-mail.
+    """
+    serializer_class = ContactFormSerializer
+    # Garante que apenas usuários logados possam enviar mensagens
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # Pega os dados validados
+        validated_data = serializer.validated_data
+        name = validated_data.get('name')
+        email = validated_data.get('email')
+        subject = validated_data.get('subject')
+        message = validated_data.get('message')
+        attachment = validated_data.get('attachment')
+
+        # Monta o corpo do e-mail
+        email_body = f"""
+        Você recebeu uma nova mensagem de contato da plataforma Som que Conecta:
+        --------------------------------------------------
+        De: {name}
+        Email: {email}
+        Assunto: {subject}
+        --------------------------------------------------
+
+        Mensagem:
+        {message}
+        """
+
+        # Prepara o e-mail
+        email_message = EmailMessage(
+            subject=f"[Som que Conecta Contato] {subject}",
+            body=email_body,
+            from_email=settings.DEFAULT_FROM_EMAIL,  # O e-mail configurado para envio
+            to=[settings.DEVELOPER_EMAIL],          # Envia para o seu e-mail
+            reply_to=[email],                       # IMPORTANTE: Define o "Responder Para"
+        )
+        
+        # Anexa o arquivo, se ele existir
+        if attachment:
+            email_message.attach(attachment.name, attachment.read(), attachment.content_type)
+
+        # Envia o e-mail
+        try:
+            email_message.send(fail_silently=False)
+            return Response({"detail": "Mensagem enviada com sucesso!"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Erro ao enviar e-mail de contato: {e}")
+            return Response({"detail": "Ocorreu um erro ao tentar enviar a mensagem."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
