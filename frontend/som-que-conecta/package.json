@@ -19,6 +19,7 @@
     "axios": "^1.9.0",
     "ckeditor5": "^45.2.0",
     "core-js": "^3.8.3",
+    "dompurify": "^3.2.6",
     "jwt-decode": "^4.0.0",
     "lucide-vue-next": "^0.511.0",
     "pinia": "^2.3.1",

@@ -12,6 +12,7 @@
 
       <div class="bg-white rounded-lg shadow-sm p-8">
         <form
+          v-if="isAuthenticated"
           class="space-y-6"
           @submit.prevent="submitHelpRequest"
         >
@@ -25,8 +26,8 @@
               v-model="form.name"
               type="text"
               required
-              placeholder="Digite seu nome completo"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              :disabled="isAuthenticated"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-gray-100 cursor-not-allowed"
             >
           </div>
 
@@ -40,8 +41,8 @@
               v-model="form.email"
               type="email"
               required
-              placeholder="seu.email@exemplo.com"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              :disabled="isAuthenticated"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-gray-100 cursor-not-allowed"
             >
           </div>
 
@@ -64,9 +65,6 @@
               </option>
               <option value="courses">
                 Cursos e Conteúdo
-              </option>
-              <option value="payment">
-                Pagamentos
               </option>
               <option value="technical">
                 Problemas Técnicos
@@ -102,6 +100,7 @@
                 ref="fileInput"
                 type="file"
                 class="hidden"
+                accept="image/jpeg, image/png, image/gif, application/pdf, .doc, .docx, .txt"
                 @change="handleFileAttachment"
               >
               <button
@@ -149,6 +148,19 @@
             </button>
           </div>
         </form>
+
+        <div v-else class="text-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-3">Acesso Restrito</h3>
+          <p class="text-gray-600 mb-6">
+            Para enviar uma solicitação de ajuda, por favor, faça login na sua conta.
+          </p>
+          <router-link
+            to="/auth"
+            class="inline-block px-8 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+          >
+            Fazer Login ou Registrar-se
+          </router-link>
+        </div>
       </div>
 
       <div class="mt-12">
@@ -215,7 +227,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth.store'; // 1. Importe o authStore
+import { storeToRefs } from 'pinia';
 import { Paperclip, X, Send, Loader2, ChevronDown, CheckCircle } from 'lucide-vue-next'
 import { useHead } from '@vueuse/head';
 
@@ -225,6 +239,11 @@ useHead({
     { name: 'description', content: 'Solicite ajuda sobre qualquer situação na plataforma Som que Conecta.' },
   ]
 })
+
+const authStore = useAuthStore();
+// 3. Pega o status de login e os dados do usuário de forma reativa
+const { isAuthenticated, user } = storeToRefs(authStore);
+
 
 const form = ref({
   name: '',
@@ -240,42 +259,72 @@ const showSuccessModal = ref(false)
 const openFaq = ref(null)
 
 const faqs = [
+  // Mantive as suas duas perguntas originais
   {
     question: 'Como posso recuperar minha senha?',
-    answer: 'Para recuperar sua senha, clique em "Esqueci minha senha" na tela de login. Você receberá um email com instruções para criar uma nova senha.'
+    answer: 'Para recuperar sua senha, clique no link "Esqueceu a senha?" na tela de login. Você receberá um e-mail com as instruções para criar uma nova senha de acesso.'
   },
   {
-    question: 'Como cancelar minha assinatura?',
-    answer: 'Você pode cancelar sua assinatura a qualquer momento acessando a seção "Assinaturas" em seu perfil. O cancelamento será efetivado ao final do período já pago.'
+    question: 'O uso da plataforma e dos minicursos é realmente gratuito?',
+    answer: 'Sim! Nossa missão é democratizar o acesso à educação musical. Todo o conteúdo, incluindo minicursos e artigos, é 100% gratuito. A plataforma é mantida através de parcerias e doações.'
   },
   {
-    question: 'Os certificados são reconhecidos oficialmente?',
-    answer: 'Nossos certificados atestam a conclusão dos cursos em nossa plataforma. Embora não sejam diplomas oficiais, são reconhecidos no mercado como comprovação de desenvolvimento de habilidades.'
+    question: 'Como funciona o sistema de empréstimo de instrumentos?',
+    answer: 'Nós conectamos pessoas que querem aprender com ONGs e professores que disponibilizam instrumentos. Você pode navegar pelos instrumentos disponíveis e solicitar um agendamento para avaliação. A negociação e a retirada do instrumento são feitas diretamente com o responsável (ONG ou professor), e a nossa plataforma serve como a ponte para essa conexão.'
   },
   {
-    question: 'Posso acessar os cursos offline?',
-    answer: 'Sim! Você pode baixar as aulas para assistir offline através do nosso aplicativo móvel. O conteúdo ficará disponível por 30 dias para acesso sem internet.'
+    question: 'Eu tenho um instrumento parado. Como posso disponibilizá-lo para empréstimo?',
+    answer: 'Ficamos muito felizes com seu interesse! Para garantir a segurança e a qualidade do programa, apenas usuários com o perfil de "Professor" ou "ONG" podem cadastrar instrumentos. Você pode solicitar a mudança do seu perfil enviando uma mensagem pelo formulário dessa página, e nossa equipe analisará seu pedido.'
   },
   {
-    question: 'Como faço para me tornar um instrutor?',
-    answer: 'Para se tornar um instrutor, acesse a seção "Torne-se um Instrutor" em nosso site e preencha o formulário de candidatura. Nossa equipe analisará seu perfil e entrará em contato.'
+    question: 'Como meu progresso nos minicursos é calculado?',
+    answer: 'Seu progresso é calculado com base no número de tarefas que você marca como "concluída" dentro de cada minicurso. Ao completar a primeira tarefa, você é automaticamente "matriculado", e a barra de progresso passará a refletir sua evolução.'
+  },
+  {
+    question: 'Quem pode escrever artigos na plataforma?',
+    answer: 'A criação de artigos é reservada para nossos parceiros e usuários com perfil de "Professor" ou "ONG". Isso nos ajuda a manter um alto nível de qualidade e confiabilidade no conteúdo oferecido. Todos os artigos passam por uma moderação automática antes de serem publicados.'
   }
-]
+];
+
+onMounted(() => {
+  if (isAuthenticated.value && user.value) {
+    form.value.name = `${user.value.first_name || ''} ${user.value.last_name || ''}`.trim();
+    form.value.email = user.value.email;
+  }
+});
+
 
 const handleFileAttachment = (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  // Validate file type
-  const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png']
+  // ATUALIZE ESTA LISTA DE TIPOS PERMITIDOS
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'application/pdf',
+    'application/msword', // para .doc
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // para .docx
+    'text/plain' // para .txt
+  ]
+
   if (!allowedTypes.includes(file.type)) {
-    alert('Por favor, selecione apenas arquivos PDF, JPG ou PNG.')
+    // A mensagem de alerta agora é mais completa
+    alert('Tipo de arquivo inválido. Por favor, selecione apenas imagens (JPG, PNG, GIF), PDF, documentos Word (.doc, .docx) ou arquivos de texto (.txt).')
+    // Limpa a seleção de arquivo inválido
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
     return
   }
 
-  // Validate file size (5MB max)
-  if (file.size > 5 * 1024 * 1024) {
+  // A validação de tamanho continua a mesma
+  if (file.size > 5 * 1024 * 1024) { // 5MB max
     alert('O arquivo deve ter no máximo 5MB.')
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
     return
   }
 

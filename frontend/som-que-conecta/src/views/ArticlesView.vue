@@ -78,7 +78,7 @@
       >
         <div class="relative">
           <img 
-            :src="article.cover_image && article.cover_image.includes('default.png') && article.cover_link ? article.cover_link : article.cover_image" 
+            :src="article.cover_image ? article.cover_image : article.cover_link" 
             :alt="article.title" 
             class="w-full h-48 object-cover"
           >
