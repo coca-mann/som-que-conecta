@@ -206,7 +206,7 @@
           <p class="text-red-800 mb-3">
             Faça login para comentar neste artigo
           </p>
-          <button class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+          <button class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors" @click="goToLogin">
             Fazer Login
           </button>
         </div>
@@ -564,6 +564,17 @@ const deleteComment = async () => {
   } finally {
     isDeletingComment.value = false
   }
+}
+
+// Função para redirecionar para a tela de login com callback
+const goToLogin = () => {
+  router.push({
+    name: 'auth', // ajuste se o nome da rota for diferente
+    query: {
+      mode: 'login',
+      redirect: `/articles/${route.params.id}`
+    }
+  });
 }
 
 watch(article, (newArticle) => {
