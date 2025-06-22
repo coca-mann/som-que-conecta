@@ -37,5 +37,13 @@ const authService = {
     // dj-rest-auth fornece este endpoint por padrão
     return api.post('/auth/password/reset/confirm/', payload);
   },
+  sendHelpRequest(formData) {
+    // A rota /accounts/contact/ vem da combinação da sua URL principal e da URL da app
+    return api.post('/contact/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
 }
 export default authService;

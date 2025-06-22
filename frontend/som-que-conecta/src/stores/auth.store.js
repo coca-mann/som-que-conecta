@@ -37,7 +37,7 @@ export const useAuthStore = defineStore({
                 localStorage.setItem('user', JSON.stringify(this.user));
 
             } catch (error) {
-                this.logout(); 
+                this.logout();
                 throw error;
             }
         },
@@ -49,7 +49,7 @@ export const useAuthStore = defineStore({
             try {
                 // A resposta agora contém os dados do usuário + tokens
                 const response = await authService.register(userData);
-                
+
                 // Extraímos os dados e tokens da resposta
                 const { access, refresh, ...user } = response.data;
 
@@ -88,24 +88,24 @@ export const useAuthStore = defineStore({
         },
         async loginWithGoogle(googleResponse) {
             try {
-              // Envia o access_token para o backend
-              const backendResponse = await authService.loginWithGoogle({
-                access_token: googleResponse.access_token,
-              });
-              
-              // O backend retorna os tokens da NOSSA aplicação (JWT)
-              this.accessToken = backendResponse.data.access_token;
-              this.refreshToken = backendResponse.data.refresh_token;
-              this.user = backendResponse.data.user;
-      
-              // Salva tudo no localStorage
-              localStorage.setItem('accessToken', this.accessToken);
-              localStorage.setItem('refreshToken', this.refreshToken);
-              localStorage.setItem('user', JSON.stringify(this.user));
-      
+                // Envia o access_token para o backend
+                const backendResponse = await authService.loginWithGoogle({
+                    access_token: googleResponse.access_token,
+                });
+
+                // O backend retorna os tokens da NOSSA aplicação (JWT)
+                this.accessToken = backendResponse.data.access_token;
+                this.refreshToken = backendResponse.data.refresh_token;
+                this.user = backendResponse.data.user;
+
+                // Salva tudo no localStorage
+                localStorage.setItem('accessToken', this.accessToken);
+                localStorage.setItem('refreshToken', this.refreshToken);
+                localStorage.setItem('user', JSON.stringify(this.user));
+
             } catch (error) {
-              this.logout();
-              throw error;
+                this.logout();
+                throw error;
             }
         },
         async requestPasswordReset(payload) {
@@ -116,5 +116,15 @@ export const useAuthStore = defineStore({
             // Apenas repassa a chamada para o serviço
             return authService.confirmPasswordReset(payload);
         },
+        /**
+         * Envia o formulário de ajuda/contato para o backend.
+         * @param {FormData} formData - Os dados do formulário, incluindo o anexo.
+         */
+        sendHelpRequest(formData) {
+            // A action apenas repassa a chamada para o serviço. 
+            // O componente que a chamou usará 'await' com 'try/catch'
+            // para lidar com o sucesso ou o erro da promessa retornada.
+            return authService.sendHelpRequest(formData);
+        }
     }
 });

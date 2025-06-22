@@ -351,26 +351,32 @@ const toggleFaq = (index) => {
 }
 
 const submitHelpRequest = async () => {
-  isSubmitting.value = true
+  isSubmitting.value = true;
   
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1500))
+  // Usamos FormData por causa do anexo de arquivo
+  const formData = new FormData();
+  formData.append('name', form.value.name);
+  formData.append('email', form.value.email);
+  formData.append('subject', form.value.subject);
+  formData.append('message', form.value.message);
   
-  console.log('Help request submitted:', {
-    ...form.value,
-    attachment: form.value.attachment ? form.value.attachment.name : null
-  })
-  
-  // Reset form
-  form.value = {
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-    attachment: null
+  if (form.value.attachment) {
+    formData.append('attachment', form.value.attachment);
   }
-  
-  isSubmitting.value = false
-  showSuccessModal.value = true
-}
+
+  try {
+    await authStore.sendHelpRequest(formData); // Supondo que você adicione a action no store
+    
+    // Limpa o formulário e mostra o modal de sucesso
+    form.value = { name: authStore.user.name, email: authStore.user.email, subject: '', message: '', attachment: null };
+    showSuccessModal.value = true;
+
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error.response?.data || error);
+    alert('Houve um erro ao enviar sua mensagem. Tente novamente.');
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
 </script>
