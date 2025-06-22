@@ -16,7 +16,7 @@ app.use(createPinia())
 app.use(router)
 app.use(head)
 app.use(Vue3GoogleLogin, {
-    clientId: 'SEU_CLIENT_ID_AQUI'
+    clientId: process.env.VUE_APP_GOOGLE_SSO_CLIENT_KEY
   })
 
 app.mount('#app')

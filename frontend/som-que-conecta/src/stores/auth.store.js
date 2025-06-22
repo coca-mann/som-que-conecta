@@ -88,19 +88,23 @@ export const useAuthStore = defineStore({
         },
         async loginWithGoogle(googleResponse) {
             try {
-                // Envia o access_token para o backend
-                const backendResponse = await authService.loginWithGoogle({
+                // ETAPA 1: Envia o token do Google e obtém os tokens da NOSSA aplicação
+                const tokenResponse = await authService.loginWithGoogle({
                     access_token: googleResponse.access_token,
                 });
 
-                // O backend retorna os tokens da NOSSA aplicação (JWT)
-                this.accessToken = backendResponse.data.access_token;
-                this.refreshToken = backendResponse.data.refresh_token;
-                this.user = backendResponse.data.user;
-
-                // Salva tudo no localStorage
+                // Salva os tokens no estado e no localStorage.
+                // Usamos 'access' e 'refresh' para manter a consistência com o login local.
+                this.accessToken = tokenResponse.data.access;
+                this.refreshToken = tokenResponse.data.refresh;
                 localStorage.setItem('accessToken', this.accessToken);
                 localStorage.setItem('refreshToken', this.refreshToken);
+
+                // ETAPA 2: Com os tokens salvos, busca os dados completos do usuário.
+                // Este passo é idêntico ao do login local e garante que tenhamos o objeto 'user' completo.
+                const userResponse = await authService.getMe();
+
+                this.user = userResponse.data;
                 localStorage.setItem('user', JSON.stringify(this.user));
 
             } catch (error) {
