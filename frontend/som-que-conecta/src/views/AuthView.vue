@@ -482,6 +482,39 @@
         </div>
       </div>
     </Transition>
+    <Transition
+      enter-active-class="transition ease-out duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition ease-in duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="showSuccessModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      >
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 text-center">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <MailCheck class="h-8 w-8 text-green-600" />
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Conta Criada com Sucesso!
+          </h3>
+          <p class="text-gray-600 mb-6">
+            Enviamos um link de ativação para o seu e-mail:
+            <strong class="text-gray-800">{{ registeredEmail }}</strong>.
+            Por favor, verifique sua caixa de entrada (e a pasta de spam) para ativar sua conta.
+          </p>
+          <button
+            class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            @click="handleSuccessModalClose"
+          >
+            Entendido, ir para o Login
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -491,7 +524,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { googleTokenLogin } from "vue3-google-login";
 import {
-  Music,
+  MailCheck,
   Mail,
   Lock,
   Eye,
@@ -501,8 +534,6 @@ import {
   X,
   BookOpen,
   Users,
-  Award,
-  newspaper,
   Newspaper
 } from 'lucide-vue-next'
 import { useHead } from '@vueuse/head';
@@ -528,6 +559,9 @@ const showConfirmPassword = ref(false)
 const showForgotPassword = ref(false)
 const resetEmail = ref('')
 const authStore = useAuthStore();
+
+const showSuccessModal = ref(false);
+const registeredEmail = ref('');
 
 // Form data
 const form = ref({
@@ -609,10 +643,6 @@ const clearForm = () => {
 }
 
 const handleSubmit = async () => {
-  console.log("A. Função handleSubmit foi ACIONADA.");
-  console.log("B. O valor de isLogin.value é:", isLogin.value);
-  console.log("C. O valor de isFormValid.value é:", isFormValid.value);
-
   errorMessage.value = null; 
   if (!isFormValid.value) {
     console.log("Formulário inválido, execução parada.");
@@ -633,6 +663,8 @@ const handleSubmit = async () => {
       const redirectTo = route.query.redirect || '/';
       router.push(redirectTo);
     } else {
+      registeredEmail.value = form.value.email;
+
       await authStore.register({
         email: form.value.email,
         password: form.value.password,
@@ -640,8 +672,8 @@ const handleSubmit = async () => {
         last_name: form.value.lastName,
       });
       // 2. Se o registro for bem-sucedido:
-      alert('Conta criada com sucesso! Por favor, faça o login para continuar.');
-      router.push('/');
+      clearForm();
+      showSuccessModal.value = true;
     }
     
   } catch (error) {
@@ -660,6 +692,11 @@ const handleSubmit = async () => {
     isLoading.value = false;
   }
 }
+
+const handleSuccessModalClose = () => {
+  showSuccessModal.value = false;
+  setMode('login'); // Prepara a tela para o usuário fazer o login
+};
 
 // --- NOVA FUNÇÃO DE LOGIN COM GOOGLE ---
 const signInWithGoogle = () => {
