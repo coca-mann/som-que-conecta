@@ -1,7 +1,7 @@
 <template>
   <footer class="bg-gray-900 text-white mt-auto relative z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid md:grid-cols-4 gap-8">
+      <div class="grid md:grid-cols-3 gap-8">
         <div>
           <div class="flex items-center space-x-2 mb-4">
             <img 
@@ -59,12 +59,6 @@
                 class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
                 @click="handleNavigation('/help')"
               >Central de Ajuda</a>
-            </li>
-            <li>
-              <a
-                class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
-                @click="handleNavigation('/contact')"
-              >Contato</a>
             </li>
             <li>
               <a
