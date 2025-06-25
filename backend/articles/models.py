@@ -15,6 +15,10 @@ class ArticleCategory(models.Model):
     
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = 'Categoria de Artigo'
+        verbose_name_plural = 'Categorias de Artigos'
 
 
 class Article(models.Model):
@@ -209,7 +213,7 @@ class ArticleRating(models.Model):
         verbose_name_plural = 'Avaliações de Artigos'
         
     def __str__(self):
-        return f"{self.user.username} - {self.article.title} - {self.rating}"
+        return f"{self.user_id.username} - {self.article_id.title} - {self.rating}"
 
 
 class ArticleFavorites(models.Model):
@@ -226,8 +230,12 @@ class ArticleFavorites(models.Model):
         verbose_name='Artigo',
     )
     
+    class Meta:
+        verbose_name = 'Favorito de Artigo'
+        verbose_name_plural = 'Favoritos de Artigos'
+    
     def __str__(self):
-        return f"{self.user.username} - {self.article.title}"
+        return f"{self.user_id.username} - {self.article_id.title}"
 
 
 class ArticleRead(models.Model):
