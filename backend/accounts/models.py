@@ -112,6 +112,10 @@ class UserGoals(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'Meta do Usuário'
+        verbose_name_plural = 'Metas dos Usuários'
+
 
 class UserHistory(models.Model):
     user = models.ForeignKey(
@@ -130,7 +134,10 @@ class UserHistory(models.Model):
         return f"{self.user.email} - {self.get_action_display()} - {self.object_name}"
 
     class Meta:
+        verbose_name = 'Histórico do Usuário'
+        verbose_name_plural = 'Históricos dos Usuários'
         ordering = ['-created_at']
+
 
 class EmailVerificationToken(models.Model):
     # Usamos UUID para tokens seguros e únicos
@@ -143,4 +150,8 @@ class EmailVerificationToken(models.Model):
     def is_expired(self):
         # Define que o token expira em 1 hora (ajuste conforme necessário)
         return self.created_at < timezone.now() - timedelta(hours=1)
+
+    class Meta:
+        verbose_name = 'Token de Verificação de Email'
+        verbose_name_plural = 'Tokens de Verificação de Email'
 
