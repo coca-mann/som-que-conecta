@@ -144,7 +144,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
         model = Article
         fields = [
             'id', 'title', 'short_description', 'cover_image', 'cover_link', 'reading_time',
-            'author', 'category', 'created_at', 'rating', 'read_count', 'is_published', 'comments_count', 'read_count'
+            'author', 'category', 'created_at', 'rating', 'read_count', 'is_published', 'comments_count', 'read_count', 'published_at'
         ]
         
         
@@ -162,7 +162,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'short_description', 'content', 'cover_image', 'cover_link',
             'reading_time', 'difficulty', 'author', 'category', 'comments', 'created_at',
-            'read_count', 'like_count', 'rating', 'is_published', 'favorite_count', 'modified_at', 'ai_bool', 'ai_feedback'
+            'read_count', 'like_count', 'rating', 'is_published', 'favorite_count', 'modified_at', 'ai_bool', 'ai_feedback', 'published_at'
         ]
 
     def get_cover_image(self, obj):

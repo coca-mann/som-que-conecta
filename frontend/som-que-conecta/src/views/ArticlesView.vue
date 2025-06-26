@@ -149,7 +149,7 @@
                   {{ article.author?.get_full_name }}
                 </p>
                 <p class="text-xs text-gray-500">
-                  {{ formatDate(article.created_at) }}
+                  {{ formatDate(article.published_at) }}
                 </p>
               </div>
             </div>
