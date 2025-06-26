@@ -211,7 +211,7 @@
                 @click="openBookingModal(booking)"
               >
                 <div class="font-medium truncate">
-                  {{ booking.instrument.name }}
+                  {{ booking.instrument?.name || 'Instrumento não informado' }}
                 </div>
                 <div class="truncate">
                   {{ formatTime(booking.startTime) }}
@@ -273,16 +273,16 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <img
-                      :src="booking.instrument.main_image"
-                      :alt="booking.instrument.name"
+                      :src="booking.instrument?.main_image"
+                      :alt="booking.instrument?.name"
                       class="h-10 w-10 rounded-lg object-cover"
                     >
                     <div class="ml-4">
                       <div class="text-sm font-medium text-gray-900">
-                        {{ booking.instrument.name }}
+                        {{ booking.instrument?.name || 'Instrumento não informado' }}
                       </div>
                       <div class="text-sm text-gray-500">
-                        {{ booking.instrument.brand }}
+                        {{ booking.instrument?.brand }}
                       </div>
                     </div>
                   </div>
@@ -290,16 +290,16 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <img
-                      :src="booking.client.profile_picture"
-                      :alt="booking.client.name"
+                      :src="booking.client?.profile_picture"
+                      :alt="booking.client?.name"
                       class="h-8 w-8 rounded-full"
                     >
                     <div class="ml-3">
                       <div class="text-sm font-medium text-gray-900">
-                        {{ booking.client.name }}
+                        {{ booking.client?.name || 'Cliente não informado' }}
                       </div>
                       <div class="text-sm text-gray-500">
-                        {{ booking.client.email }}
+                        {{ booking.client?.email }}
                       </div>
                     </div>
                   </div>
@@ -384,19 +384,19 @@
                 </h4>
                 <div class="flex items-center space-x-3">
                   <img
-                    :src="selectedBooking.instrument.main_image"
-                    :alt="selectedBooking.instrument.name"
+                    :src="selectedBooking.instrument?.main_image"
+                    :alt="selectedBooking.instrument?.name"
                     class="h-16 w-16 rounded-lg object-cover"
                   >
                   <div>
                     <div class="font-medium text-gray-900">
-                      {{ selectedBooking.instrument.name }}
+                      {{ selectedBooking.instrument?.name || 'Instrumento não informado' }}
                     </div>
                     <div class="text-sm text-gray-500">
-                      {{ selectedBooking.instrument.brand }}
+                      {{ selectedBooking.instrument?.brand }}
                     </div>
                     <div class="text-sm text-gray-500">
-                      {{ selectedBooking.instrument.type }}
+                      {{ selectedBooking.instrument?.type }}
                     </div>
                   </div>
                 </div>
@@ -408,19 +408,19 @@
                 </h4>
                 <div class="flex items-center space-x-3">
                   <img
-                    :src="selectedBooking.client.profile_picture"
-                    :alt="selectedBooking.client.name"
+                    :src="selectedBooking.client?.profile_picture"
+                    :alt="selectedBooking.client?.name"
                     class="h-16 w-16 rounded-full"
                   >
                   <div>
                     <div class="font-medium text-gray-900">
-                      {{ selectedBooking.client.name }}
+                      {{ selectedBooking.client?.name || 'Cliente não informado' }}
                     </div>
                     <div class="text-sm text-gray-500">
-                      {{ selectedBooking.client.email }}
+                      {{ selectedBooking.client?.email }}
                     </div>
                     <div class="text-sm text-gray-500">
-                      {{ selectedBooking.client.phone }}
+                      {{ selectedBooking.client?.phone }}
                     </div>
                   </div>
                 </div>
