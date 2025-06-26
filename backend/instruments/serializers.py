@@ -106,6 +106,7 @@ class BookingInstrumentSerializer(serializers.ModelSerializer):
 # Crie um serializer simples para o cliente (usuário)
 class BookingClientSerializer(serializers.ModelSerializer):
     profile_picture = serializers.SerializerMethodField()
+    get_full_name = serializers.SerializerMethodField()
 
     class Meta:
         # CORREÇÃO: Use get_user_model() para obter a classe de modelo real
@@ -113,7 +114,7 @@ class BookingClientSerializer(serializers.ModelSerializer):
         
         # Use os campos que realmente existem no seu modelo de usuário.
         # Estes são campos padrão do Django. Adapte se o seu for diferente.
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'profile_picture']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'profile_picture', 'get_full_name']
 
     def get_profile_picture(self, obj):
         request = self.context.get('request')
@@ -121,6 +122,12 @@ class BookingClientSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.profile_picture.url)
         # Retorna null ou uma URL de avatar padrão se não houver imagem
         return None
+
+    def get_get_full_name(self, obj):
+        # Usa o método do modelo se existir, senão concatena
+        if hasattr(obj, 'get_full_name'):
+            return obj.get_full_name()
+        return f"{obj.first_name} {obj.last_name}".strip()
 
 # --- Serializer para LEITURA (GET) ---
 # Mostra todos os dados, incluindo informações aninhadas do instrumento e do usuário.

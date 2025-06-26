@@ -296,7 +296,7 @@
                     >
                     <div class="ml-3">
                       <div class="text-sm font-medium text-gray-900">
-                        {{ booking.client?.name || 'Cliente não informado' }}
+                        {{ booking.client?.get_full_name || 'Cliente não informado' }}
                       </div>
                       <div class="text-sm text-gray-500">
                         {{ booking.client?.email }}
@@ -414,7 +414,7 @@
                   >
                   <div>
                     <div class="font-medium text-gray-900">
-                      {{ selectedBooking.client?.name || 'Cliente não informado' }}
+                      {{ selectedBooking.client?.get_full_name || 'Cliente não informado' }}
                     </div>
                     <div class="text-sm text-gray-500">
                       {{ selectedBooking.client?.email }}
