@@ -890,7 +890,7 @@ const handleAvatarUpload = (event) => {
 const continueCourse = (course) => {
   // Redireciona para a página principal da lição (curso)
   // A página de destino pode então decidir qual tarefa mostrar.
-  router.push(`/lessons/${course.id}`);
+  router.push(`/courses/${course.id}`);
 }
 
 

@@ -68,3 +68,4 @@ staticfiles
 
 # Arquivos permitidos
 !frontend/som-que-conecta/src/assets/*
+!documentation/*

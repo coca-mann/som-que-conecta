@@ -62,7 +62,7 @@
           </h3>
           <div class="space-y-4">
             <div
-              v-for="(task, index) in course.tasks"
+              v-for="(task, index) in orderedTasks"
               :key="task.id"
               class="border rounded-lg p-4 hover:shadow-md transition-shadow"
             >
@@ -180,8 +180,6 @@ import lessonService from '@/services/lessonService';
 import { Clock, BookOpen, User, X, Check, Award } from 'lucide-vue-next'
 import { useHead } from '@vueuse/head';
 
-
-
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore();
@@ -222,14 +220,20 @@ watch(course, (newCourse) => {
 })
 
 // --- PROPRIEDADES COMPUTADAS ---
+const orderedTasks = computed(() => {
+  if (!course.value?.tasks) return [];
+  // Ordena pelo campo 'order' de forma ascendente
+  return [...course.value.tasks].sort((a, b) => a.order - b.order);
+});
+
 const completedTasks = computed(() => {
   // A API agora envia 'is_completed' para cada tarefa
-  return course.value?.tasks.filter(task => task.is_completed).length || 0;
+  return orderedTasks.value.filter(task => task.is_completed).length || 0;
 });
 
 const progressPercentage = computed(() => {
-  if (!course.value?.tasks?.length) return 0;
-  return Math.round((completedTasks.value / course.value.tasks.length) * 100);
+  if (!orderedTasks.value.length) return 0;
+  return Math.round((completedTasks.value / orderedTasks.value.length) * 100);
 });
 
 // --- MÉTODOS ---
@@ -239,13 +243,13 @@ const goToTask = (task) => {
 
 const continueFromLastTask = () => {
   // Encontra a primeira tarefa não completada
-  const nextTask = course.value?.tasks.find(task => !task.is_completed);
+  const nextTask = orderedTasks.value.find(task => !task.is_completed);
   
   if (nextTask) {
     goToTask(nextTask);
-  } else if (course.value?.tasks?.length > 0) {
+  } else if (orderedTasks.value.length > 0) {
     // Se todas estiverem completas, vai para a primeira
-    goToTask(course.value.tasks[0]);
+    goToTask(orderedTasks.value[0]);
   }
 };
 

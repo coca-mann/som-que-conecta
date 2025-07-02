@@ -138,7 +138,7 @@ class LessonListSerializer(serializers.ModelSerializer):
 class LessonDetailSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     instrument_type = serializers.StringRelatedField()
-    tasks = TaskSerializer(many=True, read_only=True, source='task_set')
+    tasks = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
@@ -149,3 +149,9 @@ class LessonDetailSerializer(serializers.ModelSerializer):
         Retorna o nome completo do autor da lição usando o método get_full_name().
         """
         return obj.author.get_full_name()
+    
+    def get_tasks(self, obj):
+        # Ordena as tarefas pelo campo 'order' de forma ascendente
+        tasks = obj.task_set.all().order_by('order')
+        context = self.context
+        return TaskSerializer(tasks, many=True, context=context).data
